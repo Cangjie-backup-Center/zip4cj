@@ -181,6 +181,7 @@ open class HeaderParser <: ZipSignatures {
             var versionMadeBy = readShortLittleEndian(buff, CEN_VEM_OFFSET)
             var versionNeededToExtract = readShortLittleEndian(buff, CEN_VER_OFFSET)
             var flag = readShortLittleEndian(buff, CEN_FLG_OFFSET)
+            var flagArr=convertToLittleEndian(flag, length:16)
             var compressionMethod = readShortLittleEndian(buff, CEN_HOW_OFFSET)
             var lastModifiedTime = readShortLittleEndian(buff, CEN_TIM_OFFSET)
             var lastModifiedDate = readShortLittleEndian(buff, CEN_DAT_OFFSET)
@@ -223,6 +224,9 @@ open class HeaderParser <: ZipSignatures {
                 fileName,
                 isDirectory
             )
+            var length=flagArr.size()
+            cdr.setEncrypted(flagArr[length-1]!=0)
+            cdr.setUtf8(flagArr[length-11]!=0)
             var file = FileUtils.getFilePath(outPath, cdr.fileName)
             if (outPath != "" && cdr.isDirectory) {
                 file = file.slice(0, file.size() - 1).toString()

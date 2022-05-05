@@ -1,4 +1,5 @@
 package zip4cj
+
 /*
  * Create a custom type called CentralDirectoryRecord.
  * Define the central directory field.
@@ -26,8 +27,10 @@ record CentralDirectoryRecord {
     public var externalFileAttributes: Int64 = 0
     public var relativeOffSetOfLocalFileHeader: Int64 = 0
     public var fileName: String = ""
-    public var isDirectory:Bool=false
-     public init(
+    public var isDirectory: Bool = false
+    public var isEncrypted = false
+    public var isUtf8 = false
+    public init(
         signature: Int64,
         versionMadeBy: Int64,
         versionExtract: Int64,
@@ -46,7 +49,7 @@ record CentralDirectoryRecord {
         externalFileAttributes: Int64,
         relativeOffSetOfLocalFileHeader: Int64,
         fileName: String,
-        isDirectory:Bool
+        isDirectory: Bool
     ) {
         this.signature = signature
         this.versionMadeBy = versionMadeBy
@@ -66,7 +69,7 @@ record CentralDirectoryRecord {
         this.externalFileAttributes = externalFileAttributes
         this.relativeOffSetOfLocalFileHeader = relativeOffSetOfLocalFileHeader
         this.fileName = fileName
-        this.isDirectory=isDirectory
+        this.isDirectory = isDirectory
     }
     public init(
         signature: Int64,
@@ -106,5 +109,11 @@ record CentralDirectoryRecord {
         this.externalFileAttributes = externalFileAttributes
         this.relativeOffSetOfLocalFileHeader = relativeOffSetOfLocalFileHeader
         this.fileName = fileName
+    }
+    public mut func setEncrypted(isEncrypted: Bool) {
+        this.isEncrypted = isEncrypted
+    }
+    public mut func setUtf8(isUtf8: Bool) {
+        this.isUtf8 = isUtf8
     }
 }
