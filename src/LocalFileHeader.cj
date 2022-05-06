@@ -5,7 +5,7 @@ package zip4cj
  *
  * @author      lizhenjie
  */
-record LocalFileHeader {
+public record LocalFileHeader {
 
     public var signature: Int64 = 0
     public var versionExtract: Int64 = 0

@@ -1,4 +1,5 @@
 package zip4cj
+
 from std import io.*
 from compress import zlib.*
 from std import collection.*
@@ -10,8 +11,12 @@ public open class ZipFile {
     private var outPath: String = ""
     private var zipParam: ZipParams = ZipParams()
     private var fileList = HashSet<String>()
-    public init() {}
+    private let headerParser: HeaderParser
+    public init() {
+        headerParser = HeaderParser()
+    }
     public init(filePath: String) {
+        headerParser = HeaderParser()
         this.filePath = filePath
     }
     func checkFile(files: HashSet<String>) {
@@ -40,11 +45,9 @@ public open class ZipFile {
         if (!outPath.endsWith(".zip")) {
             throw RuntimeException("Output file type should be zip!")
         }
-        var hp = HeaderParser(outPath)
-        hp.writeZipFile(fileList,zipParam)
+        headerParser.writeZipFile(fileList, zipParam)
     }
-
-    public func extractAll() {
+    private func checkFile() {
         if (filePath == "") {
             throw RuntimeException("file Path is null or invalid")
         }
@@ -55,19 +58,34 @@ public open class ZipFile {
         if (!fileInfo.exist()) {
             throw RuntimeException("file not exist!")
         }
+    }
+    public func extractAll(): ArrayList<LocalFileHeader> {
+        checkFile()
         var dirInfo = io.DirectoryInfo(outPath)
         if (!dirInfo.exist()) {
             dirInfo.create()
         }
-        unzip()
+        return unzip()
     }
-    private func unzip() {
-        var hp = HeaderParser(outPath)
+    private func unzip(): ArrayList<LocalFileHeader>  {
+        checkFile()
+        headerParser.setOutPath(outPath)
         var buff = FileUtils.readFile(filePath)
-        var eocd = hp.parseEndOfCentralDirectory(buff)
-        var cdrs = hp.parseCentralDirectoryRecord(buff, eocd)
-        hp.parseLocalFileHeader(buff, cdrs)
-        return
+        var eocd = headerParser.parseEndOfCentralDirectory(buff)
+        var cdrs = headerParser.parseCentralDirectoryRecord(buff, eocd)
+        return headerParser.parseLocalFileHeader(buff, cdrs)
+    }
+
+    /*
+     *Gets the directory inside the compressed package
+     */
+    public func nameList(): Array<String> {
+        checkFile()
+        headerParser.setOutPath(outPath)
+        var buff = FileUtils.readFile(filePath)
+        var eocd = headerParser.parseEndOfCentralDirectory(buff)
+        var cdrs = headerParser.parseCentralDirectoryRecord(buff, eocd)
+        return cdrs.keys().toArray()
     }
 
     public func setOutPath(outPath: String) {

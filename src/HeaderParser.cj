@@ -1,4 +1,5 @@
 package zip4cj
+
 from std import math.*
 from std import io.*
 from std import log.*
@@ -15,12 +16,14 @@ open class HeaderParser <: ZipSignatures {
     public init(outPath: String) {
         this.outPath = outPath
     }
+    public func setOutPath(outPath: String) {
+        this.outPath = outPath
+    }
 
     /*
      *Parse local file header
      */
-    public func parseLocalFileHeader(buff: Array<UInt8>, fileType: HashMap<String, CentralDirectoryRecord>): ArrayList<
-        LocalFileHeader> {
+    public func parseLocalFileHeader(buff: Array<UInt8>, fileType: HashMap<String, CentralDirectoryRecord>): ArrayList<LocalFileHeader> {
         var length = buff.size()
         var localFileHeaderSigStartPosition = ArrayList<Int64>()
         for (index in 0..length) {
@@ -72,8 +75,7 @@ open class HeaderParser <: ZipSignatures {
                         logger.info("Unpack the success")
                     case 99 => //AES_INTERNAL_ONLY
                         logger.info("Compression method:$[meth} does not support!")
-                    case _ =>
-                        throw RuntimeException("Compression method:$[meth} does not support!")
+                    case _ => throw RuntimeException("Compression method:$[meth} does not support!")
                 }
                 if (outPath != "") {
                     var file = FileUtils.getFilePath(outPath, fileName)
@@ -163,8 +165,7 @@ open class HeaderParser <: ZipSignatures {
     /*
      *Parse central directory record
      */
-    public func parseCentralDirectoryRecord(buff: Array<UInt8>, endCDR: EndCDR): HashMap<String, CentralDirectoryRecord>
-     {
+    public func parseCentralDirectoryRecord(buff: Array<UInt8>, endCDR: EndCDR): HashMap<String, CentralDirectoryRecord> {
         var cdrData = splitCentralDirectoryRecord(buff, endCDR)
         var fileType = HashMap<String, CentralDirectoryRecord>()
         for (key in cdrData.keys()) {
@@ -181,7 +182,7 @@ open class HeaderParser <: ZipSignatures {
             var versionMadeBy = readShortLittleEndian(buff, CEN_VEM_OFFSET)
             var versionNeededToExtract = readShortLittleEndian(buff, CEN_VER_OFFSET)
             var flag = readShortLittleEndian(buff, CEN_FLG_OFFSET)
-            var flagArr=convertToLittleEndian(flag, length:16)
+            var flagArr = convertToLittleEndian(flag, length: 16)
             var compressionMethod = readShortLittleEndian(buff, CEN_HOW_OFFSET)
             var lastModifiedTime = readShortLittleEndian(buff, CEN_TIM_OFFSET)
             var lastModifiedDate = readShortLittleEndian(buff, CEN_DAT_OFFSET)
@@ -224,9 +225,9 @@ open class HeaderParser <: ZipSignatures {
                 fileName,
                 isDirectory
             )
-            var length=flagArr.size()
-            cdr.setEncrypted(flagArr[length-1]!=0)
-            cdr.setUtf8(flagArr[length-11]!=0)
+            var length = flagArr.size()
+            cdr.setEncrypted(flagArr[length - 1] != 0)
+            cdr.setUtf8(flagArr[length - 11] != 0)
             var file = FileUtils.getFilePath(outPath, cdr.fileName)
             if (outPath != "" && cdr.isDirectory) {
                 file = file.slice(0, file.size() - 1).toString()
@@ -345,7 +346,7 @@ open class HeaderParser <: ZipSignatures {
         if (readIntLittleEndian(buff, length - END_HDR_SIZE) == ENDSIG) {
             startPos = length - END_HDR_SIZE
         } else {
-            for (index in length - 1..=0:-1) {
+            for (index in length - 1..=0 : -1) {
                 if (index - 3 < 0) {
                     return Array<UInt8>()
                 }
@@ -491,7 +492,7 @@ open class HeaderParser <: ZipSignatures {
         return valArr
     }
 
-    public func writeZipFile(files: HashSet<String>,zipParam: ZipParams) {
+    public func writeZipFile(files: HashSet<String>, zipParam: ZipParams) {
         var fileNum = files.size()
         var time = Time.now(Location.Local)
         var localFileLst = ArrayList<UInt8>()
