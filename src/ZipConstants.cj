@@ -141,4 +141,6 @@ abstract class ZipConstants {
     let EXTT_FLAG_LMT = 0x1 // LastModifiedTime
     let EXTT_FLAG_LAT = 0x2 // LastAccessTime
     let EXTT_FLAT_CT = 0x4 // CreationTime
+
+     let GENERAL_PURPOSE_BIT_FLAG_SIZE=16
 }

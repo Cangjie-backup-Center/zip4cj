@@ -3,15 +3,20 @@
    
 zip4cj是基于仓颉（0.28.4）语言实现的文件压缩和解压缩，目前基本实现了zip和gzip的压缩和解压缩。
 
->zip待解决的问题:<br>
- 1、文件加密和解密为实现<br>
- 2、zip解压中文文件名称乱码
+## 引入charset包
+ 
+ 地址：https://gitee.com/HW-PLLab/charset
+
+ ### 使用说明
+ > 1、git clone https://gitee.com/HW-PLLab/charset.git<br>
+ > 2、cd charset<br>
+ > 3、cpm build<br>
+ > 4、将build下的charset复制到仓颉环境cangjie/lib/linux_x86_64_llvm下
 
  ## 未来规划
- > 1、解决中文乱码<br>
- > 2、丰富接口<br>
- > 3、实现压缩解密和加密<br>
- > 4、其他有啥想法了再添加^_^
+ > 1、丰富接口<br>
+ > 2、实现压缩解密和加密<br>
+ > 3、其他有啥想法了再添加^_^
  ## 使用说明
  ### **zip**
  ### zip解压
@@ -42,3 +47,7 @@ zip4cj是基于仓颉（0.28.4）语言实现的文件压缩和解压缩，目�
     var deCompressData=deCompress[1]
     var outPath="/mnt/c/Users/lizhenjie/Desktop/"+fName
     FileUtils.writeFile(Array(deCompressData), outPath)
+
+## 编译时候指定library-path
+
+    如：cjc -m . --library-path /home/lzj/cangjie/lib/linux_x86_64_llvm/charset -l charsetcharset -l charsetcharset.encoding -l charsetcharset.traditionchinese -l charsetcharset.simplechinese -l charsetcharset.korean -l charsetcharset.singlebyte -l charsetcharset.unicode

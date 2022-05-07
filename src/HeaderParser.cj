@@ -3,7 +3,7 @@ package zip4cj
 from std import math.*
 from std import io.*
 from std import log.*
-
+from charset import charset.*
 /*
  * Parse zip Header information
  * @author      lizhenjie
@@ -49,6 +49,7 @@ open class HeaderParser <: ZipSignatures {
             var sig = readIntLittleEndian(buffer, LOC_HDR_SIG_OFFSET)
             var version = readShortLittleEndian(buffer, LOC_HDR_VER_OFFSET)
             var flag = readShortLittleEndian(buffer, LOC_HDR_FLG_OFFSET)
+            var flagArr = MsDosUtils.convertToBinary(flag, length: 16)
             var meth = readShortLittleEndian(buffer, LOC_HDR_HOW_OFFSET)
             var dateTime = readIntLittleEndian(buffer, LOC_HDR_TIM_OFFSET)
             var time = readShortLittleEndian(buffer, LOC_HDR_TIM_OFFSET)
@@ -59,7 +60,14 @@ open class HeaderParser <: ZipSignatures {
             var fileNameLength = readShortLittleEndian(buffer, LOC_HDR_NAM_OFFSET)
             var extraFieldLength = readShortLittleEndian(buffer, LOC_HDR_EXT_OFFSET)
             var fileNameArr = subArray(buffer, LOC_HDR_FNM_OFFSET, (LOC_HDR_FNM_OFFSET + fileNameLength))
-            var fileName = String.fromUtf8(fileNameArr, start: 0, length: fileNameLength, isAscii: true)
+            var length = flagArr.size()
+            var isUtf8:Bool=(flagArr[length - 12] != 0)
+            var fileName=""
+            if (isUtf8) {
+                 fileName = String.fromUtf8(fileNameArr, start: 0, length: fileNameLength, isAscii: true)
+            }else {
+                 fileName=gb18030(fileNameArr)
+            }
             var sub = subArray(
                 buffer,
                 LOC_HDR_FNM_OFFSET + fileNameLength,
@@ -182,7 +190,7 @@ open class HeaderParser <: ZipSignatures {
             var versionMadeBy = readShortLittleEndian(buff, CEN_VEM_OFFSET)
             var versionNeededToExtract = readShortLittleEndian(buff, CEN_VER_OFFSET)
             var flag = readShortLittleEndian(buff, CEN_FLG_OFFSET)
-            var flagArr = convertToLittleEndian(flag, length: 16)
+            var flagArr = MsDosUtils.convertToBinary(flag, length: 16)
             var compressionMethod = readShortLittleEndian(buff, CEN_HOW_OFFSET)
             var lastModifiedTime = readShortLittleEndian(buff, CEN_TIM_OFFSET)
             var lastModifiedDate = readShortLittleEndian(buff, CEN_DAT_OFFSET)
@@ -202,7 +210,14 @@ open class HeaderParser <: ZipSignatures {
                 fileNameArr[j] = buff[index]
                 j++
             }
-            var fileName = String.fromUtf8(fileNameArr, start: 0, length: fileNameLength, isAscii: true)
+            var length = flagArr.size()
+            var isUtf8:Bool=(flagArr[length - 12] != 0)
+            var fileName=""
+            if (isUtf8) {
+                 fileName = String.fromUtf8(fileNameArr, start: 0, length: fileNameLength, isAscii: true)
+            }else {
+                 fileName=gb18030(fileNameArr)
+            }
             var isDirectory = (fileName != "" && (fileName.endsWith("/") || fileName.endsWith("\\")))
             var cdr = CentralDirectoryRecord(
                 CENSIG,
@@ -225,9 +240,8 @@ open class HeaderParser <: ZipSignatures {
                 fileName,
                 isDirectory
             )
-            var length = flagArr.size()
             cdr.setEncrypted(flagArr[length - 1] != 0)
-            cdr.setUtf8(flagArr[length - 11] != 0)
+            cdr.setUtf8(isUtf8)
             var file = FileUtils.getFilePath(outPath, cdr.fileName)
             if (outPath != "" && cdr.isDirectory) {
                 file = file.slice(0, file.size() - 1).toString()
@@ -508,7 +522,7 @@ open class HeaderParser <: ZipSignatures {
             var lfh: LocalFileHeader = LocalFileHeader(
                 LOCSIG,
                 20,
-                0,
+                generalPurposeBitFlag(),
                 CompressionMethod.DEFLATE,
                 MsDosUtils.getLastModFileTime(time),
                 MsDosUtils.getLastModFileDate(time),
@@ -528,7 +542,7 @@ open class HeaderParser <: ZipSignatures {
                 CENSIG,
                 20,
                 20,
-                0,
+                generalPurposeBitFlag(),
                 CompressionMethod.DEFLATE,
                 MsDosUtils.getLastModFileTime(time),
                 MsDosUtils.getLastModFileDate(time),
@@ -566,5 +580,26 @@ open class HeaderParser <: ZipSignatures {
         var endCDRLst = writeEndOfCentralDirectoryRecord(endCDR)
         localFileLst.addAll(endCDRLst)
         FileUtils.writeFile(Array(localFileLst), outPath)
+    }
+
+    private func gb18030(arr:Array<UInt8>):String {
+          var charset = match(Charsets.forName("gb18030")){
+            case Some(cs) => cs
+            case _ => Charsets.gb18030
+        }
+        var decoder = charset.newDecoder()
+        return decoder.decode(arr)
+    }
+
+    private func generalPurposeBitFlag(utf8!:Int64=1,encrypted!:Int64=0):Int64{
+        var flagArr = Array<Int64>(GENERAL_PURPOSE_BIT_FLAG_SIZE, {i => 0})
+        flagArr[GENERAL_PURPOSE_BIT_FLAG_SIZE - 12] = utf8
+        flagArr[GENERAL_PURPOSE_BIT_FLAG_SIZE - 1] = encrypted
+        var sum: Int64 = 0
+        for (index in 0..GENERAL_PURPOSE_BIT_FLAG_SIZE) {
+            sum += flagArr[index] * (2 ** (GENERAL_PURPOSE_BIT_FLAG_SIZE - index - 1))
+        }
+        return sum
+        return sum
     }
 }

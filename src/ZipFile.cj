@@ -45,6 +45,7 @@ public open class ZipFile {
         if (!outPath.endsWith(".zip")) {
             throw RuntimeException("Output file type should be zip!")
         }
+        headerParser.setOutPath(outPath)
         headerParser.writeZipFile(fileList, zipParam)
     }
     private func checkFile() {
