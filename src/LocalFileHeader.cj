@@ -1,9 +1,20 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
+ */
+
+/**
+ * @file
+ *
+ * This is a custom type that provides local headers.
+ */
+
 package zip4cj
+
 /*
  * Create a custom type called LocalFileHeader.
  * Define the local file header field.
  *
- * @author      lizhenjie
+ * @since 0.28.4    @author lizhenjie
  */
 public record LocalFileHeader {
 

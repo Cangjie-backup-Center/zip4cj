@@ -1,19 +1,33 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. All rights reserved.
+ */
+
+/**
+ * @file
+ *
+ * This is a class that provides compression and decompression functions.
+ * Provides function such as compress deCompress.
+ */
+
 package zip4cj
 from compress import zlib.*
 from std import collection.*
-/*
+
+/**
  * This class provides compression and decompression of gzip
- *
- * @author      lizhenjie
+ * @since 0.28.4    @author lizhenjie
  */
 open class GZUtils {
 
-    /*
-     *  Gzip compression method
-     *  @param  filePath  
-     *  @param  level
-     *  @param  outFileName
-     *  return fileName*Compressed data
+    /**
+     * Gzip compression method
+     *
+     * @param filePath Compressed file path
+     * @param level Compressed level
+     * @param outFileName Output file name after compression
+     *
+     * @return Returns the file name and compressed data
+     * @since 0.28.4
      */
      
    public static func compress(filePath: String, level: UInt32, outFileName: String): String*Array<UInt8> {
@@ -72,19 +86,25 @@ open class GZUtils {
         return ("", retbuf)
     }
 
-    /*
-     * decompressed gzip file.
-     * @Param filePath
-     * return  fileName*Decompressed  data
+    /**
+     * decompressed gzip file
+     *
+     * @param filePath The path of the file that needs to be unzipped
+     *
+     * @return Returns the file name and compressed data
+     * @since 0.28.4
      */
     public static func deCompress(filePath: String): String*ArrayList<UInt8> {
         return deCompress(FileUtils.readFile(filePath))
     }
 
-    /*
-     * decompressed gzip file.
-     * @param  input
-     * return  fileName*Decompressed  data
+    /**
+     * decompressed gzip file
+     *
+     * @param input Data to be decompressed
+     *
+     * @return Returns the unzipped file name and compressed data
+     * @since 0.28.4
      */
    public static  func  deCompress(input: Array<UInt8>): String*ArrayList<UInt8> {
         var retbuf: ArrayList<UInt8> = ArrayList<UInt8>()

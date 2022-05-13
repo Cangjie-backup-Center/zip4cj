@@ -1,9 +1,20 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. All rights reserved.
+ */
+
+/**
+ * @file
+ *
+ * This is the custom type of define the end of central directory record field.
+ */
+
 package zip4cj
+
 /*
  * Create a custom type called EndCDR.
  * Define the end of central directory record field.
  *
- * @author      lizhenjie
+ * @since 0.28.4    @author lizhenjie
  */
 record EndCDR {
     public var sig: Int64 = 0

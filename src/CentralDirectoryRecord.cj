@@ -1,10 +1,20 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. All rights reserved.
+ */
+
+/**
+ * @file
+ *
+ * This is the custom type of define the central directory field.
+ */
+
 package zip4cj
 
 /*
  * Create a custom type called CentralDirectoryRecord.
  * Define the central directory field.
  *
- * @author      lizhenjie
+ * @since 0.28.4    @author lizhenjie
  */
 record CentralDirectoryRecord {
     public var signature: Int64 = 0
