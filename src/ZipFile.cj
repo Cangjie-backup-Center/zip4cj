@@ -1,10 +1,24 @@
-package zip4cj
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. All rights reserved.
+ */
 
+/**
+ * @file
+ *
+ * This is a class library that implements compression file functions.
+ * Provides streaming compression interfaces such as deflateInit, deflate, deflateEnd, deflateBound, setGzipHeader, and setDictionary.
+ */
+
+package zip4cj
 from std import io.*
 from compress import zlib.*
 from std import collection.*
 from std import convert.*
 
+/**
+ * Provide compressed file function
+ * @since 0.28.4
+ */
 public open class ZipFile {
     private var filePath: String = ""
     private var passwd: String = ""
@@ -12,13 +26,27 @@ public open class ZipFile {
     private var zipParam: ZipParams = ZipParams()
     private var fileList = HashSet<String>()
     private let headerParser: HeaderParser
+    /**
+     * Zip decompression initialization
+     *
+     * @since 0.28.4
+     */
     public init() {
         headerParser = HeaderParser()
     }
+
+    /**
+     * Zip compression initialization
+     *
+     * @param filePath File path to be unzipped
+     *
+     * @since 0.28.4
+     */
     public init(filePath: String) {
         headerParser = HeaderParser()
         this.filePath = filePath
     }
+
     func checkFile(files: HashSet<String>) {
         for (file in fileList) {
             var fileInfo = FileInfo(file)
@@ -27,6 +55,14 @@ public open class ZipFile {
             }
         }
     }
+
+    /**
+     * Add compressed file
+     *
+     * @param file Add path to compressed file
+     *
+     * @since 0.28.4
+     */
     public func addFile(file: String) {
         var fileInfo = FileInfo(file)
         if (!fileInfo.exist()) {
@@ -34,6 +70,14 @@ public open class ZipFile {
         }
         fileList.put(file)
     }
+
+    /**
+     * The Function is addFiles
+     *
+     * @param The param is files of HashSet<String>
+     *
+     * @since 0.28.4
+     */
     public func addFiles(files: HashSet<String>) {
         if (files.size() == 0) {
             throw RuntimeException("The number of added files cannot be empty!")
@@ -41,6 +85,12 @@ public open class ZipFile {
         checkFile(files)
         fileList.putAll(files)
     }
+
+    /**
+     * Zip compress
+     *
+     * @since 0.28.4
+     */
     public func writeZip() {
         if (!outPath.endsWith(".zip")) {
             throw RuntimeException("Output file type should be zip!")
@@ -48,6 +98,7 @@ public open class ZipFile {
         headerParser.setOutPath(outPath)
         headerParser.writeZipFile(fileList, zipParam)
     }
+    
     private func checkFile() {
         if (filePath == "") {
             throw RuntimeException("file Path is null or invalid")
@@ -60,6 +111,11 @@ public open class ZipFile {
             throw RuntimeException("file not exist!")
         }
     }
+    /**
+     * Extract all decompressed data
+     *
+     * @since 0.28.4
+     */
     public func extractAll(): ArrayList<LocalFileHeader> {
         checkFile()
         var dirInfo = io.DirectoryInfo(outPath)
@@ -77,8 +133,10 @@ public open class ZipFile {
         return headerParser.parseLocalFileHeader(buff, cdrs)
     }
 
-    /*
-     *Gets the directory inside the compressed package
+    /**
+     *  Gets the directory inside the compressed package
+     *
+     * @since 0.28.4
      */
     public func nameList(): Array<String> {
         checkFile()
@@ -89,12 +147,35 @@ public open class ZipFile {
         return cdrs.keys().toArray()
     }
 
+    /**
+     * The Function is setOutPath
+     *
+     * @param The param is outPath of String
+     *
+     * @since 0.28.4
+     */
     public func setOutPath(outPath: String) {
         this.outPath = outPath
     }
+
+    /*
+     * Set password for compressed files
+     *
+     * @param passwd Compress password
+     *
+     * @since 0.28.4
+     */
     public func setOutPasswd(passwd: String) {
         this.passwd = passwd
     }
+
+    /*
+     * Set compression parameters
+     *
+     * @param zipParam compression parameters
+     *
+     * @since 0.28.4
+     */
     public func setZipParams(zipParam: ZipParams) {
         this.zipParam = zipParam
     }

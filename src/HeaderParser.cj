@@ -1,17 +1,28 @@
-package zip4cj
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. All rights reserved.
+ */
 
+/**
+ * @file
+ *
+ * This is a class that provides compressed header information.
+ */
+
+package zip4cj
 from std import math.*
 from std import io.*
 from std import log.*
 from charset import charset.*
+
 /*
  * Parse zip Header information
- * @author      lizhenjie
+ * @since0.28.4    @author lizhenjie
  */
 open class HeaderParser <: ZipSignatures {
     private let HEXADECIMAL = 16
     private let logger = SimpleLogger()
     private var outPath = ""
+
     public init() {}
     public init(outPath: String) {
         this.outPath = outPath
@@ -21,7 +32,13 @@ open class HeaderParser <: ZipSignatures {
     }
 
     /*
-     *Parse local file header
+     * Parse local file header
+     *
+     * @param buff Local file data
+     * @param fileType Local file type
+     *
+     * @return Return the parsed file header
+     * @since 0.28.4
      */
     public func parseLocalFileHeader(buff: Array<UInt8>, fileType: HashMap<String, CentralDirectoryRecord>): ArrayList<LocalFileHeader> {
         var length = buff.size()
@@ -171,7 +188,13 @@ open class HeaderParser <: ZipSignatures {
     }
 
     /*
-     *Parse central directory record
+     * Parse central directory record
+     *
+     * @param buff central directory
+     * @param endCDR Define the end of central directory record field
+     *
+     * @return Return parsed data
+     * @since 0.28.4
      */
     public func parseCentralDirectoryRecord(buff: Array<UInt8>, endCDR: EndCDR): HashMap<String, CentralDirectoryRecord> {
         var cdrData = splitCentralDirectoryRecord(buff, endCDR)
@@ -314,9 +337,12 @@ open class HeaderParser <: ZipSignatures {
     }
 
     /*
-     *Parse end of central directory record
-     *@param buff
-     *return end of central directory record data
+     * Parse end of central directory record
+     *
+     * @param buff The end of central directory record
+     *
+     * @return Return end of central directory record data
+     * @since
      */
     public func parseEndOfCentralDirectory(buff: Array<UInt8>): EndCDR {
         var arr = readEndOfCentralDirectoryRecord(buff)
@@ -452,6 +478,14 @@ open class HeaderParser <: ZipSignatures {
         return arr
     }
 
+    /*
+     * Write central cirectory rcecord
+     *
+     * @param cdr Central directory record
+     *
+     * @return Return the data after write
+     * @since
+     */
     public func writeCentralDirectoryRecord(cdr: CentralDirectoryRecord): ArrayList<UInt8> {
         var valArr = ArrayList<UInt8>()
         valArr.addAll(convertToLittleEndian(cdr.signature, length: 4))
@@ -474,6 +508,15 @@ open class HeaderParser <: ZipSignatures {
         valArr.addAll(cdr.fileName.toUtf8Array())
         return valArr
     }
+
+    /*
+     * Write local file header
+     *
+     * @param lfh Local file header information
+     *
+     * @return Return data after writing
+     * @since
+     */
     public func writeLocalFileHeader(lfh: LocalFileHeader): ArrayList<UInt8> {
         var valArr = ArrayList<UInt8>()
         valArr.addAll(convertToLittleEndian(lfh.signature, length: 4))
@@ -490,6 +533,15 @@ open class HeaderParser <: ZipSignatures {
         valArr.addAll(lfh.fileName.toUtf8Array())
         return valArr
     }
+
+    /*
+     * Write the end of central directory record field
+     *
+     * @param endCDR Define the end of central directory record field
+     *
+     * @return Return data after operation
+     * @since 0.28.4
+     */
     public func writeEndOfCentralDirectoryRecord(endCDR: EndCDR): ArrayList<UInt8> {
         var valArr = ArrayList<UInt8>()
         valArr.addAll(convertToLittleEndian(endCDR.sig, length: 4))
@@ -506,6 +558,14 @@ open class HeaderParser <: ZipSignatures {
         return valArr
     }
 
+    /*
+     * Write data to Zip File
+     *
+     * @param files Zip File data
+     * @param zipParam Zip param
+     *
+     * @since 0.28.4
+     */
     public func writeZipFile(files: HashSet<String>, zipParam: ZipParams) {
         var fileNum = files.size()
         var time = Time.now(Location.Local)

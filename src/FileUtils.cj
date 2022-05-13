@@ -1,7 +1,32 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. All rights reserved.
+ */
+
+/**
+ * @file
+ *
+ * This is a class that provides file operations.
+ * Provide some methods, such as getFilePath getFileName readFile writeFile.
+ */
+
 package zip4cj
 from std import io.*
 
+/*
+ * The class is providing some methods of file operations.
+ * @since 0.28.4
+ */
 open class FileUtils {
+
+    /*
+     * Get file path
+     *
+     * @param outPath File path
+     * @param fileName File name
+     *
+     * @return Returns the file path of string type
+     * @since 0.28.4
+     */
     static public func getFilePath(outPath: String, fileName: String): String {
         if (outPath.contains("/")) {
             var lastIndex = outPath.lastIndexOf("/")
@@ -34,8 +59,12 @@ open class FileUtils {
     }
 
     /*
-     *  Get file name
-     *  @param file path
+     * Get file name
+     *
+     * @param path File path
+     *
+     * @return Returns the file name of a string type
+     * @since 0.28.4
      */
     static public func getFileName(path: String): String {
         var start = 0
@@ -53,9 +82,13 @@ open class FileUtils {
         return path.slice(start + 1, path.size() - start - 1).toString()
     }
 
-    /**
+    /*
      * Read files according to the file path
-     * @param path   the file path
+     *
+     * @param path File path
+     *
+     * @return Returns the contents of the file. Type is Array<UInt8>
+     * @since 0.28.4
      */
     static func readFile(path: String): Array<UInt8> {
         var data = Array<UInt8>()
@@ -75,10 +108,13 @@ open class FileUtils {
         return data
     }
 
-    /**
+    /*
      * Writes data to a file
-     * @param outData    content
-     * @param filePath   Content output path
+     *
+     * @param outData content
+     * @param filePath Content output path
+     *
+     * @since 0.28.4
      */
     static func writeFile(outData: Array<UInt8>, filePath: String) {
         var fileInfo = FileInfo(filePath)

@@ -1,12 +1,29 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. All rights reserved.
+ */
+
+/**
+ * @file
+ *
+ * This is a class library that implements MS-DOS utils.
+ */
+
 package zip4cj
 from std import time.*
 
 /*
  * MS-DOS  utils
- *
- * @author      lizhenjie
+ * @since 0.28.4    @author lizhenjie
  */
 open class MsDosUtils {
+
+    /*
+     * Get last modFile time
+     *
+     * @param time Current time
+     *
+     * @since 0.28.4
+     */
     public static  func getLastModFileTime(time: Time) {
         var lst = ArrayList<Int64>()
         lst.addAll(convertToBinary(time.hour(), length: 5))
@@ -20,7 +37,16 @@ open class MsDosUtils {
         }
         return sum
     }
-   public static  func getLastModFileDate(time: Time): Int64 {
+    
+    /*
+     * Get last modFile date
+     *
+     * @param time current time
+     *
+     * @return Returns the date of the final acquisition,type is Int64
+     * @since
+     */
+    public static  func getLastModFileDate(time: Time): Int64 {
         var lst = ArrayList<Int64>()
         lst.addAll(convertToBinary(time.year() - 1980, length: 7))
         lst.addAll(convertToBinary(time.month().value(), length: 4))
@@ -33,6 +59,7 @@ open class MsDosUtils {
         }
         return sum
     }
+
     static func convertToBinary(value: Int64, length!: Int64): Array<Int64> {
         var tempVal = value
         var lst = Array<Int64>(length, {i => 0})
