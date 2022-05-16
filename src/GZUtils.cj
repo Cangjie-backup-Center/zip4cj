@@ -17,7 +17,7 @@ from std import collection.*
  * This class provides compression and decompression of gzip
  * @since 0.28.4    @author lizhenjie
  */
-open class GZUtils {
+public open class GZUtils {
 
     /**
      * Gzip compression method

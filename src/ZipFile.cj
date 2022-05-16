@@ -48,7 +48,7 @@ public open class ZipFile {
     }
 
     func checkFile(files: HashSet<String>) {
-        for (file in fileList) {
+        for (file in files) {
             var fileInfo = FileInfo(file)
             if (!fileInfo.exist()) {
                 throw RuntimeException(FileUtils.getFileName(file) + " file does not exist")
