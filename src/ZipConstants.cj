@@ -130,4 +130,5 @@ abstract class ZipConstants {
     let EXTT_FLAG_LAT = 0x2
     /* CreationTime */
     let EXTT_FLAT_CT = 0x4
+    let GENERAL_PURPOSE_BIT_FLAG_SIZE=16
 }
