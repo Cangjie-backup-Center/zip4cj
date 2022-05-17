@@ -6,7 +6,7 @@
 <img alt="" src="https://badg.now.sh/badge/release/v0.0.1?color=green" style="display: inline-block;" />
 <img alt="" src="https://badg.now.sh/badge/build/pass?color=green" style="display: inline-block;" />
 <img alt="" src="https://badg.now.sh/badge/cjc/v0.28.4?color=green" style="display: inline-block;" />
-<img alt="" src="https://badg.now.sh/badge/cjcov/0%25?color=green" style="display: inline-block;" />
+<img alt="" src="https://badg.now.sh/badge/cjcov/92%25?color=green" style="display: inline-block;" />
 <img alt="" src="https://badg.now.sh/badge/project/open?color=green" style="display: inline-block;" />
 </p>
 
@@ -79,6 +79,10 @@ zip4cj 是基于仓颉（0.28.4）语言实现的文件压缩和解压缩，目�
  *
  * @param filePath 压缩文件路劲
  * @param level 压缩登等级 （0-9）
+ *        LEVEL_NO_COMPRESSION      = 0
+ *        LEVEL_BEST_SPEED          = 1
+ *        LEVEL_DEFAULT_COMPRESSION = 6
+ *        LEVEL_BEST_COMPRESSION    = 9
  * @param outFileName 压缩后的文件名
  *
  * @return 返回压缩后的文件名和数据
@@ -206,9 +210,21 @@ Zip 设置文件压缩后的路径
 public func setOutPath(outPath: String)
 ```
 
+#### class FileUtils
+
+##### func writeFile
+
+FileUtils 根据文件内容和路径写入文件
+
+```cangjie
+func writeFile(outData: Array<UInt8>, filePath: String)
+```
+
 ## <img alt="" src="./doc/assets/readme-icon-compile.png" style="display: inline-block;" width=3%/>编译执行
 
 ### 编译
+
+#### 第一种方式
 
 #### 引入charset包
  
@@ -223,6 +239,21 @@ public func setOutPath(outPath: String)
 #### 编译时候指定library-path
 
     如：cjc -m . --library-path /home/lzj/cangjie/lib/linux_x86_64_llvm/charset -l charsetcharset -l charsetcharset.encoding -l charsetcharset.traditionchinese -l charsetcharset.simplechinese -l charsetcharset.korean -l charsetcharset.singlebyte -l charsetcharset.unicode
+
+#### 第二种方式
+
+#### 引入 testJekins 包
+ 
+地址：https://gitee.com/HW-PLLab/testJekins 将 src 下 ci_test 放入 zip4cj 根目录下
+
+#### 使用说明
+
+```
+git clone https://gitee.com/HW-PLLab/testJekins
+apt-get install python3
+python3 ci_test/main.py build
+python3 ci_test/main.py test
+```
 
 ### zip 示例
 

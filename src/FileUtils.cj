@@ -16,7 +16,7 @@ from std import io.*
  * The class is providing some methods of file operations.
  * @since 0.28.4
  */
-open class FileUtils {
+public open class FileUtils {
 
     /*
      * Get file path
@@ -90,7 +90,7 @@ open class FileUtils {
      * @return Returns the contents of the file. Type is Array<UInt8>
      * @since 0.28.4
      */
-    static func readFile(path: String): Array<UInt8> {
+    static public func readFile(path: String): Array<UInt8> {
         var data = Array<UInt8>()
         var fs = FileStream(path, ReadOnly)
         var readnum: Int64 = 0
@@ -116,7 +116,7 @@ open class FileUtils {
      *
      * @since 0.28.4
      */
-    static func writeFile(outData: Array<UInt8>, filePath: String) {
+    static public func writeFile(outData: Array<UInt8>, filePath: String) {
         var fileInfo = FileInfo(filePath)
         if (!fileInfo.exist()) {
             fileInfo.create()
