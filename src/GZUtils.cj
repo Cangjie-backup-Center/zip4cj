@@ -30,7 +30,7 @@ public open class GZUtils {
      * @since 0.28.4
      */
      
-   public static func compress(filePath: String, level: UInt32, outFileName: String): String*Array<UInt8> {
+   public static func compress(filePath: String, level: UInt32, outFileName: String): (String, Array<UInt8>) {
         var fileInfo = FileInfo(filePath)
         if (!fileInfo.exist()) {
             throw RuntimeException("file not exist!")
@@ -94,7 +94,7 @@ public open class GZUtils {
      * @return Returns the file name and compressed data
      * @since 0.28.4
      */
-    public static func deCompress(filePath: String): String*ArrayList<UInt8> {
+    public static func deCompress(filePath: String): (String, ArrayList<UInt8>) {
         return deCompress(FileUtils.readFile(filePath))
     }
 
@@ -106,7 +106,7 @@ public open class GZUtils {
      * @return Returns the unzipped file name and compressed data
      * @since 0.28.4
      */
-   public static  func  deCompress(input: Array<UInt8>): String*ArrayList<UInt8> {
+   public static  func  deCompress(input: Array<UInt8>): (String, ArrayList<UInt8>) {
         var retbuf: ArrayList<UInt8> = ArrayList<UInt8>()
         if (input.size() > 0) {
             var inflate = Inflate()

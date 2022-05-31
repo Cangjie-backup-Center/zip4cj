@@ -1,9 +1,16 @@
-import zip4cj.*
+// EXEC: cjc lib.o %f -o a.out
+// EXEC: ./a.out
 
-main() { 
+import zip4cj.*
+from std import os.posix.*
+
+main() {
+    var path2: String = getcwd()
     try {
-        var gzCompress = GZUtils.compress("/home/gtt/cangjie/zip4cj/test/LLT/hello.txt", 6, "hello.gz")
+        var gzCompress = GZUtils.compress("${path2}/hello.txt", 6, "hello.gz")
     } catch (e: RuntimeException) {
         println(e.toString()) // file not exist!
+        return 0
     }
+    return 1
 }
