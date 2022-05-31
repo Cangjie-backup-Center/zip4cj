@@ -1,9 +1,17 @@
+// DEPENDENCE: testZipFile02.zip
+// DEPENDENCE: test.txt
+// DEPENDENCE: test.doc
+// EXEC: cjc lib.o %f -o a.out
+// EXEC: ./a.out
+
 import zip4cj.*
+from std import os.posix.*
 
 main() { 
-    var gzCompress = GZUtils.compress("/home/gtt/cangjie/zip4cj/test/LLT/test.txt", 6, "testGzipUtilsCom01.gz")
+    var path2: String = getcwd()
+    var gzCompress = GZUtils.compress("${path2}/test.txt", 6, "testGzipUtilsCom01.gz")
     var fileName = gzCompress[0]
     var compressData = gzCompress[1]
-    var outPath = "/home/gtt/cangjie/zip4cj/test/LLT/" + fileName
+    var outPath = "${path2}/" + fileName
     FileUtils.writeFile(compressData, outPath)
 }
