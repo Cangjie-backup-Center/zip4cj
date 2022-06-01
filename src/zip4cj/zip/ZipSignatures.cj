@@ -8,7 +8,7 @@
  * The class is ZipSignatures inherited from ZipConstants.
  */
 
-package zip4cj
+package zip4cj.zip
 
 /*
  * The class is ZipSignatures inherited from ZipConstants

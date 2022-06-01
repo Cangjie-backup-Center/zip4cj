@@ -8,7 +8,7 @@
  * This is a custom type that provides local headers.
  */
 
-package zip4cj
+package zip4cj.zip
 
 /*
  * Create a custom type called LocalFileHeader.

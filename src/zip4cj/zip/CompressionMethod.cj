@@ -9,7 +9,7 @@
  * Provided Two variables STORE and DEFLATE
  */
 
-package zip4cj
+package zip4cj.zip
 
 /*
  * The class is CompressionMethod

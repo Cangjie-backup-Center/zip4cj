@@ -8,7 +8,7 @@
  * This abstract defines the constants that are used by the classes.
  */
 
-package zip4cj
+package zip4cj.zip
 
 /*
  * This abstract defines the constants that are used by the classes

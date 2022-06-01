@@ -9,7 +9,7 @@
  * Provide some methods, such as getFilePath getFileName readFile writeFile.
  */
 
-package zip4cj
+package zip4cj.utils
 from std import io.*
 
 /*
@@ -27,7 +27,7 @@ public open class FileUtils {
      * @return Returns the file path of string type
      * @since 0.28.4
      */
-    static public func getFilePath(outPath: String, fileName: String): String {
+    public static  func getFilePath(outPath: String, fileName: String): String {
         if (outPath.contains("/")) {
             var lastIndex = outPath.lastIndexOf("/")
             match (lastIndex) {
@@ -66,7 +66,7 @@ public open class FileUtils {
      * @return Returns the file name of a string type
      * @since 0.28.4
      */
-    static public func getFileName(path: String): String {
+    public static  func getFileName(path: String): String {
         var start = 0
         if (path.contains("\\")) {
             match (path.lastIndexOf('\\')) {
@@ -90,7 +90,7 @@ public open class FileUtils {
      * @return Returns the contents of the file. Type is Array<UInt8>
      * @since 0.28.4
      */
-    static public func readFile(path: String): Array<UInt8> {
+    public static  func readFile(path: String): Array<UInt8> {
         var data = Array<UInt8>()
         var fs = FileStream(path, ReadOnly)
         var readnum: Int64 = 0
@@ -116,7 +116,7 @@ public open class FileUtils {
      *
      * @since 0.28.4
      */
-    static public func writeFile(outData: Array<UInt8>, filePath: String) {
+    public static  func writeFile(outData: Array<UInt8>, filePath: String) {
         var fileInfo = FileInfo(filePath)
         if (!fileInfo.exist()) {
             fileInfo.create()

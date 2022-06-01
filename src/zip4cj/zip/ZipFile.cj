@@ -9,11 +9,12 @@
  * Provides streaming compression interfaces such as deflateInit, deflate, deflateEnd, deflateBound, setGzipHeader, and setDictionary.
  */
 
-package zip4cj
+package zip4cj.zip
 from std import io.*
 from compress import zlib.*
 from std import collection.*
 from std import convert.*
+import zip4cj.utils.FileUtils
 
 /**
  * Provide compressed file function
@@ -25,14 +26,13 @@ public open class ZipFile {
     private var outPath: String = ""
     private var zipParam: ZipParams = ZipParams()
     private var fileList = HashSet<String>()
-    private let headerParser: HeaderParser
+    private let headerParser: HeaderParser=HeaderParser()
     /**
      * Zip decompression initialization
      *
      * @since 0.28.4
      */
     public init() {
-        headerParser = HeaderParser()
     }
 
     /**
@@ -43,7 +43,6 @@ public open class ZipFile {
      * @since 0.28.4
      */
     public init(filePath: String) {
-        headerParser = HeaderParser()
         this.filePath = filePath
     }
 
@@ -139,7 +138,10 @@ public open class ZipFile {
      * @since 0.28.4
      */
     public func nameList(): Array<String> {
-        checkFile()
+        var fileInfo = FileInfo(filePath)
+        if (!fileInfo.exist()) {
+            throw RuntimeException(FileUtils.getFileName(filePath) + " file does not exist")
+        }
         headerParser.setOutPath(outPath)
         var buff = FileUtils.readFile(filePath)
         var eocd = headerParser.parseEndOfCentralDirectory(buff)

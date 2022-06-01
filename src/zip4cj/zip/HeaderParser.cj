@@ -8,11 +8,12 @@
  * This is a class that provides compressed header information.
  */
 
-package zip4cj
+package zip4cj.zip
 from std import math.*
 from std import io.*
 from std import log.*
 from charset import charset.*
+import zip4cj.utils.FileUtils
 
 /*
  * Parse zip Header information

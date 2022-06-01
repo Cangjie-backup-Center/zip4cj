@@ -8,7 +8,7 @@
  * This is a custom type created with the name zipparams.
  */
 
-package zip4cj
+package zip4cj.zip
 
 /*
  * Create a custom type called ZipParams

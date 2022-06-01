@@ -9,9 +9,11 @@
  * Provides function such as compress deCompress.
  */
 
-package zip4cj
+package zip4cj.gzip
 from compress import zlib.*
 from std import collection.*
+from std import io.*
+import zip4cj.utils.FileUtils
 
 /**
  * This class provides compression and decompression of gzip

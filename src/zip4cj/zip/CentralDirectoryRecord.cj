@@ -8,7 +8,7 @@
  * This is the custom type of define the central directory field.
  */
 
-package zip4cj
+package zip4cj.zip
 
 /*
  * Create a custom type called CentralDirectoryRecord.

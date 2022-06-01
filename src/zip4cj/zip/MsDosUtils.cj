@@ -8,7 +8,7 @@
  * This is a class library that implements MS-DOS utils.
  */
 
-package zip4cj
+package zip4cj.zip
 from std import time.*
 
 /*
