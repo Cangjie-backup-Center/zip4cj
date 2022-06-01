@@ -36,24 +36,30 @@ zip4cj 是基于仓颉（0.29.3）语言实现的文件压缩和解压缩，目�
 
 ```shell
 .
+├── LICENSE  
 ├── README.md
 ├── doc
-│   ├── assets  
-│   ├── cjcov
+│   ├── assets
+│   └── cjcov
+├── module.json
 ├── src
-│   ├── CentralDirectoryRecord.cj  
-│   ├── CompressionMethod.cj
-│   ├── EndCDR.cj  
-│   ├── FileUtils
-│   ├── GZUtils.cj  
-│   ├── HeaderParser.cj
-│   ├── LocalFileHeader.cj  
-│   ├── MsDosUtils.cj
-│   ├── ZipConstants.cj
-│   ├── ZipFile.cj  
-│   ├── ZipParams.cj
-│   └── ZipSignatures.cj
-└── test   
+│   └── zip4cj
+│       ├── gzip
+│       │   └── GZUtils.cj
+│       ├── utils
+│       │   └── FileUtils.cj
+│       └── zip
+│           ├── CentralDirectoryRecord.cj
+│           ├── CompressionMethod.cj
+│           ├── EndCDR.cj
+│           ├── HeaderParser.cj
+│           ├── LocalFileHeader.cj
+│           ├── MsDosUtils.cj
+│           ├── ZipConstants.cj
+│           ├── ZipFile.cj
+│           ├── ZipParams.cj
+│           └── ZipSignatures.cj
+└── test
     ├── HLT
     ├── LLT
     └── UT
@@ -61,6 +67,8 @@ zip4cj 是基于仓颉（0.29.3）语言实现的文件压缩和解压缩，目�
 
 - `doc` 是库的设计文档、提案、库的使用文档、LLT 覆盖率报告
 - `src` 是库源码目录
+- `src/zip` 是zip解压缩核心代码
+- `src/gzip` 是gzip解压缩核心代码
 - `test` 是存放测试用例，包括 HLT 用例、LLT 用例和 UT 用例
 
 ### 接口说明
@@ -222,28 +230,66 @@ func writeFile(outData: Array<UInt8>, filePath: String)
 
 ## <img alt="" src="./doc/assets/readme-icon-compile.png" style="display: inline-block;" width=3%/>编译执行
 
+### 项目依赖
+`charset`包<br>
+下载地址：https://gitee.com/HW-PLLab/charset
+
 ### 编译
 
 #### 第一种方式
 
 #### 引入charset包
- 
-地址：https://gitee.com/HW-PLLab/charset
+
+~~~powershell
+git clone https://gitee.com/HW-PLLab/charset.git
+~~~
+
+   将charset包放在zip4cj目录下
 
 #### 使用说明
- > 1、git clone https://gitee.com/HW-PLLab/charset.git<br>
- > 2、cd charset<br>
- > 3、cpm build<br>
- > 4、将build下的charset复制到仓颉环境cangjie/lib/linux_x86_64_llvm下
 
-#### 编译时候指定library-path
+1、在zip4cj目录下module.json中的requires属性中配置charset
 
-    如：cjc -m . --library-path /home/lzj/cangjie/lib/linux_x86_64_llvm/charset -l charsetcharset -l charsetcharset.encoding -l charsetcharset.traditionchinese -l charsetcharset.simplechinese -l charsetcharset.korean -l charsetcharset.singlebyte -l charsetcharset.unicode
+~~~json
+{
+  "cjc_version": "0.29.3",
+  "organization": "lzj",
+  "name": "zip4cj",
+  "description": "zip is a compression/decompression library that can be used for zip, gzip, and other compressed files",
+  "version": "0.0.2",
+  "requires": {
+    "charset":{
+      "organization": "zft",
+      "version": "1.0.0",
+      "path":"charset"
+    }
+  },
+  "package_requires": {},
+  "foreign_requires": {},
+  "output_type": "dynamic",
+  "command_option": ""
+}
+~~~
+
+2、编译
+
+~~~powershell
+cpm build
+~~~
+
+3、测试
+
+~~~powershell
+cpm test test/UT
+unittest/bin/main
+~~~
+
+
 
 #### 第二种方式
 
 #### 引入 testJekins 包
- 
+
 地址：https://gitee.com/HW-PLLab/testJekins 将 src 下 ci_test 放入 zip4cj 根目录下
 
 #### 使用说明
@@ -294,6 +340,54 @@ var fName=deCompress[0]
 var deCompressData=deCompress[1]
 var outPath="/mnt/c/Users/lizhenjie/Desktop/"+fName
 FileUtils.writeFile(Array(deCompressData), outPath)
+```
+
+## 项目中使用zip4cj
+
+### 源码引入
+
+下载charset和zip4cj放入你的项目目录
+
+zip_test(`Your project directory`)
+├── charset
+├── zip4cj
+├── src
+
+├── test
+
+└── module.json
+
+编辑zip_test/zip4cj/module.json，在requires下添加charset包,如：
+
+~~~json
+ "requires": {
+    "charset":{
+      "organization": "zft",
+      "version": "1.0.0",
+      "path":"../charset"
+    }
+  },
+~~~
+
+
+
+编辑zip_test/module.json，在requires下添加zip4cj包,如：
+
+```json
+ "requires": {
+    "zip4cj":{
+      "organization": "zip",
+      "version": "0.0.2",
+      "path":"zip4cj"
+    }
+  }
+```
+
+使用：
+
+```cangjie
+from zip4cj import zip4cj.zip.ZipFile
+from zip4cj import zip4cj.zip.ZipParams
 ```
 
 ## <img alt="" src="./doc/assets/readme-icon-contribute.png" style="display: inline-block;" width=3%/>参与贡献
