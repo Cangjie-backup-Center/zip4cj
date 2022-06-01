@@ -187,7 +187,7 @@ Zip 压缩
 public func writeZip()
 ```
 
-##### func extractAll
+##### func nameList
 
 获取压缩包中的目录
 
@@ -195,7 +195,7 @@ public func writeZip()
 public func nameList(): Array<String>
 ```
 
-##### func nameList
+##### func extractAll
 
 Zip 提取所有解压后的数据
 
