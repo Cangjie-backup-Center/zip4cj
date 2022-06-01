@@ -348,6 +348,7 @@ FileUtils.writeFile(Array(deCompressData), outPath)
 
 下载charset和zip4cj放入你的项目目录
 
+~~~shell
 zip_test(`Your project directory`)
 ├── charset
 ├── zip4cj
@@ -356,6 +357,9 @@ zip_test(`Your project directory`)
 ├── test
 
 └── module.json
+~~~
+
+
 
 编辑zip_test/zip4cj/module.json，在requires下添加charset包,如：
 
