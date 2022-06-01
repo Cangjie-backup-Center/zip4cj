@@ -50,35 +50,4 @@ record EndCDR {
         this.commentLength = commentLength
         this.comment = comment
     }
-    public mut func setSig(sig: Int64) {
-        this.sig = sig
-    }
-    public mut func setDiskNum(diskNum: Int64) {
-        this.diskNum = diskNum
-    }
-    public mut func setTotalNumberOfEntriesInCentralDirectoryOnThisDisk(
-        totalNumberOfEntriesInCentralDirectoryOnThisDisk: Int64) {
-        this.totalNumberOfEntriesInCentralDirectoryOnThisDisk = totalNumberOfEntriesInCentralDirectoryOnThisDisk
-    }
-    public mut func setNumberOfThisDiskStartOfCentralDir(numberOfThisDiskStartOfCentralDir: Int64) {
-        this.numberOfThisDiskStartOfCentralDir = numberOfThisDiskStartOfCentralDir
-    }
-    public mut func setTotalNumberOfEntriesInCentralDirectory(totalNumberOfEntriesInCentralDirectory: Int64) {
-        this.totalNumberOfEntriesInCentralDirectory = totalNumberOfEntriesInCentralDirectory
-    }
-    public mut func setSizeOfCentralDirectory(sizeOfCentralDirectory: Int64) {
-        this.sizeOfCentralDirectory = sizeOfCentralDirectory
-    }
-    public mut func setOffsetOfEndOfCentralDirectory(offsetOfEndOfCentralDirectory: Int64) {
-        this.offsetOfEndOfCentralDirectory = offsetOfEndOfCentralDirectory
-    }
-    public mut func setOffsetOfStartOfCentralDirectory(offsetOfStartOfCentralDirectory: Int64) {
-        this.offsetOfStartOfCentralDirectory = offsetOfStartOfCentralDirectory
-    }
-    public mut func setCommentLength(commentLength: Int64) {
-        this.commentLength = commentLength
-    }
-    public mut func setComment(comment: String) {
-        this.comment = comment
-    }
 }

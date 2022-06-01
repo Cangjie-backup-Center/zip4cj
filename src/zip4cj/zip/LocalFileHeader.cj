@@ -32,9 +32,6 @@ public record LocalFileHeader {
     public var fileName: String = ""
     public var extraField: Int64 = 0
     public var inflateData=Array<UInt8>()
-    public init() {
-        
-    }
     public LocalFileHeader(
         signature:Int64,
         versionExtract: Int64,
@@ -63,44 +60,5 @@ public record LocalFileHeader {
         this.extraFieldLength = extraFieldLength
         this.fileName = fileName
         this.inflateData=inflateData
-    }
-    public mut func setSignature(signature: Int64) {
-        this.signature = signature
-    }
-    public mut func setVersionExtract(versionExtract: Int64) {
-        this.versionExtract = versionExtract
-    }
-    public mut func setGeneralPurposeBitFlag(generalPurposeBitFlag: Int64) {
-        this.generalPurposeBitFlag = generalPurposeBitFlag
-    }
-    public mut func setCompressionMethod(compressionMethod: Int64) {
-        this.compressionMethod = compressionMethod
-    }
-    public mut func setLastModFileTime(lastModFileTime: Int64) {
-        this.lastModFileTime = lastModFileTime
-    }
-    public mut func setLastModFileDate(lastModFileDate: Int64) {
-        this.lastModFileDate = lastModFileDate
-    }
-    public mut func setCrc32(crc32: Int64) {
-        this.crc32 = crc32
-    }
-    public mut func setCompressedSize(compressedSize: Int64) {
-        this.compressedSize = compressedSize
-    }
-    public mut func setUncompressedSize(uncompressedSize: Int64) {
-        this.uncompressedSize = uncompressedSize
-    }
-    public mut func setFileNameLength(fileNameLength: Int64) {
-        this.fileNameLength = fileNameLength
-    }
-    public mut func setExtraFieldLength(extraFieldLength: Int64) {
-        this.extraFieldLength = extraFieldLength
-    }
-    public mut func setFileName(fileName: String) {
-        this.fileName = fileName
-    }
-    public mut func setExtraField(extraField: Int64) {
-        this.extraField = extraField
     }
 }
