@@ -661,6 +661,5 @@ open class HeaderParser <: ZipSignatures {
             sum += flagArr[index] * (2 ** (GENERAL_PURPOSE_BIT_FLAG_SIZE - index - 1))
         }
         return sum
-        return sum
     }
 }
