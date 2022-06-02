@@ -75,6 +75,24 @@ zip4cj 是基于仓颉（0.29.3）语言实现的文件压缩和解压缩，目�
 
 主要是核心类和成员函数说明
 
+#### class TarFile
+
+##### func extractTar
+
+实现 TAR 解压
+
+```cangjie
+/**
+ * 实现 TAR 解压
+ *
+ * @param file 要解药的tar包
+ *
+ * @since 0.28.4
+ */
+ public func extractTar(file: Array<UInt8>): Unit
+
+```
+
 #### class GZUtils
 
 ##### func compress
@@ -341,6 +359,17 @@ var deCompressData=deCompress[1]
 var outPath="/mnt/c/Users/lizhenjie/Desktop/"+fName
 FileUtils.writeFile(Array(deCompressData), outPath)
 ```
+
+tar 解压
+
+~~~cangjie
+var tf = TarFile()
+tf.outPath = "/mnt/c/Users/lizhenjie/Desktop/"
+var file = FileUtils.readFile("/mnt/c/Users/lizhenjie/Desktop/water_analysis.tar")
+tf.extractTar(file)
+~~~
+
+
 
 ## 项目中使用zip4cj
 
