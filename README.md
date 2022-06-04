@@ -48,6 +48,8 @@ zip4cj 是基于仓颉（0.29.3）语言实现的文件压缩和解压缩，目�
 │       │   └── GZUtils.cj
 │       ├── utils
 │       │   └── FileUtils.cj
+│       ├── tar
+│       │   └── TarFile.cj
 │       └── zip
 │           ├── CentralDirectoryRecord.cj
 │           ├── CompressionMethod.cj
@@ -69,6 +71,7 @@ zip4cj 是基于仓颉（0.29.3）语言实现的文件压缩和解压缩，目�
 - `src` 是库源码目录
 - `src/zip` 是zip解压缩核心代码
 - `src/gzip` 是gzip解压缩核心代码
+- `src/tar` 是tar提取的核心代码
 - `test` 是存放测试用例，包括 HLT 用例、LLT 用例和 UT 用例
 
 ### 接口说明
@@ -83,9 +86,9 @@ zip4cj 是基于仓颉（0.29.3）语言实现的文件压缩和解压缩，目�
 
 ```cangjie
 /**
- * 实现 TAR 解压
+ * 实现 TAR 提取
  *
- * @param file 要解药的tar包
+ * @param file 要提取的tar包
  *
  * @since 0.28.4
  */
