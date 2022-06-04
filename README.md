@@ -14,13 +14,15 @@
 
 ## <img alt="" src="./doc/assets/readme-icon-introduction.png" style="display: inline-block;" width=3%/>介绍
 
-zip4cj 是基于仓颉（0.29.3）语言实现的文件压缩和解压缩，目前基本实现了zip 和 gzip 的压缩和解压缩。
+zip4cj 是基于仓颉（0.29.3）语言实现的文件压缩和解压缩，目前基本实现了zip 和 gzip 的压缩和解压缩，以及tar文件提取。
 
 ### 特性
 
 - 🚀 zip 压缩和解压缩。
 
 - 🚀 gzip 的压缩和解压缩。
+
+- 🚀 tar 的提取。
 
 ### 未来规划
 
