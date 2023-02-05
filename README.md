@@ -14,7 +14,7 @@
 
 ## <img alt="" src="./doc/assets/readme-icon-introduction.png" style="display: inline-block;" width=3%/>介绍
 
-zip4cj 是基于仓颉（0.29.3）语言实现的文件压缩和解压缩，目前基本实现了zip 和 gzip 的压缩和解压缩，以及tar文件提取。
+zip4cj 是基于仓颉（0.35.6）语言实现的文件压缩和解压缩，目前基本实现了zip 和 gzip 的压缩和解压缩，以及tar文件提取。
 
 ### 特性
 
@@ -380,54 +380,32 @@ tf.extractTar(file)
 
 ## 项目中使用zip4cj
 
-### 源码引入
+1、编译
 
-下载charset和zip4cj放入你的项目目录
+cpm build
 
-~~~shell
-zip_test(`Your project directory`)
-├── charset
-├── zip4cj
-├── src
-
-├── test
-
-└── module.json
-~~~
-
-
-
-编辑zip_test/zip4cj/module.json，在requires下添加charset包,如：
+2、引入
 
 ~~~json
- "requires": {
-    "charset":{
-      "organization": "zft",
-      "version": "1.0.0",
-      "path":"../charset"
-    }
+  "package_requires": {
+    "path_option": [
+			"./lib/zip4cj"
+		],
+		"package_option": {}
   },
 ~~~
+3、使用
+~~~cangjie
+from zip4cj import zip4cj.tar.*
+from std import fs.*
 
-
-
-编辑zip_test/module.json，在requires下添加zip4cj包,如：
-
-```json
- "requires": {
-    "zip4cj":{
-      "organization": "zip",
-      "version": "0.0.2",
-      "path":"zip4cj"
-    }
-  }
-```
-
-使用：
-
-```cangjie
-from zip4cj import zip4cj.zip.ZipFile
-from zip4cj import zip4cj.zip.ZipParams
+main() {
+    var tf = TarFile()
+    tf.outPath = "/mnt/c/Users/lizhenjie/Desktop/test/01/论文.tar"
+    tf.storeTar("/mnt/c/Users/lizhenjie/Desktop/test/论文/")
+}
+~~~
+### 源码引入
 ```
 
 ## <img alt="" src="./doc/assets/readme-icon-contribute.png" style="display: inline-block;" width=3%/>参与贡献
