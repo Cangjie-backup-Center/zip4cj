@@ -1,18 +1,17 @@
 {
-  "cjc_version": "0.29.3",
+  "cjc_version": "0.35.6",
   "organization": "lzj",
   "name": "zip4cj",
   "description": "zip is a compression/decompression library that can be used for zip, gzip, and other compressed files",
-  "version": "0.0.2",
-  "requires": {
-    "charset":{
-      "organization": "zft",
-      "version": "1.0.0",
-      "path":"charset"
-    }
+  "version": "0.0.3",
+  "requires": {},
+  "package_requires": {
+    "path_option": [
+			"./lib/charset"
+		],
+		"package_option": {}
   },
-  "package_requires": {},
   "foreign_requires": {},
-  "output_type": "dynamic",
+  "output_type": "executable",
   "command_option": ""
 }

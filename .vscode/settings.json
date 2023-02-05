@@ -1,5 +1,11 @@
 {
     "editor.selectionHighlight": false,
-    "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 1
+    "files.autoSave": "onFocusChange",
+    "files.autoSaveDelay": 1,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.quickSuggestions": {
+        "other": "on",
+        "comments": "off",
+        "strings": "on"
+    }
 }

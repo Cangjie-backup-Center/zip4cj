@@ -1,0 +1,11 @@
+{
+	"help": false,
+	"debug": false,
+	"verbose": false,
+	"coverage": false,
+	"serial": false,
+	"increment": false,
+	"alias": "",
+	"cross": "",
+	"condition": ""
+}

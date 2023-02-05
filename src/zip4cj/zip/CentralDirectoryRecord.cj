@@ -16,7 +16,7 @@ package zip4cj.zip
  *
  * @since 0.28.4    @author lizhenjie
  */
-record CentralDirectoryRecord {
+struct CentralDirectoryRecord {
     public var signature: Int64 = 0
     public var sizeOfZip64EndOfCentral: Int64 = 0
     public var directoryRecord: Int64 = 0

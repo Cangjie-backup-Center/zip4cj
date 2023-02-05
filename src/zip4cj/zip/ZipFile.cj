@@ -10,11 +10,10 @@
  */
 
 package zip4cj.zip
-from std import io.*
+
 from compress import zlib.*
-from std import collection.*
 from std import convert.*
-import zip4cj.utils.FileUtils
+
 
 /**
  * Provide compressed file function
@@ -22,18 +21,17 @@ import zip4cj.utils.FileUtils
  */
 public open class ZipFile {
     private var filePath: String = ""
-    private var passwd: String = ""
     private var outPath: String = ""
     private var zipParam: ZipParams = ZipParams()
     private var fileList = HashSet<String>()
-    private let headerParser: HeaderParser=HeaderParser()
+    private let headerParser: HeaderParser = HeaderParser()
+
     /**
      * Zip decompression initialization
      *
      * @since 0.28.4
      */
-    public init() {
-    }
+    public init() {}
 
     /**
      * Zip compression initialization
@@ -48,9 +46,9 @@ public open class ZipFile {
 
     func checkFile(files: HashSet<String>) {
         for (file in files) {
-            var fileInfo = FileInfo(file)
-            if (!fileInfo.exist()) {
-                throw RuntimeException(FileUtils.getFileName(file) + " file does not exist")
+            var path = Path(file)
+            if (!File.exists(path)) {
+                throw ZipException(path.fileName.getOrThrow() + " file does not exist")
             }
         }
     }
@@ -63,9 +61,9 @@ public open class ZipFile {
      * @since 0.28.4
      */
     public func addFile(file: String) {
-        var fileInfo = FileInfo(file)
-        if (!fileInfo.exist()) {
-            throw RuntimeException(FileUtils.getFileName(file) + " file does not exist")
+        var path = Path(file)
+        if (!File.exists(path)) {
+            throw ZipException(path.fileName.getOrThrow() + " file does not exist")
         }
         fileList.put(file)
     }
@@ -78,8 +76,8 @@ public open class ZipFile {
      * @since 0.28.4
      */
     public func addFiles(files: HashSet<String>) {
-        if (files.size() == 0) {
-            throw RuntimeException("The number of added files cannot be empty!")
+        if (files.size == 0) {
+            throw ZipException("The number of added files cannot be empty!")
         }
         checkFile(files)
         fileList.putAll(files)
@@ -92,24 +90,25 @@ public open class ZipFile {
      */
     public func writeZip() {
         if (!outPath.endsWith(".zip")) {
-            throw RuntimeException("Output file type should be zip!")
+            throw ZipException("Output file type should be zip!")
         }
         headerParser.setOutPath(outPath)
         headerParser.writeZipFile(fileList, zipParam)
     }
-    
+
     private func checkFile() {
         if (filePath == "") {
-            throw RuntimeException("file Path is null or invalid")
+            throw ZipException("file Path is null or invalid")
         }
         if (outPath == "") {
-            throw RuntimeException("out Path is null or invalid")
+            throw ZipException("out Path is null or invalid")
         }
-        var fileInfo = FileInfo(filePath)
-        if (!fileInfo.exist()) {
-            throw RuntimeException("file not exist!")
+        var fPath = Path(filePath)
+        if (!File.exists(fPath)) {
+            throw ZipException("file not exist!")
         }
     }
+
     /**
      * Extract all decompressed data
      *
@@ -117,13 +116,13 @@ public open class ZipFile {
      */
     public func extractAll(): ArrayList<LocalFileHeader> {
         checkFile()
-        var dirInfo = io.DirectoryInfo(outPath)
-        if (!dirInfo.exist()) {
-            dirInfo.create()
+        let oPath=Path(outPath);
+        if (!Directory.exists(oPath)) {
+            Directory.create(oPath, recursive: true)
         }
         return unzip()
     }
-    private func unzip(): ArrayList<LocalFileHeader>  {
+    private func unzip(): ArrayList<LocalFileHeader> {
         checkFile()
         headerParser.setOutPath(outPath)
         var buff = FileUtils.readFile(filePath)
@@ -133,14 +132,14 @@ public open class ZipFile {
     }
 
     /**
-     *  Gets the directory inside the compressed package
+     * Gets the directory inside the compressed package
      *
      * @since 0.28.4
      */
     public func nameList(): Array<String> {
-        var fileInfo = FileInfo(filePath)
-        if (!fileInfo.exist()) {
-            throw RuntimeException(FileUtils.getFileName(filePath) + " file does not exist")
+        var path = Path(filePath)
+        if (!File.exists(path)) {
+            throw ZipException(path.fileName.getOrThrow() + "file does not exist")
         }
         headerParser.setOutPath(outPath)
         var buff = FileUtils.readFile(filePath)
@@ -158,27 +157,5 @@ public open class ZipFile {
      */
     public func setOutPath(outPath: String) {
         this.outPath = outPath
-    }
-
-    /*
-     * Set password for compressed files
-     *
-     * @param passwd Compress password
-     *
-     * @since 0.28.4
-     */
-    public func setOutPasswd(passwd: String) {
-        this.passwd = passwd
-    }
-
-    /*
-     * Set compression parameters
-     *
-     * @param zipParam compression parameters
-     *
-     * @since 0.28.4
-     */
-    public func setZipParams(zipParam: ZipParams) {
-        this.zipParam = zipParam
     }
 }

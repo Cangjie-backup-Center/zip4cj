@@ -15,10 +15,6 @@ package zip4cj.zip
  *
  * @since 0.28.4    @author lizhenjie
  */
-public record ZipParams {
-    public var level: UInt32 = LEVEL_DEFAULT_COMPRESSION
-    public init() {}
-    public init(level: UInt32) {
-        this.level = level
-    }
+public struct ZipParams {
+ public init() {}
 }

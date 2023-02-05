@@ -1,0 +1,386 @@
+{
+  "resolves": [
+    {
+      "organization": "lzj",
+      "name": "zip4cj",
+      "path": ".",
+      "packagePath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/src/zip4cj/utils",
+      "packageName": "zip4cj/zip4cj.utils",
+      "version": "0.0.3",
+      "hash": "-2010629012165287315",
+      "isMacroPackage": false,
+      "output_type": "static",
+      "command_option": "",
+      "condition_option": {},
+      "link_option": "",
+      "requires": [],
+      "package_requires": {
+        "charset/charset.encoding": {
+          "isMacroPackage": false,
+          "requires": [],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.encoding"
+        },
+        "charset/charset.japanese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.japanese"
+        },
+        "charset/charset.korean": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.korean"
+        },
+        "charset/charset.simplechinese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.simplechinese"
+        },
+        "charset/charset.singlebyte": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.singlebyte"
+        },
+        "charset/charset.traditionchinese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.traditionchinese"
+        },
+        "charset/charset.unicode": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.unicode"
+        },
+        "charset/charset": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding",
+            "charset/charset.japanese",
+            "charset/charset.korean",
+            "charset/charset.simplechinese",
+            "charset/charset.singlebyte",
+            "charset/charset.traditionchinese",
+            "charset/charset.unicode"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset"
+        }
+      },
+      "foreign_requires": {},
+      "cross_compile_configuration": {}
+    },
+    {
+      "organization": "lzj",
+      "name": "zip4cj",
+      "path": ".",
+      "packagePath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/src/zip4cj/gzip",
+      "packageName": "zip4cj/zip4cj.gzip",
+      "version": "0.0.3",
+      "hash": "-2010629012165287315",
+      "isMacroPackage": false,
+      "output_type": "static",
+      "command_option": "",
+      "condition_option": {},
+      "link_option": "",
+      "requires": [],
+      "package_requires": {
+        "charset/charset.encoding": {
+          "isMacroPackage": false,
+          "requires": [],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.encoding"
+        },
+        "charset/charset.japanese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.japanese"
+        },
+        "charset/charset.korean": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.korean"
+        },
+        "charset/charset.simplechinese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.simplechinese"
+        },
+        "charset/charset.singlebyte": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.singlebyte"
+        },
+        "charset/charset.traditionchinese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.traditionchinese"
+        },
+        "charset/charset.unicode": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.unicode"
+        },
+        "charset/charset": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding",
+            "charset/charset.japanese",
+            "charset/charset.korean",
+            "charset/charset.simplechinese",
+            "charset/charset.singlebyte",
+            "charset/charset.traditionchinese",
+            "charset/charset.unicode"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset"
+        }
+      },
+      "foreign_requires": {},
+      "cross_compile_configuration": {}
+    },
+    {
+      "organization": "lzj",
+      "name": "zip4cj",
+      "path": ".",
+      "packagePath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/src/zip4cj/tar",
+      "packageName": "zip4cj/zip4cj.tar",
+      "version": "0.0.3",
+      "hash": "-2010629012165287315",
+      "isMacroPackage": false,
+      "output_type": "static",
+      "command_option": "",
+      "condition_option": {},
+      "link_option": "",
+      "requires": [],
+      "package_requires": {
+        "charset/charset.encoding": {
+          "isMacroPackage": false,
+          "requires": [],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.encoding"
+        },
+        "charset/charset.japanese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.japanese"
+        },
+        "charset/charset.korean": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.korean"
+        },
+        "charset/charset.simplechinese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.simplechinese"
+        },
+        "charset/charset.singlebyte": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.singlebyte"
+        },
+        "charset/charset.traditionchinese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.traditionchinese"
+        },
+        "charset/charset.unicode": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.unicode"
+        },
+        "charset/charset": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding",
+            "charset/charset.japanese",
+            "charset/charset.korean",
+            "charset/charset.simplechinese",
+            "charset/charset.singlebyte",
+            "charset/charset.traditionchinese",
+            "charset/charset.unicode"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset"
+        }
+      },
+      "foreign_requires": {},
+      "cross_compile_configuration": {}
+    },
+    {
+      "organization": "lzj",
+      "name": "zip4cj",
+      "path": ".",
+      "packagePath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/src/zip4cj/zip",
+      "packageName": "zip4cj/zip4cj.zip",
+      "version": "0.0.3",
+      "hash": "-2010629012165287315",
+      "isMacroPackage": false,
+      "output_type": "static",
+      "command_option": "",
+      "condition_option": {},
+      "link_option": "",
+      "requires": [
+        "zip4cj/zip4cj.utils"
+      ],
+      "package_requires": {
+        "charset/charset.encoding": {
+          "isMacroPackage": false,
+          "requires": [],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.encoding"
+        },
+        "charset/charset.japanese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.japanese"
+        },
+        "charset/charset.korean": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.korean"
+        },
+        "charset/charset.simplechinese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.simplechinese"
+        },
+        "charset/charset.singlebyte": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.singlebyte"
+        },
+        "charset/charset.traditionchinese": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.traditionchinese"
+        },
+        "charset/charset.unicode": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset.unicode"
+        },
+        "charset/charset": {
+          "isMacroPackage": false,
+          "requires": [
+            "charset/charset.encoding",
+            "charset/charset.japanese",
+            "charset/charset.korean",
+            "charset/charset.simplechinese",
+            "charset/charset.singlebyte",
+            "charset/charset.traditionchinese",
+            "charset/charset.unicode"
+          ],
+          "cjPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib",
+          "libPath": "/mnt/e/cangjie_workspace/20221105-test/zip4cj/zip4cj/lib/charset",
+          "libName": "charset_charset"
+        }
+      },
+      "foreign_requires": {},
+      "cross_compile_configuration": {}
+    }
+  ]
+}

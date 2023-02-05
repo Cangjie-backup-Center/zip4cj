@@ -16,7 +16,7 @@ package zip4cj.zip
  *
  * @since 0.28.4    @author lizhenjie
  */
-record EndCDR {
+struct EndCDR {
     public var sig: Int64 = 0
     public var diskNum: Int64 = 0
     public var numberOfThisDiskStartOfCentralDir: Int64 = 0

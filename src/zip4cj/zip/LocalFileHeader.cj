@@ -16,7 +16,7 @@ package zip4cj.zip
  *
  * @since 0.28.4    @author lizhenjie
  */
-public record LocalFileHeader {
+public struct LocalFileHeader {
 
     public var signature: Int64 = 0
     public var versionExtract: Int64 = 0

@@ -13,8 +13,8 @@ package zip4cj.gzip
 from compress import zlib.*
 from std import collection.*
 from std import io.*
-import zip4cj.utils.FileUtils
-
+from std import fs.*
+from std import math.*
 /**
  * This class provides compression and decompression of gzip
  * @since 0.28.4    @author lizhenjie
@@ -24,125 +24,80 @@ public open class GZUtils {
     /**
      * Gzip compression method
      *
-     * @param filePath Compressed file path
-     * @param level Compressed level
-     * @param outFileName Output file name after compression
+     * @param filePath 需要压缩的文件
+     * @param outPath  压缩后输出的文件位置
      *
-     * @return Returns the file name and compressed data
+     * @return 返回压缩状态，小于等于 0 表示失败，大于 0 成功
      * @since 0.28.4
      */
-     
-   public static func compress(filePath: String, level: UInt32, outFileName: String): (String, Array<UInt8>) {
-        var fileInfo = FileInfo(filePath)
-        if (!fileInfo.exist()) {
-            throw RuntimeException("file not exist!")
+    public static func compress(filePath: String, outPath: String): Int64 {
+        if (!File.exists(filePath)) {
+            throw GzipException("file not exist!")
         }
-        var fileStream = FileStream(fileInfo)
+        if (!Directory.exists(outPath)) {
+            Directory.create(outPath, recursive: true)
+        }
+        var file = File.openRead(filePath)
         var input = Array<UInt8>()
-        if (fileStream.openFile()) {
-            input = fileStream.readAllBytes()
+        if (file.canRead()) {
+            input = file.readToEnd()
         }
-        var path = fileInfo.getPath()
-        var start = 0
-        if (path.contains("\\")) {
-            match (path.lastIndexOf('\\')) {
-                case Some(value) => start = value
-                case None => start = 0
-            }
-        }else {
-            match (path.lastIndexOf('/')) {
-                case Some(value) => start = value
-                case None => start = 0
-            }
-        }
-        let fileName = path.slice(start+1, path.size()-start-1)
-        var retbuf = Array<UInt8>()
-        if (input.size() > 0) {
-            var deflate = Deflate()
-            var comprLen = input.size()
-            var ret: UInt32 = 0
-            deflate.deflateInit(
-                wrap: WrapType.GZIP,
-                level: level,
-                wbits: DEF_WINDOW_BITS,
-                mlevel: DEF_MEM_LEVEL,
-                strategy: Z_DEFAULT_STRATEGY
-            )
-            var outlength = deflate.deflateBound(input.size())
-            var outbuf = Array<UInt8>(outlength, {i => 0})
-            deflate.setInBuf(input)
-            deflate.setOutBuf(outbuf)
-            var gzhead = GzHeader()
-            gzhead.name = Buffer(fileName.toUtf8Array())
-            deflate.setGzipHeader(gzhead)
-            ret = deflate.deflate(Z_FINISH)
-            ret = deflate.deflateEnd()
-            var fileName = ""
-            if (outFileName.endsWith(".gz")) {
-                fileName = outFileName
+        let fileName = file.info.path.fileName.getOrThrow()
+        var count: Int64 = 0
+        var srcFile: File = File(filePath, OpenOption.Open(true, false))
+        var destFile: File = File(outPath + "/" + fileName + ".gz", OpenOption.Create(false))
+        var tempBuf: Array<UInt8> = Array<UInt8>(1024, item: 0)
+        var compressOutputStream: CompressOutputStream = CompressOutputStream(destFile, wrap: GzipFormat, bufLen: 10000)
+        while (true) {
+            var readNum = srcFile.read(tempBuf)
+            if (readNum > 0) {
+                compressOutputStream.write(tempBuf.slice(0, readNum).toArray())
+                count += readNum
             } else {
-                fileName = outFileName + ".gz"
+                break
             }
-            return (fileName, outbuf[0..deflate.getOutDataLength()])
         }
-        return ("", retbuf)
+        compressOutputStream.flush()
+        compressOutputStream.close()
+        srcFile.close()
+        destFile.close()
+        return count
     }
 
     /**
      * decompressed gzip file
      *
-     * @param filePath The path of the file that needs to be unzipped
+     * @param filePath 需要解压的文件
+     * @param outPath  解压后输出的文件位置
      *
-     * @return Returns the file name and compressed data
+     * @return 返回解压缩状态，小于等于 0 表示失败，大于 0 成功
      * @since 0.28.4
      */
-    public static func deCompress(filePath: String): (String, ArrayList<UInt8>) {
-        return deCompress(FileUtils.readFile(filePath))
-    }
-
-    /**
-     * decompressed gzip file
-     *
-     * @param input Data to be decompressed
-     *
-     * @return Returns the unzipped file name and compressed data
-     * @since 0.28.4
-     */
-   public static  func  deCompress(input: Array<UInt8>): (String, ArrayList<UInt8>) {
-        var retbuf: ArrayList<UInt8> = ArrayList<UInt8>()
-        if (input.size() > 0) {
-            var inflate = Inflate()
-            var comprLen = input.size()
-            var ret: UInt32 = 0
-            var outbuf = Array<UInt8>(comprLen, {i => 0})
-            inflate.inflateInit(wrap: WrapType.GZIP, wbits: DEF_WINDOW_BITS, ischeck: true)
-            inflate.setInBuf(input)
-            inflate.setOutBuf(outbuf)
-            var gzhead = GzHeader()
-            inflate.getGzipHeader(gzhead)
-            while (true) {
-                ret = inflate.inflate(Z_NO_FLUSH)
-                if (ret == Z_OK) {
-                    if (inflate.isHaveOutData()) {
-                        retbuf.addAll(outbuf[0..inflate.getOutDataLength()])
-                        inflate.resetOutBuf()
-                    }
-                } else if (ret == Z_STREAM_END) {
-                    if (inflate.isHaveOutData()) {
-                        retbuf.addAll(outbuf[0..inflate.getOutDataLength()])
-                        inflate.resetOutBuf()
-                    }
-                    break
-                } else {
-                    println("err zlibUnCompressGz()" + inflate.message)
-                    break
-                }
-            }
-            ret = inflate.inflateEnd()
-            var nameArr = Array<UInt8>(gzhead.name)
-            var fileName = String.fromUtf8(nameArr, start: 0, length: nameArr.size(), isAscii: true)
-            return (fileName, retbuf)
+    public static func decompress(filePath: String, outPath: String): Int64 {
+        if (!File.exists(filePath)) {
+            throw GzipException("file not exist!")
         }
-        return ("", retbuf)
+        
+        var count: Int64 = 0
+        var srcFile: File = File(filePath, OpenOption.Open(true, false))
+        var destFile: File = File(outPath, OpenOption.Create(false))
+        var tempBuf: Array<UInt8> = Array<UInt8>(1024, item: 0)
+        var decompressInputStream: DecompressInputStream = DecompressInputStream(
+            srcFile,
+            wrap: GzipFormat,
+            bufLen: 10000
+        )
+        while (true) {
+            var readNum = decompressInputStream.read(tempBuf)
+            if (readNum <= 0) {
+                break
+            } 
+            destFile.write(tempBuf.slice(0, readNum).toArray())
+            count += readNum
+        }
+        decompressInputStream.close()
+        srcFile.close()
+        destFile.close()
+        return count
     }
 }
