@@ -1,7 +1,7 @@
-// EXEC: cjc lib.o %f -o a.out
-// EXEC: ./a.out
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
 
-import zip4cj.*
+from zip4cj import zip4cj.zip.*
 from std import os.posix.*
 
 main() { 
@@ -10,7 +10,7 @@ main() {
     zipFile.setOutPath("${path2}/testZipFile03.zip")
     try {
         zipFile.addFile("${path2}/hello.txt")
-    } catch(e: RuntimeException) {
+    } catch(e: Exception) {
         println(e.toString()) // hello.txt file does not exist
         return 0
     }

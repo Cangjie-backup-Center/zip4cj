@@ -1,15 +1,15 @@
 // DEPENDENCE: testGzipUtilsDecom01.gz
-// EXEC: cjc lib.o %f -o a.out
-// EXEC: ./a.out
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
 
-import zip4cj.*
+from zip4cj import zip4cj.gzip.*
 from std import os.posix.*
 
 main() { 
     var path2: String = getcwd()
-    var deCompress = GZUtils.deCompress("${path2}/testGzipUtilsDecom01.gz")
-    var fName = deCompress[0]
-    var deCompressData = deCompress[1]
-    var outPath = "${path2}/" + fName
-    FileUtils.writeFile(Array(deCompressData), outPath)
+    var deCompress = GZUtils.decompress("${path2}/testGzipUtilsDecom01.gz", "testGzipUtilsDecom01.txt")
+    if(deCompress < 0) {
+        return -1
+    }
+    return 0
 }

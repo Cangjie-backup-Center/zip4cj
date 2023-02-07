@@ -145,12 +145,12 @@ open class HeaderParser <: ZipSignatures {
     private func zipDeflate(input: Array<UInt8>, param: ZipParams): Array<UInt8> {
         let tempDir = os.tempDir();
         //为读取到的数据文件
-        var srcFile = tempDir.createFile("${Time.now().unixNano()}")
+        var srcFile = tempDir.createFile("${Time.now().unixTimeStamp().nanoseconds()}")
         if (srcFile.canWrite()) {
             srcFile.write(input)
         }
         srcFile.close()
-        let destFile = tempDir.createFile("${Time.now().unixNano()}")
+        let destFile = tempDir.createFile("${Time.now().unixTimeStamp().nanoseconds()}")
         srcFile=File.openRead(srcFile.info.path)
         if (srcFile.canRead()) {  
             var tempBuf: Array<UInt8> = Array<UInt8>(2048, item: 0)

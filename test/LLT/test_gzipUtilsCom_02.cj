@@ -1,15 +1,18 @@
-// EXEC: cjc lib.o %f -o a.out
-// EXEC: ./a.out
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
 
-import zip4cj.*
+from zip4cj import zip4cj.gzip.*
+from zip4cj import zip4cj.utils.*
 from std import os.posix.*
 
 main() {
     var path2: String = getcwd()
     try {
-        var gzCompress = GZUtils.compress("${path2}/hello.txt", 6, "hello.gz")
-    } catch (e: RuntimeException) {
-        println(e.toString()) // file not exist!
+        var gzCompress = GZUtils.compress("${path2}/hello.txt", "hello.gz")
+    } catch (e: Exception) {
+        if(!e.toString().contains("Exception: file not exist!")) {
+            return -1
+        }
         return 0
     }
     return 1

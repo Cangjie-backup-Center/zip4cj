@@ -248,7 +248,7 @@ public class TarFile {
         }
         var mtime: Array<UInt8> = Array<UInt8>(12, {i => 0})
         var time = Time.now(Location.Local)
-        formatVal(mtime, convertsToOctal(time.unix()).toUtf8Array())
+        formatVal(mtime, convertsToOctal(time.unixTimeStamp().nanoseconds()).toUtf8Array())
         checkSum = sum(checkSum, mtime)
 
         var linkflag: Array<UInt8> = Array<UInt8>(1, @overflowThrowing{i => 0})
