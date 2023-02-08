@@ -1,9 +1,9 @@
 // DEPENDENCE: testZipFile02.zip
 // DEPENDENCE: test.txt
-// EXEC: cjc lib.o %f -o a.out
-// EXEC: ./a.out
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
 
-import zip4cj.*
+from zip4cj import zip4cj.zip.*
 from std import os.posix.*
 from std import collection.*
 
@@ -14,7 +14,7 @@ main() {
     zipFile.addFile("${path2}/test.txt")
     try {
         zipFile.writeZip()
-    } catch(e: RuntimeException) {
+    } catch(e: Exception) {
         println(e.toString()) // Output file type should be zip!
         return 0
     }

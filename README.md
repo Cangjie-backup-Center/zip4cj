@@ -3,9 +3,9 @@
 </div>
 
 <p align="center">
-<img alt="" src="https://img.shields.io/badge/release-v0.0.1-brightgreen" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/release-v0.0.2-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/build-pass-brightgreen" style="display: inline-block;" />
-<img alt="" src="https://img.shields.io/badge/cjc-v0.29.3-brightgreen" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/cjc-v0.36.4-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/cjcov-92%25-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/project-open-brightgreen" style="display: inline-block;" />
 </p>
@@ -14,7 +14,7 @@
 
 ## <img alt="" src="./doc/assets/readme-icon-introduction.png" style="display: inline-block;" width=3%/>介绍
 
-zip4cj 是基于仓颉（0.35.6）语言实现的文件压缩和解压缩，目前基本实现了zip 和 gzip 的压缩和解压缩，以及tar文件提取。
+zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实现了zip 和 gzip 的压缩和解压缩，以及tar文件提取。
 
 ### 特性
 
@@ -78,182 +78,11 @@ zip4cj 是基于仓颉（0.35.6）语言实现的文件压缩和解压缩，目�
 - `src/tar` 是tar提取的核心代码
 - `test` 是存放测试用例，包括 HLT 用例、LLT 用例和 UT 用例
 
-### 接口说明
+### 类和接口说明：
 
-主要是核心类和成员函数说明
+详情见 [API](./doc/api.md)
 
-#### class TarFile
-
-##### func extractTar
-
-实现 TAR 解压
-
-```cangjie
-/**
- * 实现 TAR 提取
- *
- * @param file 要提取的tar包
- *
- * @since 0.28.4
- */
- public func extractTar(file: Array<UInt8>): Unit
-
-```
-
-#### class GZUtils
-
-##### func compress
-
-实现 GZIP 压缩
-
-```cangjie
-/**
- * 实现 GZIP 压缩
- *
- * @param filePath 压缩文件路劲
- * @param level 压缩登等级 （0-9）
- *        LEVEL_NO_COMPRESSION      = 0
- *        LEVEL_BEST_SPEED          = 1
- *        LEVEL_DEFAULT_COMPRESSION = 6
- *        LEVEL_BEST_COMPRESSION    = 9
- * @param outFileName 压缩后的文件名
- *
- * @return 返回压缩后的文件名和数据
- * @since 0.28.4
-*/
-public static func compress(filePath: String, level: UInt32, outFileName: String): String * Array<UInt8>
-```
-
-##### func deCompress
-
-实现 GZIP 解压
-
-```cangjie
-/**
- * 实现 GZIP 解压
- *
- * @param filePath 待解压的文件路劲
- *
- * @return 返回解压后的文件名和数据
- * @since 0.28.4
- */
-public static func deCompress(filePath: String): String * ArrayList<UInt8>
-
-/**
- * 实现 GZIP 解压
- *
- * @param input 待解压数据
- *
- * @return 返回解压后的文件名和数据
- * @since 0.28.4
- */
-public static  func  deCompress(input: Array<UInt8>): String * ArrayList<UInt8> 
-```
-
-#### class ZipFile
-
-##### func init
-
-ZipFile 初始化
-
-```cangjie
-/**
- * Zip 压缩初始化
- *
- * @since 0.28.4
- */
-public init()
-
-/**
- * Zip 解压初始化
- *
- * @param filePath 待解压的文件路径
- *
- * @since 0.28.4
- */
-public init(filePath: String)
-```
-
-##### func addFile
-
-Zip 添加压缩的文件
-
-```cangjie
-/**
- * 添加压缩的文件
- *
- * @param file 添加压缩的文件路径
- *
- * @since 0.28.4
- */
-public func addFile(file: String)
-```
-
-##### func addFiles
-
-Zip 添加压缩的文件集合
-
-```cangjie
-/**
- * 添加压缩的文件集合
- *
- * @param files 问价集合，类型为 HashSet<String>
- *
- * @since 0.28.4
- */
-public func addFiles(files: HashSet<String>)
-```
-
-##### func writeZip
-
-Zip 压缩
-
-```cangjie
-public func writeZip()
-```
-
-##### func nameList
-
-获取压缩包中的目录
-
-```cangjie
-public func nameList(): Array<String>
-```
-
-##### func extractAll
-
-Zip 提取所有解压后的数据
-
-```cangjie
-public func extractAll()
-```
-
-##### func setOutPath
-
-Zip 设置文件压缩后的路径
-
-```cangjie
-/**
- * 设置文件压缩后的路径
- *
- * @param outPath 压缩文件后的路径
- *
- * @since 0.28.4
- */
-public func setOutPath(outPath: String)
-```
-
-#### class FileUtils
-
-##### func writeFile
-
-FileUtils 根据文件内容和路径写入文件
-
-```cangjie
-func writeFile(outData: Array<UInt8>, filePath: String)
-```
-
-## <img alt="" src="./doc/assets/readme-icon-compile.png" style="display: inline-block;" width=3%/>编译执行
+## <img alt="" src="./doc/assets/readme-icon-compile.png" style="display: inline-block;" width=3%/> 使用说明
 
 ### 项目依赖
 `charset`包<br>
@@ -263,7 +92,7 @@ func writeFile(outData: Array<UInt8>, filePath: String)
 
 #### 第一种方式
 
-#### 引入charset包
+##### 引入charset包
 
 ~~~powershell
 git clone https://gitee.com/HW-PLLab/charset.git
@@ -271,7 +100,7 @@ git clone https://gitee.com/HW-PLLab/charset.git
 
    将charset包放在zip4cj目录下
 
-#### 使用说明
+##### 使用
 
 1、在zip4cj目录下module.json中的requires属性中配置charset
 
@@ -309,15 +138,13 @@ cpm test test/UT
 unittest/bin/main
 ~~~
 
-
-
 #### 第二种方式
 
-#### 引入 testJekins 包
+##### 引入 testJekins 包
 
 地址：https://gitee.com/HW-PLLab/testJekins 将 src 下 ci_test 放入 zip4cj 根目录下
 
-#### 使用说明
+##### 使用
 
 ```
 git clone https://gitee.com/HW-PLLab/testJekins
@@ -326,7 +153,7 @@ python3 ci_test/main.py build
 python3 ci_test/main.py test
 ```
 
-### zip 示例
+### 功能示例
 
 zip 解压
 
@@ -369,14 +196,12 @@ FileUtils.writeFile(Array(deCompressData), outPath)
 
 tar 解压
 
-~~~cangjie
+```cangjie
 var tf = TarFile()
 tf.outPath = "/mnt/c/Users/lizhenjie/Desktop/"
 var file = FileUtils.readFile("/mnt/c/Users/lizhenjie/Desktop/water_analysis.tar")
 tf.extractTar(file)
-~~~
-
-
+```
 
 ## 项目中使用zip4cj
 
@@ -386,16 +211,16 @@ cpm build
 
 2、引入
 
-~~~json
+```json
   "package_requires": {
     "path_option": [
 			"./lib/zip4cj"
 		],
 		"package_option": {}
   },
-~~~
+```
 3、使用
-~~~cangjie
+```cangjie
 from zip4cj import zip4cj.tar.*
 from std import fs.*
 
@@ -404,12 +229,8 @@ main() {
     tf.outPath = "/mnt/c/Users/lizhenjie/Desktop/test/01/论文.tar"
     tf.storeTar("/mnt/c/Users/lizhenjie/Desktop/test/论文/")
 }
-~~~
-### 源码引入
 ```
 
-## <img alt="" src="./doc/assets/readme-icon-contribute.png" style="display: inline-block;" width=3%/>参与贡献
+## <img alt="" src="./doc/assets/readme-icon-contribute.png" style="display: inline-block;" width=3%/> 参与贡献
 
-主要写参与贡献的人以及个人主页链接
-
-[@chinesebear](https://gitee.com/chinesebear)[@ahri_xiao](https://gitee.com/ahri_xiao)
+欢迎给我们提交 PR，欢迎给我们提交 issue，欢迎参与任何形式的贡献。

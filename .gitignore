@@ -1,0 +1,10 @@
+*.cjo
+.vscode
+build/
+module-resolve.json
+*.gcda
+*.gcno
+ci_test/
+ci_lib/
+bin/
+charset/

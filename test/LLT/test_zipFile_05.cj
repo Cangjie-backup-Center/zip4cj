@@ -1,7 +1,7 @@
-// EXEC: cjc lib.o %f -o a.out
-// EXEC: ./a.out
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
 
-import zip4cj.*
+from zip4cj import zip4cj.zip.*
 from std import os.posix.*
 from std import collection.*
 
@@ -12,7 +12,7 @@ main() {
     var files: HashSet<String> = HashSet<String>() 
     try {
         zipFile.addFiles(files)
-    } catch (e: RuntimeException) {
+    } catch (e: Exception) {
         println(e.toString()) // The number of added files cannot be empty!
         return 0
     }

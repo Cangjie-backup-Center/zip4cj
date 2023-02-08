@@ -1,17 +1,18 @@
 // EXEC: mkdir testDoc
 // EXEC: echo 'fjwaekgapewflserogkroegoerkgpre' > ./testDoc/test.doc
-// EXEC: cjc lib.o %f -o a.out
-// EXEC: ./a.out
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
 
-import zip4cj.*
+from zip4cj import zip4cj.gzip.*
+from zip4cj import zip4cj.utils.*
 from std import os.posix.*
 from std import io.*
 
 main() {
     var path2: String = getcwd()
-    var gzCompress = GZUtils.compress("${path2}/testDoc/test.doc", 6, "testGzipUtilsCom04.gz")
-    var fileName = gzCompress[0]
-    var compressData = gzCompress[1]
-    var outPath = "${path2}/testDoc/" + fileName
-    FileUtils.writeFile(compressData, outPath)
+    var gzCompress = GZUtils.compress("${path2}/testDoc/test.doc", "testGzipUtilsCom04.gz")
+    if(gzCompress < 0) {
+        return -1 
+    }
+    return 0
 }

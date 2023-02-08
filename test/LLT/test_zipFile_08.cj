@@ -1,8 +1,8 @@
 // DEPENDENCE: testZipFile08.zip
-// EXEC: cjc lib.o %f -o a.out
-// EXEC: ./a.out
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
 
-import zip4cj.*
+from zip4cj import zip4cj.zip.*
 from std import os.posix.*
 main() {
     var path2: String = getcwd()
@@ -11,7 +11,7 @@ main() {
     try {     
         zipFile.extractAll()
         var nameList = zipFile.nameList()
-    } catch (e: RuntimeException) {
+    } catch (e: Exception) {
         println(e.toString()) // out Path is null or invalid
         return 0
     }

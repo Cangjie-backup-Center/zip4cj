@@ -1,7 +1,7 @@
-// EXEC: cjc lib.o %f -o a.out
-// EXEC: ./a.out
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
 
-import zip4cj.*
+from zip4cj import zip4cj.zip.*
 from std import os.posix.*
 from std import collection.*
 
@@ -12,7 +12,7 @@ main() {
     var files: HashSet<String> = HashSet<String>(["${path2}/hello.cj"])
     try {
         zipFile.addFiles(files)
-    } catch (e: RuntimeException) {
+    } catch (e: Exception) {
         println(e.toString()) // hello.txt file does not exist
         return 0
     }
