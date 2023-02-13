@@ -176,22 +176,13 @@ var zipFile= ZipFile()
 gzip 添加压缩
 
 ```cangjie
-var gzCompress = GZUtils.compress("/mnt/c/Users/lizhenjie/Desktop/test.txt", LEVEL_DEFAULT_COMPRESSION,
-        "test.gz")
-var fileName = gzCompress[0]
-var compressData = gzCompress[1]
-var outPath="/mnt/c/Users/lizhenjie/Desktop/"+fileName
-FileUtils.writeFile(compressData, outPath)
+GZUtils.compress("gtt/zip4cj/test.txt", "testGzipUtilsCom01.gz")
 ```
 
 gzip 解压
 
 ```cangjie
-var deCompress=GZUtils.deCompress("/mnt/c/Users/lizhenjie/Desktop/test.gz")
-var fName=deCompress[0]
-var deCompressData=deCompress[1]
-var outPath="/mnt/c/Users/lizhenjie/Desktop/"+fName
-FileUtils.writeFile(Array(deCompressData), outPath)
+GZUtils.decompress("gtt/zip4cj/testGzipUtilsDecom01.gz", "testGzipUtilsDecom01.txt")
 ```
 
 tar 解压
