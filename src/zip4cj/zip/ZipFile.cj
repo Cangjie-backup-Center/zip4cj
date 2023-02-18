@@ -11,7 +11,6 @@
 
 package zip4cj.zip
 
-from compress import zlib.*
 from std import convert.*
 
 
@@ -128,7 +127,7 @@ public open class ZipFile {
         var buff = FileUtils.readFile(filePath)
         var eocd = headerParser.parseEndOfCentralDirectory(buff)
         var cdrs = headerParser.parseCentralDirectoryRecord(buff, eocd)
-        return headerParser.parseLocalFileHeader(buff, cdrs)
+        return headerParser.parseLocalFileHeader(buff, cdrs,eocd)
     }
 
     /**

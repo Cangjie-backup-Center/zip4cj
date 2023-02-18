@@ -37,6 +37,45 @@ open class HeaderParser <: ZipSignatures {
         this.outPath = outPath
     }
 
+    public func findFileHeaderSigStart(buff: Array<UInt8>, endCDR: EndCDR): ArrayList<Int64> {
+        var fileStartIndex = 0 //文件开始位置
+        var localFileHeaderSigStartPosition = ArrayList<Int64>()
+        var fileHeaderBuffer = buff.slice(fileStartIndex, 30)
+        var fileCount = 0;
+        while (fileCount <= endCDR.totalNumberOfEntriesInCentralDirectory) {
+            var meth = readShortLittleEndian(fileHeaderBuffer, LOC_HDR_HOW_OFFSET)
+            var compressedSize = readIntLittleEndian(fileHeaderBuffer, LOC_HDR_SIZ_OFFSET)
+            var flag = readShortLittleEndian(fileHeaderBuffer, LOC_HDR_FLG_OFFSET)
+            var flagArr = MsDosUtils.convertToBinary(flag, length: 16)
+            var fileNameLength = readShortLittleEndian(fileHeaderBuffer, LOC_HDR_NAM_OFFSET)
+            var extraFieldLength = readShortLittleEndian(fileHeaderBuffer, LOC_HDR_EXT_OFFSET)
+            fileHeaderBuffer = buff.slice(fileStartIndex, LOC_HDR_FNM_OFFSET + fileNameLength)
+            var fileNameArr = subArray(fileHeaderBuffer, LOC_HDR_FNM_OFFSET, (LOC_HDR_FNM_OFFSET + fileNameLength))
+            var length = flagArr.size
+            var isUtf8: Bool = (flagArr[length - 12] != 0)
+            var fileName = ""
+            if (isUtf8) {
+                fileName = String.fromUtf8(fileNameArr)
+            } else {
+                fileName = gb18030(fileNameArr)
+            }
+
+            //println("解压文件名称:" + fileName)
+            
+            //println("extraFieldLength=${extraFieldLength}")
+            //println("compressedSize=${compressedSize}")
+            //println("fileNameLength=${fileNameLength}")
+            //println("LOC_HDR_FNM_OFFSET=${LOC_HDR_FNM_OFFSET}")
+            localFileHeaderSigStartPosition.append(fileStartIndex)
+
+            //println("------------------------------------------------")
+            fileCount++
+            fileStartIndex = fileStartIndex + LOC_HDR_FNM_OFFSET + extraFieldLength + compressedSize + fileNameLength
+            fileHeaderBuffer = buff.slice(fileStartIndex, 30)
+        }
+        return localFileHeaderSigStartPosition
+    }
+
     /*
      * Parse local file header
      *
@@ -46,20 +85,10 @@ open class HeaderParser <: ZipSignatures {
      * @return Return the parsed file header
      * @since 0.28.4
      */
-    public func parseLocalFileHeader(buff: Array<UInt8>, fileType: HashMap<String, CentralDirectoryRecord>): ArrayList<LocalFileHeader> {
+    public func parseLocalFileHeader(buff: Array<UInt8>, fileType: HashMap<String, CentralDirectoryRecord>, 
+        endCDR: EndCDR): ArrayList<LocalFileHeader> {
         var length = buff.size
-        var localFileHeaderSigStartPosition = ArrayList<Int64>()
-        for (index in 0..length) {
-            if (index + 3 >= length) {
-                break
-            }
-            var buffer = Array<UInt8>([buff[index], buff[index + 1], buff[index + 2], buff[index + 3]])
-            var locSig = readIntLittleEndian(buffer, LOC_HDR_SIG_OFFSET)
-            if (locSig == LOCSIG) {
-                localFileHeaderSigStartPosition.append(index)
-            }
-        }
-        localFileHeaderSigStartPosition.append(length)
+        var localFileHeaderSigStartPosition = findFileHeaderSigStart(buff, endCDR)
         var size = localFileHeaderSigStartPosition.size
         var lfhList = ArrayList<LocalFileHeader>()
         for (index in 0..size) {
@@ -91,23 +120,24 @@ open class HeaderParser <: ZipSignatures {
             } else {
                 fileName = gb18030(fileNameArr)
             }
-            var sub = subArray(
-                buffer,
-                LOC_HDR_FNM_OFFSET + fileNameLength,
-                LOC_HDR_FNM_OFFSET + fileNameLength + compressedSize
-            )
+            var sub = Array<UInt8>()
+            if (compressedSize > 0) {
+                sub = subArray(
+                    buffer,
+                    LOC_HDR_FNM_OFFSET + fileNameLength,
+                    LOC_HDR_FNM_OFFSET + fileNameLength + compressedSize
+                )
+            }
             var fType = fileType[fileName]
             if (!fType.isDirectory) {
                 match (meth) {
-                    case 0 => logger.info("No need to decompress!") //STORE
+                    case 0 => logger.info(fileName + "解压完成") //STORE
                     case 8 =>
                         //zipInflate
-                        var file = FileUtils.getFilePath(outPath, fileName + ".tmp")
-                        if (!fType.isDirectory) {
-                            FileUtils.writeFile(sub, file)
-                        }
-                        sub = Array(zipInflate(outPath + fileName + ".tmp"))
-                        logger.info("Unpack the success")
+                        let tempFile = outPath + "/" + fileName + ".tmp"
+                        File.writeTo(tempFile, sub, openOption: OpenOption.CreateOrAppend)
+                        sub = Array(zipInflate(tempFile))
+                        logger.info(fileName + "解压完成")
                     case 99 => //AES_INTERNAL_ONLY
                         logger.info("Compression method:$[meth} does not support!")
                     case _ => throw ZipException("Compression method:$[meth} does not support!")
@@ -144,6 +174,7 @@ open class HeaderParser <: ZipSignatures {
      */
     private func zipDeflate(input: Array<UInt8>, param: ZipParams): Array<UInt8> {
         let tempDir = os.tempDir();
+
         //为读取到的数据文件
         var srcFile = tempDir.createFile("${Time.now().unixTimeStamp().nanoseconds()}")
         if (srcFile.canWrite()) {
@@ -151,8 +182,8 @@ open class HeaderParser <: ZipSignatures {
         }
         srcFile.close()
         let destFile = tempDir.createFile("${Time.now().unixTimeStamp().nanoseconds()}")
-        srcFile=File.openRead(srcFile.info.path)
-        if (srcFile.canRead()) {  
+        srcFile = File.openRead(srcFile.info.path)
+        if (srcFile.canRead()) {
             var tempBuf: Array<UInt8> = Array<UInt8>(2048, item: 0)
             var retbuf: ArrayList<UInt8> = ArrayList<UInt8>()
             var compressOutputStream: CompressOutputStream = CompressOutputStream(destFile, wrap: DeflateFormat)
@@ -169,7 +200,7 @@ open class HeaderParser <: ZipSignatures {
         }
         srcFile.close()
         destFile.close()
-        let result=FileUtils.readFile(destFile.info.path.toString())
+        let result = FileUtils.readFile(destFile.info.path.toString())
         File.delete(srcFile.info.path)
         File.delete(destFile.info.path)
         return result

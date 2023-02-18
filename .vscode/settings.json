@@ -7,5 +7,11 @@
         "other": "on",
         "comments": "off",
         "strings": "on"
-    }
+    },
+    "terminal.integrated.env.linux": {
+        "CANGJIE_HOME": "/usr/local/cangjie/",
+        "PATH": "/usr/local/cangjie//bin:/usr/local/cangjie//tools/bin:${env:PATH}",
+        "LD_LIBRARY_PATH": "/usr/local/cangjie//runtime/lib/linux_x86_64_llvm:/usr/local/cangjie//debugger/third_party/lldb/lib:${env:LD_LIBRARY_PATH}"
+    },
+    "cangjie_cj_sdk.sdkPath": "/usr/local/cangjie/"
 }
