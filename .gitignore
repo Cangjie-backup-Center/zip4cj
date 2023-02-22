@@ -8,3 +8,4 @@ ci_test/
 ci_lib/
 bin/
 charset/
+lib/

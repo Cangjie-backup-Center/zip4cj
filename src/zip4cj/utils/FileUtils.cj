@@ -87,6 +87,6 @@ public open class FileUtils {
         if (!File.exists(fileInfo)) {
            File.create(fileInfo)
         }
-        File.writeTo(fileInfo, outData, openOption: OpenOption.Append)
+        File.writeTo(fileInfo, outData, openOption: OpenOption.Truncate(true))
     }
 }
