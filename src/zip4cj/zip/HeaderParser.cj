@@ -92,11 +92,16 @@ open class HeaderParser <: ZipSignatures {
         var size = localFileHeaderSigStartPosition.size
         var lfhList = ArrayList<LocalFileHeader>()
         for (index in 0..size) {
-            if (index + 1 >= size) {
+            if (index >= size) {
                 break
             }
             var start = localFileHeaderSigStartPosition[index]
-            var end = localFileHeaderSigStartPosition[index + 1]
+            var end = 0
+            if (index + 1 >= size) {
+                end = buff.size
+            } else {
+                end = localFileHeaderSigStartPosition[index+1]
+            }
             var buffer = subArray(buff, start, end)
             var sig = readIntLittleEndian(buffer, LOC_HDR_SIG_OFFSET)
             var version = readShortLittleEndian(buffer, LOC_HDR_VER_OFFSET)
@@ -136,7 +141,7 @@ open class HeaderParser <: ZipSignatures {
                         //zipInflate
                         let tempFile = outPath + "/" + fileName + ".tmp"
                         File.writeTo(tempFile, sub, openOption: OpenOption.CreateOrAppend)
-                        sub = Array(zipInflate(tempFile))
+                        sub = Array(zipInflate(tempFile,uncompressedSize))
                         logger.info(fileName + "解压完成")
                     case 99 => //AES_INTERNAL_ONLY
                         logger.info("Compression method:$[meth} does not support!")
@@ -209,7 +214,7 @@ open class HeaderParser <: ZipSignatures {
     /*
      * Zip inflate
      */
-    private func zipInflate(tempFile: String): ArrayList<UInt8> {
+    private func zipInflate(tempFile: String,size:Int64): ArrayList<UInt8> {
         var retbuf: ArrayList<UInt8> = ArrayList<UInt8>()
         var tempBuf: Array<UInt8> = Array<UInt8>(2048, item: 0)
         var srcFile: File = File(tempFile, OpenOption.Open(true, false))
@@ -224,7 +229,7 @@ open class HeaderParser <: ZipSignatures {
         File.delete(tempFile)
         srcFile.close()
         decompressInputStream.close()
-        return retbuf
+        return retbuf[0..size]
     }
 
     /*
