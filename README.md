@@ -14,17 +14,11 @@
 
 ## <img alt="" src="./doc/assets/readme-icon-introduction.png" style="display: inline-block;" width=3%/>介绍
 
-zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实现了zip 和 gzip 的压缩和解压缩，以及tar文件提取。
+zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实现了zip 的压缩和解压缩。
 
 ### 特性
 
 - 🚀 zip 压缩和解压缩。
-
-- 🚀 gzip 的压缩和解压缩。
-
-- 🚀 tar 的创建和提取。
-
-- 🚀 tar.gz 的压缩和解压缩。
 
 ### 未来规划
 
@@ -48,12 +42,8 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 ├── module.json
 ├── src
 │   └── zip4cj
-│       ├── gzip
-│       │   └── GZUtils.cj
 │       ├── utils
 │       │   └── FileUtils.cj
-│       ├── tar
-│       │   └── TarFile.cj
 │       └── zip
 │           ├── CentralDirectoryRecord.cj
 │           ├── CompressionMethod.cj
@@ -74,13 +64,11 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 - `doc` 是库的设计文档、提案、库的使用文档、LLT 覆盖率报告
 - `src` 是库源码目录
 - `src/zip` 是zip解压缩核心代码
-- `src/gzip` 是gzip解压缩核心代码
-- `src/tar` 是tar提取的核心代码
 - `test` 是存放测试用例，包括 HLT 用例、LLT 用例和 UT 用例
 
 ### 类和接口说明：
 
-详情见 [API](./doc/api.md)
+详情见 [API](./doc/feature_api.md)
 
 ## <img alt="" src="./doc/assets/readme-icon-compile.png" style="display: inline-block;" width=3%/> 使用说明
 
@@ -171,27 +159,6 @@ var zipFile= ZipFile()
     zipFile.addFile("/mnt/c/Users/lizhenjie/Desktop/test.txt")
     zipFile.addFile("/mnt/c/Users/lizhenjie/Desktop/aaa.docx")
     zipFile.writeZip()
-```
-
-gzip 添加压缩
-
-```cangjie
-GZUtils.compress("gtt/zip4cj/test.txt", "testGzipUtilsCom01.gz")
-```
-
-gzip 解压
-
-```cangjie
-GZUtils.decompress("gtt/zip4cj/testGzipUtilsDecom01.gz", "testGzipUtilsDecom01.txt")
-```
-
-tar 解压
-
-```cangjie
-var tf = TarFile()
-tf.outPath = "/mnt/c/Users/lizhenjie/Desktop/"
-var file = FileUtils.readFile("/mnt/c/Users/lizhenjie/Desktop/water_analysis.tar")
-tf.extractTar(file)
 ```
 
 ## 项目中使用zip4cj
