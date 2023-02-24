@@ -177,13 +177,17 @@ open class HeaderParser <: ZipSignatures {
     /*
      * Zip deflate
      */
-    private func zipDeflate(input: Array<UInt8>, param: ZipParams): Array<UInt8> {
+    private func zipDeflate(input: Array<UInt8>): Array<UInt8> {
         let tempDir = os.tempDir();
 
         //为读取到的数据文件
         var srcFile = tempDir.createFile("${Time.now().unixTimeStamp().nanoseconds()}")
         if (srcFile.canWrite()) {
-            srcFile.write(input)
+            try {
+                srcFile.write(input)
+            } catch (e: Exception) {
+                throw Exception("file write failed: ${e.message}")
+            }
         }
         srcFile.close()
         let destFile = tempDir.createFile("${Time.now().unixTimeStamp().nanoseconds()}")
@@ -193,11 +197,15 @@ open class HeaderParser <: ZipSignatures {
             var retbuf: ArrayList<UInt8> = ArrayList<UInt8>()
             var compressOutputStream: CompressOutputStream = CompressOutputStream(destFile, wrap: DeflateFormat)
             while (true) {
-                var readNum = srcFile.read(tempBuf)
-                if (readNum > 0) {
-                    compressOutputStream.write(tempBuf.slice(0, readNum).toArray())
-                } else {
-                    break
+                try {
+                    var readNum = srcFile.read(tempBuf)
+                    if (readNum > 0) {
+                        compressOutputStream.write(tempBuf.slice(0, readNum).toArray())
+                    } else {
+                        break
+                    }
+                } catch (e: Exception) {
+                    throw Exception("file read failed: ${e.message}")
                 }
             }
             compressOutputStream.flush()
@@ -617,7 +625,7 @@ open class HeaderParser <: ZipSignatures {
         var cdrLst = ArrayList<UInt8>()
         for (file in files) {
             let fileData = FileUtils.readFile(file)
-            let deflate = zipDeflate(fileData, zipParam)
+            let deflate = zipDeflate(fileData)
             let fileName = FileUtils.getFileName(file)
             let fileNameLength = fileName.toUtf8Array().size
             let compressedSize = deflate.size
