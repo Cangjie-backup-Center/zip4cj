@@ -65,10 +65,14 @@ public open class FileUtils {
         var or=File.openRead(path)
         var readnum: Int64 = 0
         if (or.canRead()) {
-            var size = or.seek(SeekPosition.End(0))
-            or.seek(SeekPosition.Begin(0))
-            data =or.readToEnd()
-            or.flush()
+            try {
+                var size = or.seek(SeekPosition.End(0))
+                or.seek(SeekPosition.Begin(0))
+                data =or.readToEnd()
+                or.flush()
+            } catch (e: Exception) {
+                throw Exception("file read failed: ${e.message}")
+            }
         }
         or.close()
         return data
@@ -85,8 +89,13 @@ public open class FileUtils {
     public static  func writeFile(outData: Array<UInt8>, filePath: String) {
         var fileInfo = Path(filePath)
         if (!File.exists(fileInfo)) {
-           File.create(fileInfo)
+           var file = File.create(fileInfo)
+           file.close()
         }
-        File.writeTo(fileInfo, outData, openOption: OpenOption.Truncate(true))
+        try {
+            File.writeTo(fileInfo, outData, openOption: OpenOption.Truncate(true))
+        } catch (e: Exception) {
+                throw Exception("file write failed: ${e.message}")
+        }
     }
 }
