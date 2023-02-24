@@ -61,10 +61,10 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
     └── UT
 ```
 
-- `doc` 是库的设计文档、提案、库的使用文档、LLT 覆盖率报告
+- `doc` 存放库的设计文档、提案、库的使用文档、LLT 覆盖率报告
 - `src` 是库源码目录
-- `src/zip` 是zip解压缩核心代码
-- `test` 是存放测试用例，包括 HLT 用例、LLT 用例和 UT 用例
+- `src/zip` 存放zip解压缩核心代码
+- `test` 存放测试用例，包括 HLT 用例、LLT 用例和 UT 用例
 
 ### 类和接口说明：
 
@@ -88,43 +88,44 @@ git clone https://gitee.com/HW-PLLab/charset.git
 
    将charset包放在zip4cj目录下
 
-##### 使用
+##### 配置
 
-1、在zip4cj目录下module.json中的requires属性中配置charset
+在zip4cj目录下module.json中的requires属性中配置charset
 
 ~~~json
 {
-  "cjc_version": "0.29.3",
-  "organization": "lzj",
+  "cjc_version": "0.36.4",
+  "organization": "zip4cj",
   "name": "zip4cj",
-  "description": "zip is a compression/decompression library that can be used for zip, gzip, and other compressed files",
+  "description": "nothing here",
   "version": "0.0.2",
   "requires": {
     "charset":{
-      "organization": "zft",
+      "organization": "pllab",
       "version": "1.0.0",
       "path":"charset"
     }
   },
-  "package_requires": {},
+  "package_requires": {
+    "path_option": [],
+    "package_option": {}
+  },
   "foreign_requires": {},
   "output_type": "dynamic",
-  "command_option": ""
+  "command_option": "-O2",
+  "condition_option": {},
+  "link_option": "",
+  "cross_compile_configuration": {},
+  "package_configuration": {}
 }
 ~~~
 
-2、编译
+##### cpm编译
 
 ~~~powershell
 cpm build
 ~~~
 
-3、测试
-
-~~~powershell
-cpm test test/UT
-unittest/bin/main
-~~~
 
 #### 第二种方式
 
@@ -132,13 +133,15 @@ unittest/bin/main
 
 地址：https://gitee.com/HW-PLLab/testJekins 将 src 下 ci_test 放入 zip4cj 根目录下
 
+##### 安装python3
+```
+apt-get install python3
+```
 ##### 使用
 
 ```
-git clone https://gitee.com/HW-PLLab/testJekins
-apt-get install python3
-python3 ci_test/main.py build
-python3 ci_test/main.py test
+python3 ci_test/main.py build  // 编译
+python3 ci_test/main.py test  // 执行LLT测试用例
 ```
 
 ### 功能示例
@@ -146,46 +149,68 @@ python3 ci_test/main.py test
 zip 解压
 
 ```cangjie
-var zipFile= ZipFile("/mnt/c/Users/lizhenjie/Desktop/MisLinks.zip")
-zipFile.setOutPath("/mnt/c/Users/lizhenjie/Desktop/MisLinks")
-zipFile.extractAll()
+from zip4cj import zip4cj.zip.*
+from std import os.posix.*
+main() { 
+    var path2: String = getcwd()
+    var zipFile: ZipFile = ZipFile("${path2}/testZipFile02.zip")
+    zipFile.setOutPath("${path2}/testZipFile02/")
+    zipFile.extractAll()
+    var nameList = zipFile.nameList()
+    for(name in nameList) {
+        println(name.toString())
+    }
+}
 ```
 
 zip 添加压缩
 
 ```cangjie
-var zipFile= ZipFile()
-    zipFile.setOutPath("/mnt/c/Users/lizhenjie/Desktop/test.zip")
-    zipFile.addFile("/mnt/c/Users/lizhenjie/Desktop/test.txt")
-    zipFile.addFile("/mnt/c/Users/lizhenjie/Desktop/aaa.docx")
+from zip4cj import zip4cj.zip.*
+from zip4cj import zip4cj.utils.*
+from std import os.posix.*
+
+main() { 
+    var path2: String = getcwd()
+    var zipFile = ZipFile()
+    zipFile.setOutPath(path2 + "/testZipFile01.zip")
+    zipFile.addFile("${path2}/test.txt")
+    zipFile.addFile("${path2}/test.doc")
     zipFile.writeZip()
+}
 ```
 
-## 项目中使用zip4cj
+### 项目中使用zip4cj
 
-1、编译
-
-cpm build
-
-2、引入
-
+##### 引入
+在项目的module.json中配置
 ```json
+  ....
   "package_requires": {
     "path_option": [
 			"./lib/zip4cj"
 		],
 		"package_option": {}
   },
+  ...
 ```
-3、使用
-```cangjie
-from zip4cj import zip4cj.tar.*
-from std import fs.*
+##### 编译
 
-main() {
-    var tf = TarFile()
-    tf.outPath = "/mnt/c/Users/lizhenjie/Desktop/test/01/论文.tar"
-    tf.storeTar("/mnt/c/Users/lizhenjie/Desktop/test/论文/")
+cpm build
+
+##### 使用
+```cangjie
+from zip4cj import zip4cj.zip.*
+from zip4cj import zip4cj.utils.*
+from std import os.posix.*
+
+main() { 
+    var path2: String = getcwd()
+    var zipFile = ZipFile()
+    zipFile.setOutPath(path2 + "/testZipFile01.zip")
+    zipFile.addFile("${path2}/test.txt")
+    zipFile.addFile("${path2}/test.doc")
+    zipFile.writeZip()
 }
 ```
 
