@@ -52,8 +52,8 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 │           ├── LocalFileHeader.cj
 │           ├── MsDosUtils.cj
 │           ├── ZipConstants.cj
+│           ├── ZipException.cj
 │           ├── ZipFile.cj
-│           ├── ZipParams.cj
 │           └── ZipSignatures.cj
 └── test
     ├── HLT
