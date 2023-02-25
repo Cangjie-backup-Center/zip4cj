@@ -236,14 +236,6 @@ class ZipException
  */
 public init(message: String)
 ```
-struct ZipParams
-```
-/**
- * 构造函数
- *
- */
-public init()
-```
 struct LocalFileHeader
 ```
 /**
