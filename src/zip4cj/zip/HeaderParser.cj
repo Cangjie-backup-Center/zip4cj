@@ -614,11 +614,10 @@ open class HeaderParser <: ZipSignatures {
      * Write data to Zip File
      *
      * @param files Zip File data
-     * @param zipParam Zip param
      *
      * @since 0.28.4
      */
-    public func writeZipFile(files: HashSet<String>, zipParam: ZipParams) {
+    public func writeZipFile(files: HashSet<String>) {
         var fileNum = files.size
         var time = Time.now(Location.Local)
         var localFileLst = ArrayList<UInt8>()

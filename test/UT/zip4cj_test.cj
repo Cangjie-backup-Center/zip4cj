@@ -1,7 +1,6 @@
 from std import unittest.*
 from std import unittest.testmacro.*
 from zip4cj import zip4cj.zip.ZipFile
-from zip4cj import zip4cj.zip.ZipParams
 from std import collection.*
 
 @Test
@@ -47,8 +46,6 @@ public class zip4cj_test {
     public func caseWriteZipWithParam(): unit {
         println("-------------caseWriteZipWithParam--------------------------")
         var zf: ZipFile = ZipFile()
-        var param = ZipParams(1)
-        zf.setZipParams(param)
         zf.setOutPath("/mnt/c/Users/lizhenjie/Desktop/test3.zip")
         var set = HashSet<String>()
         set.put("/mnt/c/Users/lizhenjie/Desktop/cangjie_debug安装.pdf")

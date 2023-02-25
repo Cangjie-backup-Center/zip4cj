@@ -21,7 +21,6 @@ from std import convert.*
 public open class ZipFile {
     private var filePath: String = ""
     private var outPath: String = ""
-    private var zipParam: ZipParams = ZipParams()
     private var fileList = HashSet<String>()
     private let headerParser: HeaderParser = HeaderParser()
 
@@ -92,7 +91,7 @@ public open class ZipFile {
             throw ZipException("Output file type should be zip!")
         }
         headerParser.setOutPath(outPath)
-        headerParser.writeZipFile(fileList, zipParam)
+        headerParser.writeZipFile(fileList)
     }
 
     private func checkFile() {
