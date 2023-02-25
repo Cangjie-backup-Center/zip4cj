@@ -3,7 +3,7 @@
   "organization": "zip4cj",
   "name": "zip4cj",
   "description": "nothing here",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "requires": {
     "charset":{
       "organization": "pllab",
