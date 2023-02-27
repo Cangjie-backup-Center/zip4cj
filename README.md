@@ -78,9 +78,7 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 
 ### 编译
 
-#### 第一种方式
-
-##### 引入charset包
+#### 引入charset包
 
 ~~~powershell
 git clone https://gitee.com/HW-PLLab/charset.git
@@ -88,7 +86,7 @@ git clone https://gitee.com/HW-PLLab/charset.git
 
    将charset包放在zip4cj目录下
 
-##### 配置
+#### 配置
 
 在zip4cj目录下module.json中的requires属性中配置charset
 
@@ -120,29 +118,11 @@ git clone https://gitee.com/HW-PLLab/charset.git
 }
 ~~~
 
-##### cpm编译
+#### cpm编译
 
 ~~~powershell
 cpm build
 ~~~
-
-
-#### 第二种方式
-
-##### 引入 testJekins 包
-
-地址：https://gitee.com/HW-PLLab/testJekins 将 src 下 ci_test 放入 zip4cj 根目录下
-
-##### 安装python3
-```
-apt-get install python3
-```
-##### 使用
-
-```
-python3 ci_test/main.py build  // 编译
-python3 ci_test/main.py test  // 执行LLT测试用例
-```
 
 ### 功能示例
 

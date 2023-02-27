@@ -30,12 +30,13 @@ public open class FileUtils {
      * @since 0.28.4
      */
     public static  func getFilePath(outPath: String, fileName: String): String {
-        var lastIndex = outPath.lastIndexOf("/").getOrThrow()
-        var lastName = outPath.slice(lastIndex, outPath.size - lastIndex).toString()
+        var temp = outPath.replace('\\','/')
+        var lastIndex = temp.lastIndexOf("/").getOrThrow()
+        var lastName = temp.slice(lastIndex, temp.size - lastIndex).toString()
         if (fileName.startsWith(lastName)) {
-            return outPath.slice(0, lastIndex) + "/" + fileName
+            return temp.slice(0, lastIndex) + "/" + fileName
         } else {
-            return outPath + "/" + fileName
+            return temp + "/" + fileName
         }
         return ""
     }
