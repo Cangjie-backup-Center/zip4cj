@@ -234,8 +234,8 @@ open class HeaderParser <: ZipSignatures {
             }
             retbuf.appendAll(tempBuf);
         }
-        File.delete(tempFile)
         srcFile.close()
+        File.delete(tempFile)
         decompressInputStream.close()
         return retbuf[0..size]
     }
