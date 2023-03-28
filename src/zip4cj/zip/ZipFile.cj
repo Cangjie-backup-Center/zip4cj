@@ -34,7 +34,7 @@ public open class ZipFile {
     /**
      * Zip compression initialization
      *
-     * @param filePath File path to be unzipped
+     * @param filePath File path to be unzipped or zip
      *
      * @since 0.28.4
      */
@@ -93,6 +93,20 @@ public open class ZipFile {
         headerParser.setOutPath(outPath)
         headerParser.writeZipFile(fileList)
     }
+    /**
+    *压缩dir下所有文件
+    */
+    public func zipDIr() {
+        if (!outPath.endsWith(".zip")) {
+            throw ZipException("Output file type should be zip!")
+        }
+        var dir=Directory(filePath)
+        if (dir.isEmpty()) {
+             throw ZipException("FilePath is empty directory")
+        }
+        headerParser.setOutPath(outPath)
+        headerParser.writeZipFile(dir)
+    }
 
     private func checkFile() {
         if (filePath == "") {
@@ -139,7 +153,6 @@ public open class ZipFile {
         if (!File.exists(path)) {
             throw ZipException(path.fileName.getOrThrow() + "file does not exist")
         }
-        headerParser.setOutPath(outPath)
         var buff = FileUtils.readFile(filePath)
         var eocd = headerParser.parseEndOfCentralDirectory(buff)
         var cdrs = headerParser.parseCentralDirectoryRecord(buff, eocd)
@@ -155,5 +168,8 @@ public open class ZipFile {
      */
     public func setOutPath(outPath: String) {
         this.outPath = outPath
+    }
+    public func setFilePath(filePath: String) {
+        this.filePath = filePath
     }
 }

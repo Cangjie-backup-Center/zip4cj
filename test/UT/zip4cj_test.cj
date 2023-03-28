@@ -53,4 +53,11 @@ public class zip4cj_test {
         zf.addFiles(set)
         zf.writeZip()
     }
+    @TestCase
+    public func caseZipDir(): unit {
+        var zf: ZipFile = ZipFile()
+        zf.setFilePath("/home/lzj/test/apache-maven-3.9.0")
+        zf.setOutPath("/home/lzj/test/apache-maven-3.9.0-bin-2.zip")
+        zf.zipDIr()
+    }
 }
