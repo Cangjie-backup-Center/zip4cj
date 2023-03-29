@@ -493,7 +493,6 @@ open class HeaderParser <: ZipSignatures {
 
     
  func  convertToLittleEndian(value: Int64, length!: Int64 = 2): Array<UInt8> {
-    println("-->convertToLittleEndian")
     var result=Array<UInt8>(length,{i=>0})
     var num=value
     for (i in 0..length) {
