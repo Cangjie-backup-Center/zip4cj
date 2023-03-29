@@ -491,38 +491,17 @@ open class HeaderParser <: ZipSignatures {
         return Int64(buff[position]) | rotate(Int64(buff[1 + position]), 8)
     }
 
-    /*
-     * Convert the data to ZIP bytes
-     */
-    private func convertToLittleEndian(value: Int64, length!: Int64 = 2): Array<UInt8> {
-        var val = value
-        var valArr = ArrayList<Int64>()
-        while (true) {
-            valArr.append(val % HEXADECIMAL)
-            val = val / HEXADECIMAL
-            if (val < HEXADECIMAL) {
-                valArr.append(val)
-                break
-            }
-        }
-        if (valArr.size % 2 != 0) {
-            valArr.append(0)
-        }
-        valArr.reverse()
-        let size = valArr.size / 2
-        var array = ArrayList<UInt8>()
-        for (i in 0..size) {
-            var first = valArr[i * 2]
-            var second = valArr[i * 2 + 1]
-            array.append(UInt8(first * HEXADECIMAL + second))
-        }
-        array.reverse()
-        var arr = Array<UInt8>(length, {i => 0})
-        for (index in 0..array.size) {
-            arr[index] = array[index]
-        }
-        return arr
+    
+ func  convertToLittleEndian(value: Int64, length!: Int64 = 2): Array<UInt8> {
+    println("-->convertToLittleEndian")
+    var result=Array<UInt8>(length,{i=>0})
+    var num=value
+    for (i in 0..length) {
+        result[i] = UInt8(num & 0xff)
+        num >>= 8
     }
+    return result
+}
 
     /*
      * Write central cirectory rcecord
