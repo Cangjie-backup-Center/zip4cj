@@ -159,7 +159,13 @@ main() {
     zipFile.writeZip()
 }
 ```
-
+### 压缩整个文件夹并且保持文件目录层级
+```cangjie
+ var zf: ZipFile = ZipFile()
+    zf.setFilePath("/home/lzj/test/apache-maven-3.9.0")
+    zf.setOutPath("/home/lzj/test/apache-maven-3.9.0-bin-2.zip")
+    zf.zipDIr()
+```
 ### 项目中使用zip4cj
 
 ##### 引入
