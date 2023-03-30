@@ -159,7 +159,7 @@ main() {
     zipFile.writeZip()
 }
 ```
-### 压缩整个文件夹并且保持文件目录层级
+### 压缩整个文件夹，并且保持目录层级
 ```cangjie
  var zf: ZipFile = ZipFile()
     zf.setFilePath("/home/lzj/test/apache-maven-3.9.0")
