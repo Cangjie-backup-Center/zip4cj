@@ -19,6 +19,7 @@ from std import time.*
 from std import collection.*
 from std import fs.*
 import zip4cj.utils.FileUtils
+from std import io.*
 
 /*
  * Parse zip Header information
@@ -132,10 +133,7 @@ open class HeaderParser <: ZipSignatures {
                 match (meth) {
                     case 0 => logger.info(fileName + "解压完成") //STORE
                     case 8 =>
-                        //zipInflate
-                        let tempFile = outPath + "/" + fileName + ".tmp"
-                        File.writeTo(tempFile, sub, openOption: OpenOption.CreateOrAppend)
-                        sub = Array(zipInflate(tempFile, uncompressedSize))
+                        sub = Array(zipInflate(sub, uncompressedSize))
                         logger.info(fileName + "解压完成")
                     case 99 => //AES_INTERNAL_ONLY
                         logger.info("Compression method:$[meth} does not support!")
@@ -167,60 +165,23 @@ open class HeaderParser <: ZipSignatures {
         }
         return lfhList
     }
-
     /*
      * Zip deflate
      */
-    private func zipDeflate(input: Array<UInt8>): Array<UInt8> {
-        let tempDir = os.tempDir();
-
-        //为读取到的数据文件
-        var srcFile = tempDir.createFile("${Time.now().unixTimeStamp().nanoseconds()}")
-        if (srcFile.canWrite()) {
-            try {
-                srcFile.write(input)
-            } catch (e: Exception) {
-                throw Exception("file write failed: ${e.message}")
-            }
-        }
-        srcFile.close()
-        let destFile = tempDir.createFile("${Time.now().unixTimeStamp().nanoseconds()}")
-        srcFile = File.openRead(srcFile.info.path)
-        if (srcFile.canRead()) {
-            var tempBuf: Array<UInt8> = Array<UInt8>(2048, item: 0)
-            var retbuf: ArrayList<UInt8> = ArrayList<UInt8>()
-            var compressOutputStream: CompressOutputStream = CompressOutputStream(destFile, wrap: DeflateFormat)
-            while (true) {
-                try {
-                    var readNum = srcFile.read(tempBuf)
-                    if (readNum > 0) {
-                        compressOutputStream.write(tempBuf.slice(0, readNum).toArray())
-                    } else {
-                        break
-                    }
-                } catch (e: Exception) {
-                    throw Exception("file read failed: ${e.message}")
-                }
-            }
-            compressOutputStream.flush()
-            compressOutputStream.close()
-        }
-        srcFile.close()
-        destFile.close()
-        let result = FileUtils.readFile(destFile.info.path.toString())
-        File.delete(srcFile.info.path)
-        File.delete(destFile.info.path)
-        return result
+    private func zipDeflate(fileData: Array<UInt8>): Array<UInt8> {
+        var outputDataStream: ByteArrayStream = ByteArrayStream()
+        var cos = CompressOutputStream(outputDataStream, wrap: DeflateFormat)
+        cos.write(fileData)
+        cos.flush()
+        cos.close()
+        return  outputDataStream.bytes()
     }
-
-    /*
-     * Zip inflate
-     */
-    private func zipInflate(tempFile: String, size: Int64): ArrayList<UInt8> {
+    private func zipInflate(data: Array<UInt8>, size: Int64): ArrayList<UInt8> {
         var retbuf: ArrayList<UInt8> = ArrayList<UInt8>()
         var tempBuf: Array<UInt8> = Array<UInt8>(2048, item: 0)
-        var srcFile: File = File(tempFile, OpenOption.Open(true, false))
-        var decompressInputStream = DecompressInputStream(srcFile, wrap: DeflateFormat)
+        var bas: ByteArrayStream = ByteArrayStream()
+        bas.write(data)
+        var decompressInputStream = DecompressInputStream(bas, wrap: DeflateFormat)
         while (true) {
             var readNum = decompressInputStream.read(tempBuf)
             if (readNum <= 0) {
@@ -228,8 +189,6 @@ open class HeaderParser <: ZipSignatures {
             }
             retbuf.appendAll(tempBuf);
         }
-        srcFile.close()
-        File.delete(tempFile)
         decompressInputStream.close()
         return retbuf[0..size]
     }
@@ -491,16 +450,15 @@ open class HeaderParser <: ZipSignatures {
         return Int64(buff[position]) | rotate(Int64(buff[1 + position]), 8)
     }
 
-    
- func  convertToLittleEndian(value: Int64, length!: Int64 = 2): Array<UInt8> {
-    var result=Array<UInt8>(length,{i=>0})
-    var num=value
-    for (i in 0..length) {
-        result[i] = UInt8(num & 0xff)
-        num >>= 8
+    func convertToLittleEndian(value: Int64, length!: Int64 = 2): Array<UInt8> {
+        var result = Array<UInt8>(length, {i => 0})
+        var num = value
+        for (i in 0..length) {
+            result[i] = UInt8(num & 0xff)
+            num >>= 8
+        }
+        return result
     }
-    return result
-}
 
     /*
      * Write central cirectory rcecord
@@ -668,7 +626,7 @@ open class HeaderParser <: ZipSignatures {
     public func writeZipFile(dir: Directory) {
         var dirPath = dir.info.path.toString()
         var dirPathArr = dirPath.split("/")
-        var parentDirName=dirPathArr[dirPathArr.size - 1]
+        var parentDirName = dirPathArr[dirPathArr.size - 1]
         var files = getAllFile(dir)
         files.insert(0, dir.info)
         var fileNum = files.size
@@ -676,20 +634,20 @@ open class HeaderParser <: ZipSignatures {
         var localFileLst = ArrayList<UInt8>()
         var cdrLst = ArrayList<UInt8>()
         for (file in files) {
-            var fileData=Array<UInt8>()
+            var fileData = Array<UInt8>()
             var deflate = Array<UInt8>()
-            var compressionMethod=CompressionMethod.STORE
-            var  path= file.path.toString()
+            var compressionMethod = CompressionMethod.STORE
+            var path = file.path.toString()
             var indexOf: Option<Int64> = path.indexOf(dirPathArr[dirPathArr.size - 1])
             var fileName = path.slice(indexOf.getOrThrow(), path.size - indexOf.getOrThrow())
             if (file.isFile()) {
-                    fileData = File.readFrom(file.path)
-                    deflate = zipDeflate(fileData)
-                   compressionMethod= CompressionMethod.DEFLATE
-            }else{
-                    fileName=fileName+"/"
+                fileData = File.readFrom(file.path)
+                deflate = zipDeflate(fileData)
+                compressionMethod = CompressionMethod.DEFLATE
+            } else {
+                fileName = fileName + "/"
             }
-        
+
             let fileNameLength = fileName.toUtf8Array().size
             let compressedSize = deflate.size
             let uncompressedSize = fileData.size
