@@ -10,7 +10,7 @@ main() {
     zipFile.setOutPath("${path2}/testZipFile10")
     try {     
         zipFile.extractAll()
-        var nameList = zipFile.nameList()
+        zipFile.nameList()
     } catch (e: Exception) {
         println(e.toString()) // file not exist!
         return 0

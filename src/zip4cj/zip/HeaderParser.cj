@@ -44,7 +44,7 @@ open class HeaderParser <: ZipSignatures {
         var fileHeaderBuffer = buff.slice(fileStartIndex, 30)
         var fileCount = 0;
         while (fileCount < endCDR.totalNumberOfEntriesInCentralDirectory) {
-            var meth = readShortLittleEndian(fileHeaderBuffer, LOC_HDR_HOW_OFFSET)
+            readShortLittleEndian(fileHeaderBuffer, LOC_HDR_HOW_OFFSET)
             var compressedSize = readIntLittleEndian(fileHeaderBuffer, LOC_HDR_SIZ_OFFSET)
             var flag = readShortLittleEndian(fileHeaderBuffer, LOC_HDR_FLG_OFFSET)
             var flagArr = MsDosUtils.convertToBinary(flag, length: 16)
@@ -82,7 +82,6 @@ open class HeaderParser <: ZipSignatures {
         fileType: HashMap<String, CentralDirectoryRecord>,
         endCDR: EndCDR
     ): ArrayList<LocalFileHeader> {
-        var length = buff.size
         var localFileHeaderSigStartPosition = findFileHeaderSigStart(buff, endCDR)
         var size = localFileHeaderSigStartPosition.size
         var lfhList = ArrayList<LocalFileHeader>()
@@ -103,7 +102,6 @@ open class HeaderParser <: ZipSignatures {
             var flag = readShortLittleEndian(buffer, LOC_HDR_FLG_OFFSET)
             var flagArr = MsDosUtils.convertToBinary(flag, length: 16)
             var meth = readShortLittleEndian(buffer, LOC_HDR_HOW_OFFSET)
-            var dateTime = readIntLittleEndian(buffer, LOC_HDR_TIM_OFFSET)
             var time = readShortLittleEndian(buffer, LOC_HDR_TIM_OFFSET)
             var date = readShortLittleEndian(buffer, LOC_HDR_DAT_OFFSET)
             var crc = readIntLittleEndian(buffer, LOC_HDR_CRC_OFFSET)
@@ -165,6 +163,7 @@ open class HeaderParser <: ZipSignatures {
         }
         return lfhList
     }
+
     /*
      * Zip deflate
      */
@@ -174,7 +173,7 @@ open class HeaderParser <: ZipSignatures {
         cos.write(fileData)
         cos.flush()
         cos.close()
-        return  outputDataStream.bytes()
+        return outputDataStream.bytes()
     }
     private func zipInflate(data: Array<UInt8>, size: Int64): ArrayList<UInt8> {
         var retbuf: ArrayList<UInt8> = ArrayList<UInt8>()
@@ -233,7 +232,7 @@ open class HeaderParser <: ZipSignatures {
             var internalFileAttributes = readShortLittleEndian(buff, CEN_ATT_OFFSET)
             var externalFileAttributes = readLongLittleEndian(buff, CEN_ATX_OFFSET)
             var offsetLocalHeader = readLongLittleEndian(buff, CEN_OFF_OFFSET)
-            var fileNameArr = Array<UInt8>(fileNameLength, {i => 0})
+            var fileNameArr = Array<UInt8>(fileNameLength, item: 0)
             var j = 0
             for (index in CEN_FNM_OFFSET..CEN_FNM_OFFSET + fileNameLength) {
                 fileNameArr[j] = buff[index]
@@ -288,18 +287,16 @@ open class HeaderParser <: ZipSignatures {
      * Split central directory record
      */
     private func splitCentralDirectoryRecord(buff: Array<UInt8>, endCDR: EndCDR): HashMap<Int64, Array<UInt8>> {
-        let entrieSize = endCDR.totalNumberOfEntriesInCentralDirectory
         let offsetOfStartOfCentralDirectory = endCDR.offsetOfStartOfCentralDirectory
         var cdrBuff = subArray(buff, offsetOfStartOfCentralDirectory, buff.size)
         var size = cdrBuff.size
-        var sigPositionArr = Array<Int64>(entrieSize, {i => 0})
         var startPos = 0
         var nextPos = 0
         var map = HashMap<Int64, Array<UInt8>>()
         var entryIndex = 0
         for (index in 0..size) {
             if (index + 3 >= size) {
-                var arr = Array<UInt8>(size - nextPos, {i => 0})
+                var arr = Array<UInt8>(size - nextPos, item: 0)
                 var j = 0
                 for (i in nextPos..size) {
                     arr[j] = cdrBuff[i]
@@ -314,7 +311,7 @@ open class HeaderParser <: ZipSignatures {
                 startPos = nextPos
                 nextPos = index
                 if (startPos != nextPos) {
-                    var arr = Array<UInt8>(nextPos - startPos, {i => 0})
+                    var arr = Array<UInt8>(nextPos - startPos, item: 0)
                     var j = 0
                     for (i in startPos..nextPos) {
                         arr[j] = cdrBuff[i]
@@ -332,7 +329,7 @@ open class HeaderParser <: ZipSignatures {
      * Interception of array
      */
     private func subArray(arr: Array<UInt8>, fromIndex: Int64, toIndex: Int64): Array<UInt8> {
-        var array = Array<UInt8>(toIndex - fromIndex, {i => 0})
+        var array = Array<UInt8>(toIndex - fromIndex, item: 0)
         var i = 0
         for (index in fromIndex..toIndex) {
             array[i] = arr[index]
@@ -404,7 +401,7 @@ open class HeaderParser <: ZipSignatures {
                 }
             }
         }
-        var arr = Array<UInt8>(length - startPos, {i => 0})
+        var arr = Array<UInt8>(length - startPos, item: 0)
         var i = 0
         for (index in startPos..length) {
             arr[i] = buff[index]
@@ -413,7 +410,7 @@ open class HeaderParser <: ZipSignatures {
         return arr
     }
     private func readLongLittleEndian(buff: Array<UInt8>, pos: Int64): Int64 {
-        var longBuff = Array<Int64>(8, {i => 0})
+        var longBuff = Array<Int64>(8, item: 0)
         var position = pos
         for (index in 0..4) {
             longBuff[index] = Int64(buff[position])
@@ -451,7 +448,7 @@ open class HeaderParser <: ZipSignatures {
     }
 
     func convertToLittleEndian(value: Int64, length!: Int64 = 2): Array<UInt8> {
-        var result = Array<UInt8>(length, {i => 0})
+        var result = Array<UInt8>(length, item: 0)
         var num = value
         for (i in 0..length) {
             result[i] = UInt8(num & 0xff)
@@ -549,7 +546,7 @@ open class HeaderParser <: ZipSignatures {
      */
     public func writeZipFile(files: HashSet<String>) {
         var fileNum = files.size
-        var time = Time.now(Location.Local)
+        var time = DateTime.now()
         var localFileLst = ArrayList<UInt8>()
         var cdrLst = ArrayList<UInt8>()
         for (file in files) {
@@ -626,11 +623,10 @@ open class HeaderParser <: ZipSignatures {
     public func writeZipFile(dir: Directory) {
         var dirPath = dir.info.path.toString()
         var dirPathArr = dirPath.split("/")
-        var parentDirName = dirPathArr[dirPathArr.size - 1]
         var files = getAllFile(dir)
         files.insert(0, dir.info)
         var fileNum = files.size
-        var time = Time.now(Location.Local)
+        var time = DateTime.now()
         var localFileLst = ArrayList<UInt8>()
         var cdrLst = ArrayList<UInt8>()
         for (file in files) {
@@ -721,7 +717,7 @@ open class HeaderParser <: ZipSignatures {
     }
 
     private func generalPurposeBitFlag(utf8!: Int64 = 1, encrypted!: Int64 = 0): Int64 {
-        var flagArr = Array<Int64>(GENERAL_PURPOSE_BIT_FLAG_SIZE, {i => 0})
+        var flagArr = Array<Int64>(GENERAL_PURPOSE_BIT_FLAG_SIZE, item: 0)
         flagArr[GENERAL_PURPOSE_BIT_FLAG_SIZE - 12] = utf8
         flagArr[GENERAL_PURPOSE_BIT_FLAG_SIZE - 1] = encrypted
         var sum: Int64 = 0
@@ -732,10 +728,11 @@ open class HeaderParser <: ZipSignatures {
     }
 
     private static func crcTable(): Array<Int64> {
-        var crcTable = Array<Int64>(256, {i => 0})
+        var crcTable = Array<Int64>(256, item: 0)
         for (i in 0..256) {
             var crc = i
             for (j in 0..8) {
+                (j)
                 if ((crc & 1) == 1) {
                     crc = Int64(UInt64(crc) >> UInt64(1)) ^ 0xEDB88320
                 } else {

@@ -43,7 +43,7 @@ public class ZIPTest01 {
         println("=====第三步=====")
         var zipFileUnpack = ZipFile("${path}/zip_test_file_30.zip")
         zipFileUnpack.setOutPath("${path}/")
-        var unpackFiles = zipFileUnpack.extractAll()
+        zipFileUnpack.extractAll()
 
         println("=====第四步=====")
         var unzipSize_test_01: Array<Byte> = File.readFrom("${path}/test_01")

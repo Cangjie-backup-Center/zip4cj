@@ -98,7 +98,7 @@ public class ZIPTest03 {
         
         flag = false
         try {
-            var unpackFiles = zipFileUnpack.extractAll()
+            zipFileUnpack.extractAll()
         } catch(e: Exception) {
             flag = true
             println(e.toString()) 
