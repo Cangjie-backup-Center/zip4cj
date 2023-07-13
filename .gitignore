@@ -1,5 +1,5 @@
 *.cjo
-.vscode
+.vscode/
 build/
 module-resolve.json
 *.gcda
@@ -9,3 +9,5 @@ ci_lib/
 bin/
 charset/
 lib/
+log/
+test/

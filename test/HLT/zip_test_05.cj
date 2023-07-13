@@ -74,7 +74,6 @@ public class ZIPTest05 {
     // writeFile 方法 outData 空
     @TestCase
     public func zip_test_27():Unit{
-        var fileName: String = "${path}/test_02.md"
         var data: Array<UInt8> = Array<UInt8>()
         var outPath: String = "${path}/test_27.md"
         FileUtils.writeFile(data, outPath)
@@ -91,5 +90,10 @@ public class ZIPTest05 {
         var exception4: ZipException = ZipException("中文信息")
         var tagString_a = StringBuilder('a', 2048).toString()
         var exception5: ZipException = ZipException(tagString_a)
+        @Expect(exception1.message, "message")
+        @Expect(exception2.message, "")
+        @Expect(exception3.message, "/!@#$%^&^%&*()_+/*-~[];',.")
+        @Expect(exception4.message, "中文信息")
+        @Expect(exception5.message, tagString_a)
     }
 }

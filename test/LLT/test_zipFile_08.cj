@@ -10,7 +10,7 @@ main() {
     zipFile.setOutPath("")
     try {     
         zipFile.extractAll()
-        var nameList = zipFile.nameList()
+        zipFile.nameList()
     } catch (e: Exception) {
         println(e.toString()) // out Path is null or invalid
         return 0
