@@ -38,7 +38,6 @@ public open class FileUtils {
         } else {
             return temp + "/" + fileName
         }
-        return ""
     }
 
     /*
@@ -64,10 +63,8 @@ public open class FileUtils {
     public static  func readFile(path: String): Array<UInt8> {
         var data = Array<UInt8>()
         var or=File.openRead(path)
-        var readnum: Int64 = 0
         if (or.canRead()) {
             try {
-                var size = or.seek(SeekPosition.End(0))
                 or.seek(SeekPosition.Begin(0))
                 data =or.readToEnd()
                 or.flush()
