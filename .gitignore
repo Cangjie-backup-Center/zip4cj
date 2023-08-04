@@ -11,3 +11,7 @@ charset/
 lib/
 log/
 test/
+charset/
+.cjpm-history
+module-lock.json
+report/
