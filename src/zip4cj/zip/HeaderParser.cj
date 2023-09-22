@@ -122,8 +122,8 @@ open class HeaderParser <: ZipSignatures {
             if (compressedSize > 0) {
                 sub = subArray(
                     buffer,
-                    LOC_HDR_FNM_OFFSET + fileNameLength,
-                    LOC_HDR_FNM_OFFSET + fileNameLength + compressedSize
+                    LOC_HDR_FNM_OFFSET + fileNameLength + extraFieldLength,
+                    LOC_HDR_FNM_OFFSET + fileNameLength + extraFieldLength + compressedSize
                 )
             }
             var fType = fileType[fileName]
@@ -134,8 +134,8 @@ open class HeaderParser <: ZipSignatures {
                         sub = Array(zipInflate(sub, uncompressedSize))
                         logger.info(fileName + "解压完成")
                     case 99 => //AES_INTERNAL_ONLY
-                        logger.info("Compression method:$[meth} does not support!")
-                    case _ => throw ZipException("Compression method:$[meth} does not support!")
+                        logger.info("Compression method:${meth} does not support!")
+                    case _ => throw ZipException("Compression method:${meth} does not support!")
                 }
                 if (outPath != "") {
                     var file = FileUtils.getFilePath(outPath, fileName)
@@ -329,13 +329,10 @@ open class HeaderParser <: ZipSignatures {
      * Interception of array
      */
     private func subArray(arr: Array<UInt8>, fromIndex: Int64, toIndex: Int64): Array<UInt8> {
-        var array = Array<UInt8>(toIndex - fromIndex, item: 0)
-        var i = 0
-        for (index in fromIndex..toIndex) {
-            array[i] = arr[index]
-            i++
+        if (toIndex - fromIndex < 0) {
+            throw ZipException("The zip file is corrupted.")
         }
-        return array
+        return arr[fromIndex..toIndex]
     }
 
     /*
