@@ -35,7 +35,7 @@ public class ZIPTest04 {
             flag = true
             println(e.toString()) 
         }
-        @Expect(flag)
+        @Expect(flag, false)
         
         FileUtils.getFilePath("/aaaabbbb5555", "test_01.jpg")
         flag = false
@@ -45,7 +45,7 @@ public class ZIPTest04 {
             flag = true
             println(e.toString()) 
         }
-        @Expect(flag)
+        @Expect(flag, false)
 
         FileUtils.getFilePath("!@#$%^&^%&/*()_+*-~[];',.", "test_01.jpg")
         flag = false
@@ -55,7 +55,7 @@ public class ZIPTest04 {
             flag = true
             println(e.toString()) 
         }
-        @Expect(flag)
+        @Expect(flag, false)
 
         var filePath2 = FileUtils.getFilePath(path + "/中文路径", "test_02.md")
         @Expect(filePath2, "${path}/中文路径/test_02.md")
@@ -71,7 +71,7 @@ public class ZIPTest04 {
             flag = true
             println(e.toString()) 
         }
-        @Expect(flag)
+        @Expect(flag, false)
     }
 
     // getFilePath 方法 fileName 正常字符串  "" 中文 特殊符号
