@@ -272,7 +272,7 @@ open class HeaderParser <: ZipSignatures {
             cdr.setUtf8(isUtf8)
             if (outPath != "" && cdr.isDirectory) {
                 var file = FileUtils.getFilePath(outPath, cdr.fileName)
-                file = file.slice(0, file.size - 1).toString()
+                file = String(file.toRuneArray().slice(0, file.toRuneArray().size - 1))
                 if (!Directory.exists(file)) {
                     Directory.create(file, recursive: true)
                 }
@@ -481,7 +481,7 @@ open class HeaderParser <: ZipSignatures {
         valArr.appendAll(convertToLittleEndian(cdr.internalFileAttributes))
         valArr.appendAll(convertToLittleEndian(cdr.externalFileAttributes, length: 4))
         valArr.appendAll(convertToLittleEndian(cdr.relativeOffSetOfLocalFileHeader, length: 4))
-        valArr.appendAll(cdr.fileName.toUtf8Array())
+        valArr.appendAll(cdr.fileName.toArray())
         return valArr
     }
 
@@ -506,7 +506,7 @@ open class HeaderParser <: ZipSignatures {
         valArr.appendAll(convertToLittleEndian(lfh.uncompressedSize, length: 4))
         valArr.appendAll(convertToLittleEndian(lfh.fileNameLength))
         valArr.appendAll(convertToLittleEndian(lfh.extraFieldLength))
-        valArr.appendAll(lfh.fileName.toUtf8Array())
+        valArr.appendAll(lfh.fileName.toArray())
         return valArr
     }
 
@@ -529,7 +529,7 @@ open class HeaderParser <: ZipSignatures {
         valArr.appendAll(convertToLittleEndian(endCDR.offsetOfStartOfCentralDirectory, length: 4))
         valArr.appendAll(convertToLittleEndian(endCDR.commentLength))
         if (endCDR.comment != "") {
-            valArr.appendAll(endCDR.comment.toUtf8Array())
+            valArr.appendAll(endCDR.comment.toArray())
         }
         return valArr
     }
@@ -550,7 +550,7 @@ open class HeaderParser <: ZipSignatures {
             let fileData = FileUtils.readFile(file)
             let deflate = zipDeflate(fileData)
             let fileName = FileUtils.getFileName(file)
-            let fileNameLength = fileName.toUtf8Array().size
+            let fileNameLength = fileName.toArray().size
             let compressedSize = deflate.size
             let uncompressedSize = fileData.size
             var crc = crc32(fileData)
@@ -632,7 +632,7 @@ open class HeaderParser <: ZipSignatures {
             var compressionMethod = CompressionMethod.STORE
             var path = file.path.toString()
             var indexOf: Option<Int64> = path.indexOf(dirPathArr[dirPathArr.size - 1])
-            var fileName = path.slice(indexOf.getOrThrow(), path.size - indexOf.getOrThrow())
+            var fileName = String(path.toRuneArray().slice(indexOf.getOrThrow(), path.toRuneArray().size - indexOf.getOrThrow()))
             if (file.isFile()) {
                 fileData = File.readFrom(file.path)
                 deflate = zipDeflate(fileData)
@@ -641,7 +641,7 @@ open class HeaderParser <: ZipSignatures {
                 fileName = fileName + "/"
             }
 
-            let fileNameLength = fileName.toUtf8Array().size
+            let fileNameLength = fileName.toArray().size
             let compressedSize = deflate.size
             let uncompressedSize = fileData.size
             var crc = crc32(fileData)

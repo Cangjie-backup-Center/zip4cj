@@ -29,12 +29,20 @@ public open class FileUtils {
      * @return Returns the file path of string type
      * @since 0.28.4
      */
-    public static  func getFilePath(outPath: String, fileName: String): String {
-        var temp = outPath.replace('\\','/')
-        var lastIndex = temp.lastIndexOf("/").getOrThrow()
-        var lastName = temp.slice(lastIndex, temp.size - lastIndex).toString()
+    public static func getFilePath(outPath: String, fileName: String): String {
+        var temp = outPath.replace("\\\\", "/")
+        var arrayChar: Array<Char> = temp.toRuneArray()
+        arrayChar.reverse()
+        var lastIndex = 0
+        for (i in 0..arrayChar.size) {
+            if (arrayChar[i] == '/') {
+                lastIndex = arrayChar.size - i - 1
+                break
+            }
+        }
+        var lastName = String(temp.toRuneArray().slice(lastIndex, temp.toRuneArray().size - lastIndex))
         if (fileName.startsWith(lastName)) {
-            return temp.slice(0, lastIndex) + "/" + fileName
+            return String(temp.toRuneArray().slice(0, lastIndex)) + "/" + fileName
         } else {
             return temp + "/" + fileName
         }
@@ -48,7 +56,7 @@ public open class FileUtils {
      * @return Returns the file name of a string type
      * @since 0.28.4
      */
-    public static  func getFileName(path: String): String {
+    public static func getFileName(path: String): String {
         return FileInfo(path).path.fileName.getOrThrow()
     }
 
@@ -60,13 +68,13 @@ public open class FileUtils {
      * @return Returns the contents of the file. Type is Array<UInt8>
      * @since 0.28.4
      */
-    public static  func readFile(path: String): Array<UInt8> {
+    public static func readFile(path: String): Array<UInt8> {
         var data = Array<UInt8>()
-        var or=File.openRead(path)
+        var or = File.openRead(path)
         if (or.canRead()) {
             try {
                 or.seek(SeekPosition.Begin(0))
-                data =or.readToEnd()
+                data = or.readToEnd()
                 or.flush()
             } catch (e: Exception) {
                 throw Exception("file read failed: ${e.message}")
@@ -84,16 +92,16 @@ public open class FileUtils {
      *
      * @since 0.28.4
      */
-    public static  func writeFile(outData: Array<UInt8>, filePath: String) {
+    public static func writeFile(outData: Array<UInt8>, filePath: String) {
         var fileInfo = Path(filePath)
         if (!File.exists(fileInfo)) {
-           var file = File.create(fileInfo)
-           file.close()
+            var file = File.create(fileInfo)
+            file.close()
         }
         try {
             File.writeTo(fileInfo, outData, openOption: OpenOption.Truncate(true))
         } catch (e: Exception) {
-                throw Exception("file write failed: ${e.message}")
+            throw Exception("file write failed: ${e.message}")
         }
     }
 }
