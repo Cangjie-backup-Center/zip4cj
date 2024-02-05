@@ -29,11 +29,27 @@ public class ZipIOException <: Exception {
     public init(message: String) {
         super(message)
     }
+
+    public override func toString(): String {
+        if (message == "") {
+            return "ZipIOException"
+        } else {
+            return "ZipIOException: ${message}"
+        }
+    }
 }
 
 public class UnsupportedOperationException <: Exception {
     public init() {
         super()
+    }
+
+    public override func toString(): String {
+        if (message == "") {
+            return "UnsupportedOperationException"
+        } else {
+            return "UnsupportedOperationException: ${message}"
+        }
     }
 }
 

@@ -41,7 +41,8 @@ public class AesKeyStrength <: Equal<AesKeyStrength> {
     }
 
     public operator func ==(that: AesKeyStrength): Bool {
-        if (that.keyLength == this.keyLength && that.macLength == this.macLength && that.saltLength == this.saltLength && that.rawCode == this.rawCode) {
+        if (that.keyLength == this.keyLength && that.macLength == this.macLength && that.saltLength == this.saltLength &&
+            that.rawCode == this.rawCode) {
             return true
         } else {
             return false
