@@ -53,6 +53,20 @@ public class UnsupportedOperationException <: Exception {
     }
 }
 
+public class BufferUnderflowException <: Exception {
+    public init() {
+        super()
+    }
+
+    public override func toString(): String {
+        if (message == "") {
+            return "BufferUnderflowException"
+        } else {
+            return "BufferUnderflowException: ${message}"
+        }
+    }
+}
+
 public enum ZipExceptionType {
     | WRONG_PASSWORD
     | TASK_CANCELLED_EXCEPTION
