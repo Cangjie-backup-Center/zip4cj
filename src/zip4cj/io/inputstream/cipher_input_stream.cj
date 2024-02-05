@@ -1,0 +1,82 @@
+package zip4cj.io.inputstream
+
+public abstract class CipherInputStream <: InputStream {
+    protected var zipEntryInputStream: ZipEntryInputStream
+    protected var lastReadRawDataCache: Array<Byte> = Array<Byte>()
+    protected var singleByteBuffer: Array<Byte> = Array<Byte>(1, item: 0)
+    protected var localFileHeader: LocalFileHeader
+    protected var password: ?Array<Char>
+    protected var useUtf8ForPassword: Bool
+    protected open prop decrypter: Decrypter
+
+    public init(
+        zipEntryInputStream: ZipEntryInputStream,
+        localFileHeader: LocalFileHeader,
+        password: ?Array<Char>,
+        bufferSize: Int64,
+        useUtf8ForPassword: Bool
+    ) {
+        this.useUtf8ForPassword = useUtf8ForPassword
+        this.password = password
+        this.zipEntryInputStream = zipEntryInputStream
+        this.localFileHeader = localFileHeader
+        if (Zip4cjUtil.getCompressionMethod(localFileHeader).getCode() == (CompressionMethod.DEFLATE).getCode()) {
+            lastReadRawDataCache = Array<Byte>(bufferSize, item: 0)
+        }
+    }
+
+    public func read(): Int64 {
+        if (read(singleByteBuffer) == -1) {
+            return -1
+        }
+        return Int64(singleByteBuffer[0] & 0xff)
+    }
+
+    public func read(b: Array<Byte>): Int64 {
+        return this.read(b, 0, b.size)
+    }
+
+    public func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
+        var readLen = Zip4cjUtil.readFully(zipEntryInputStream, b, off, len)
+        if (readLen > 0) {
+            cacheRawData(b, readLen)
+            decrypter.decryptData(b, off, readLen)
+        }
+        return readLen
+    }
+
+    public func close(): Unit {
+        zipEntryInputStream.close()
+    }
+
+    public func getLastReadRawDataCache(): Array<Byte> {
+        return lastReadRawDataCache
+    }
+
+    protected func readRaw(b: Array<Byte>): Int64 {
+        return zipEntryInputStream.readRawFully(b)
+    }
+
+    private func cacheRawData(b: Array<Byte>, len: Int64): Unit {
+        if (!lastReadRawDataCache.isEmpty()) {
+            b.copyTo(lastReadRawDataCache, 0, 0, len)
+        }
+    }
+
+    public func getDecrypter(): Decrypter {
+        return decrypter
+    }
+
+    protected open func endOfEntryReached(inputStream: InputStream, numberOfBytesPushedBack: Int64): Unit {
+        // is optional but useful for AES
+        return
+    }
+
+    protected func getNumberOfBytesReadForThisEntry(): Int64 {
+        return zipEntryInputStream.getNumberOfBytesRead()
+    }
+
+    public func getLocalFileHeader(): LocalFileHeader {
+        return localFileHeader
+    }
+}
