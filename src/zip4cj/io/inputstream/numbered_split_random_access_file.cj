@@ -1,0 +1,131 @@
+package zip4cj.io.inputstream
+
+func getFileModle(mode: String): OpenOption {
+    if (mode == "rw") {
+        return OpenOption.Open(true, true)
+    } else if (mode == "r") {
+        return OpenOption.Open(true, false)
+    } else {
+        return OpenOption.Open(false, true)
+    }
+}
+
+public class NumberedSplitRandomAccessFile <: RandomAccessFile {
+    private var splitLength: Int64
+    private var allSortedSplitFiles: Array<Path>
+    private var randomAccessFile: RandomAccessFile
+    private var singleByteBuffer = Array<Byte>(1, item: 0)
+    private var currentOpenSplitFileCounter: Int64 = 0
+    private var rwMode: String
+
+    public init(name: String, mode: String) {
+        this(Path(name), mode)
+    }
+
+    public init(file: Path, mode: String) {
+        this(file, mode, FileUtils.getAllSortedNumberedSplitFiles(file))
+    }
+
+    public init(file: Path, mode: String, allSortedSplitFiles: Array<Path>) {
+        super(file, getFileModle(mode))
+        this.rawFile.close()
+
+        if (RandomAccessFileMode.WRITE.getValue() == mode) {
+            throw IllegalArgumentException("write mode is not allowed for NumberedSplitRandomAccessFile")
+        }
+
+        assertAllSplitFilesExist(allSortedSplitFiles)
+        this.randomAccessFile = RandomAccessFile(file, getFileModle(mode))
+        this.allSortedSplitFiles = allSortedSplitFiles
+        this.splitLength = this.rawFile.length
+        this.rwMode = mode
+    }
+
+    public func readByte(): Int64 {
+        if (read(singleByteBuffer) <= 0) {
+            return -1
+        }
+        return Int64(singleByteBuffer[0])
+    }
+
+    public func read(b: Array<Byte>): Int64 {
+        return read(b, 0, b.size)
+    }
+
+    public func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
+        var readLen = randomAccessFile.read(b, off, len)
+
+        if (readLen == -1) {
+            if (currentOpenSplitFileCounter == allSortedSplitFiles.size - 1) {
+                return -1
+            }
+            openRandomAccessFileForIndex(currentOpenSplitFileCounter + 1)
+            return read(b, off, len)
+        }
+
+        return readLen
+    }
+
+    public func write(b: Int32) {
+        throw UnsupportedOperationException()
+    }
+
+    public func write(b: Array<Byte>) {
+        write(b, 0, b.size)
+    }
+
+    public func write(buffer: Array<Byte>, off: Int64, count: Int64) {
+        throw UnsupportedOperationException()
+    }
+
+    public func seek(pos: Int64) {
+        var splitPartOfPosition = (pos / splitLength)
+
+        if (splitPartOfPosition != currentOpenSplitFileCounter) {
+            openRandomAccessFileForIndex(splitPartOfPosition)
+        }
+
+        randomAccessFile.seek(pos - (splitPartOfPosition * splitLength))
+    }
+
+    public func getFilePointer(): Int64 {
+        return randomAccessFile.getFilePointer()
+    }
+
+    public prop length: Int64 {
+        get() {
+            return randomAccessFile.length
+        }
+    }
+
+    public func close() {
+        randomAccessFile.close()
+        super.close()
+    }
+
+    public func seekInCurrentPart(pos: Int64) {
+        randomAccessFile.seek(pos)
+    }
+
+    public func openLastSplitFileForReading() {
+        openRandomAccessFileForIndex(allSortedSplitFiles.size - 1)
+    }
+
+    private func openRandomAccessFileForIndex(splitCounter: Int64) {
+        if (currentOpenSplitFileCounter == splitCounter) {
+            return
+        }
+
+        if (splitCounter > allSortedSplitFiles.size - 1) {
+            throw ZipIOException("split counter greater than number of split files")
+        }
+
+        randomAccessFile.close()
+        randomAccessFile = RandomAccessFile(allSortedSplitFiles[splitCounter], getFileModle(rwMode))
+        currentOpenSplitFileCounter = splitCounter
+    }
+
+    private static func assertAllSplitFilesExist(allSortedSplitFiles: Array<Path>) {
+        // TODO  FIleutil
+    }
+}

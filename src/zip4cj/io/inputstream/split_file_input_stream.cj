@@ -1,0 +1,7 @@
+package zip4cj.io.inputstream
+
+// Even though this abstract class has only abstract method definitions, it is not implemented as an interface because
+// implementations of this class has to be used as an inputstream to ZipInputStream
+public abstract class SplitFileInputStream <: InputStream {
+    public func prepareExtractionForFileHeader(fileHeader: FileHeader): Unit
+}

@@ -1,0 +1,42 @@
+package zip4cj.io.inputstream
+
+class ZipStandardCipherInputStream <: CipherInputStream {
+    private var mydecrypter: ?StandardDecrypter = None
+
+    protected prop decrypter: Decrypter {
+        get() {
+            if (let Some(v) <- mydecrypter) {
+                v
+            } else {
+                let value = initializeDecrypter(this.localFileHeader, this.password, this.useUtf8ForPassword)
+                this.mydecrypter = value
+                value
+            }
+        }
+    }
+
+    public init(
+        zipEntryInputStream: ZipEntryInputStream,
+        localFileHeader: LocalFileHeader,
+        password: ?Array<Char>,
+        bufferSize: Int64,
+        useUtf8ForPassword: Bool
+    ) {
+        super(zipEntryInputStream, localFileHeader, password, bufferSize, useUtf8ForPassword)
+    }
+
+    protected func initializeDecrypter(
+        localFileHeader: LocalFileHeader,
+        password: ?Array<Char>,
+        useUtf8ForPassword: Bool
+    ): StandardDecrypter {
+        return StandardDecrypter(password, localFileHeader.getCrc(), localFileHeader.getLastModifiedTime(),
+            getStandardDecrypterHeaderBytes(), useUtf8ForPassword)
+    }
+
+    private func getStandardDecrypterHeaderBytes(): Array<Byte> {
+        var headerBytes: Array<Byte> = Array<Byte>(InternalZipConstants.STD_DEC_HDR_SIZE, item: 0)
+        readRaw(headerBytes)
+        return headerBytes
+    }
+}
