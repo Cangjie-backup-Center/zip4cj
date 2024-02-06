@@ -1,0 +1,59 @@
+package zip4cj.io.outputstream
+
+public abstract class CipherOutputStream <: OutputStream {
+    protected var outputStream: ZipEntryOutputStream
+    protected var zipParameters: ZipParameters
+    protected var password: ?Array<Char>
+    protected var useUtf8ForPassword: Bool
+    protected open prop encrypter: Encrypter
+
+    public init(
+        zipEntryOutputStream: ZipEntryOutputStream,
+        zipParameters: ZipParameters,
+        password: ?Array<Char>,
+        useUtf8ForPassword: Bool
+    ) {
+        this.outputStream = zipEntryOutputStream
+        this.zipParameters = zipParameters
+        this.password = password
+        this.useUtf8ForPassword = useUtf8ForPassword
+    }
+
+    public open func write(b: Int32): Unit {
+        this.outputStream.write(b)
+    }
+
+    public open func write(b: Array<UInt8>): Unit {
+        encrypter.encryptData(b, 0, b.size)
+        this.outputStream.write(b)
+    }
+
+    public open func write(b: Array<UInt8>, off: Int64, len: Int64): Unit {
+        encrypter.encryptData(b, off, len)
+        this.outputStream.write(b, off, len)
+    }
+
+    public open func writeHeaders(b: Array<UInt8>): Unit {
+        this.outputStream.write(b)
+    }
+
+    public open func closeEntry(): Unit {
+        this.outputStream.closeEntry()
+    }
+
+    public open func close(): Unit {
+        this.outputStream.close()
+    }
+
+    public open func getNumberOfBytesWrittenForThisEntry(): Int64 {
+        return this.outputStream.getNumberOfBytesWrittenForThisEntry()
+    }
+
+    protected open func getEncrypter(): Encrypter {
+        return encrypter
+    }
+
+    public open func flush(): Unit {
+        return
+    }
+}
