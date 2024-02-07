@@ -1,15 +1,20 @@
 {
-  "cjc_version": "0.46.2",
+  "cjc_version": "0.47.2",
   "organization": "zip4cj",
   "name": "zip4cj",
   "description": "nothing here",
   "version": "0.0.2",
   "requires": {
-    "charset":{
-      "organization": "pllab",
+    "charset": {
+      "branch": "develop",
       "version": "0.0.2",
-      "path":"charset"
-    }
+      "git": "https://gitee.com/HW-PLLab/charset.git"
+    },
+    "crypto4cj": {
+			"organization": "cangjie",
+			"version": "0.0.7",
+			"path": "./crypto4cj"
+		}
   },
   "package_requires": {
     "path_option": [],
@@ -17,7 +22,7 @@
   },
   "foreign_requires": {},
   "output_type": "dynamic",
-  "command_option": "-O2",
+  "command_option": "-Woff all",
   "condition_option": {},
   "link_option": "",
   "cross_compile_configuration": {},
