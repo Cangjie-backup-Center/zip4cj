@@ -350,19 +350,18 @@ public class HeaderReader {
             fileHeader.getUncompressedSize(), fileHeader.getCompressedSize(), fileHeader.getOffsetLocalHeader(),
             fileHeader.getDiskNumberStart())) {
             fileHeader.setZip64ExtendedInfo(zip64ExtendedInfo)
-            if (zip64ExtendedInfo.getUncompressedSize() != -1) {
+            if (-1 != zip64ExtendedInfo.getUncompressedSize()) {
                 fileHeader.setUncompressedSize(zip64ExtendedInfo.getUncompressedSize())
             }
 
-            if (zip64ExtendedInfo.getCompressedSize() != -1) {
+            if (-1 != zip64ExtendedInfo.getCompressedSize()) {
                 fileHeader.setCompressedSize(zip64ExtendedInfo.getCompressedSize())
             }
 
-            if (zip64ExtendedInfo.getOffsetLocalHeader() != -1) {
+            if (-1 != zip64ExtendedInfo.getOffsetLocalHeader()) {
                 fileHeader.setOffsetLocalHeader(zip64ExtendedInfo.getOffsetLocalHeader())
             }
-
-            if (zip64ExtendedInfo.getDiskNumberStart() != -1) {
+            if (-1 != zip64ExtendedInfo.getDiskNumberStart()) {
                 fileHeader.setDiskNumberStart(Int64(zip64ExtendedInfo.getDiskNumberStart()))
             }
         } else {
@@ -508,13 +507,13 @@ public class HeaderReader {
         } else {
             throw ZipException("Invalid entry name in local file header")
         }
-        readExtraDataRecords(inputStream, localFileHeader)
-        readZip64ExtendedInfo(localFileHeader, rawIO)
-        readAesExtraDataRecord(localFileHeader, rawIO)
+        this.readExtraDataRecords(inputStream, localFileHeader)
+        this.readZip64ExtendedInfo(localFileHeader, rawIO)
+        this.readAesExtraDataRecord(localFileHeader, rawIO)
 
         if (localFileHeader.isEncrypted()) {
-            if (localFileHeader.getEncryptionMethod() == EncryptionMethod.AES) {
-            //Do nothing
+            if (EncryptionMethod.AES == localFileHeader.getEncryptionMethod()) {
+                //Do nothing
             } else {
                 if (BitUtils.isBitSet(localFileHeader.getGeneralPurposeFlag().getOrThrow()[0], 6)) {
                     localFileHeader.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD_VARIANT_STRONG)
