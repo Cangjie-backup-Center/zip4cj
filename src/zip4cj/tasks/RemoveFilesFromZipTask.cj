@@ -45,18 +45,18 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
                     updateHeaders(sortedFileHeaders, fileHeader, lengthOfCurrentEntry)
 
                     ListRmove(zipModel.getCentralDirectory().getFileHeaders(), fileHeader)
-                    currentFileCopyPointer += lengthOfCurrentEntry
+                    currentFileCopyPointer = currentFileCopyPointer + lengthOfCurrentEntry
                 } else {
                     // copy complete entry without any changes
-                    currentFileCopyPointer += super.copyFile(inputStream, outputStream, currentFileCopyPointer,
+                    currentFileCopyPointer = currentFileCopyPointer + super.copyFile(inputStream, outputStream, currentFileCopyPointer,
                         lengthOfCurrentEntry, progressMonitor, taskParameters.zip4jConfig.getBufferSize())
                 }
-                verifyIfTaskIsCancelled()
+                this.verifyIfTaskIsCancelled()
             }
             headerWriter.finalizeZipFile(zipModel, outputStream, taskParameters.zip4jConfig.getCharset())
             successFlag = true
         } finally {
-            cleanupFile(successFlag, zipModel.getZipFile().getOrThrow(), temporaryZipFile)
+            this.cleanupFile(successFlag, zipModel.getZipFile().getOrThrow(), temporaryZipFile)
         }
     }
 
@@ -100,15 +100,15 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
         updateOffsetsForAllSubsequentFileHeaders(sortedFileHeaders, zipModel, fileHeaderThatWasRemoved,
             negate(offsetToSubtract))
 
-        var endOfCentralDirectoryRecord: EndOfCentralDirectoryRecord = zipModel.getEndOfCentralDirectoryRecord()
-        endOfCentralDirectoryRecord.setOffsetOfStartOfCentralDirectory(
-            endOfCentralDirectoryRecord.getOffsetOfStartOfCentralDirectory() - offsetToSubtract)
-        endOfCentralDirectoryRecord.setTotalNumberOfEntriesInCentralDirectory(
-            endOfCentralDirectoryRecord.getTotalNumberOfEntriesInCentralDirectory() - 1)
+        var end: EndOfCentralDirectoryRecord = zipModel.getEndOfCentralDirectoryRecord()
+        end.setOffsetOfStartOfCentralDirectory(
+            end.getOffsetOfStartOfCentralDirectory() - offsetToSubtract)
+        end.setTotalNumberOfEntriesInCentralDirectory(
+            end.getTotalNumberOfEntriesInCentralDirectory() - 1)
 
-        if (endOfCentralDirectoryRecord.getTotalNumberOfEntriesInCentralDirectoryOnThisDisk() > 0) {
-            endOfCentralDirectoryRecord.setTotalNumberOfEntriesInCentralDirectoryOnThisDisk(
-                endOfCentralDirectoryRecord.getTotalNumberOfEntriesInCentralDirectoryOnThisDisk() - 1)
+        if (end.getTotalNumberOfEntriesInCentralDirectoryOnThisDisk() > 0) {
+            end.setTotalNumberOfEntriesInCentralDirectoryOnThisDisk(
+                end.getTotalNumberOfEntriesInCentralDirectoryOnThisDisk() - 1)
         }
 
         if (zipModel.isZip64Format()) {

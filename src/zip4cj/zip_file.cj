@@ -136,7 +136,7 @@ public class ZipFile {
         if (filesToAdd.size == 0) {
             throw ZipException("input file List is None or empty")
         }
-        readZipInfo()
+        this.readZipInfo()
         if (File.exists(zipFile) && zipModel.isSplitArchive()) {
             throw ZipException("Zip file already exists. Zip file format does not allow updating split/spanned files")
         }
@@ -156,7 +156,7 @@ public class ZipFile {
     }
 
     private func addFolder(folderToAdd: Path, zipParameters: ZipParameters, checkSplitArchive: Bool) {
-        readZipInfo()
+        this.readZipInfo()
         if (checkSplitArchive) {
             if (zipModel.isSplitArchive()) {
                 throw ZipException(
@@ -169,7 +169,7 @@ public class ZipFile {
 
     public func addStream(inputStream: InputStream, parameters: ZipParameters) {
         this.setRunInThread(false)
-        readZipInfo()
+        this.readZipInfo()
         if (File.exists(zipFile) && zipModel.isSplitArchive()) {
             throw ZipException("Zip file already exists. Zip file format does not allow updating split/spanned files")
         }
@@ -188,7 +188,7 @@ public class ZipFile {
             throw ZipException("invalid output path")
         }
         if (isNullzipModel) {
-            readZipInfo()
+            this.readZipInfo()
         }
         // Throw an exception if zipModel is still None
         if (isNullzipModel) {
@@ -243,7 +243,7 @@ public class ZipFile {
         if (!Zip4cjUtil.isStringNotNullAndNotEmpty(destinationPath)) {
             throw ZipException("destination path is empty or None, cannot extract file")
         }
-        readZipInfo()
+        this.readZipInfo()
         // TODO ExtractFileTask
     }
 
@@ -253,7 +253,7 @@ public class ZipFile {
 
     public func isSplitArchive(): Bool {
         if (isNullzipModel) {
-            readZipInfo()
+            this.readZipInfo()
             if (isNullzipModel) {
                 throw ZipException("Zip Model is None")
             }
@@ -277,7 +277,7 @@ public class ZipFile {
             return
         }
         if (isNullzipModel) {
-            readZipInfo()
+            this.readZipInfo()
         }
         if (zipModel.isSplitArchive()) {
             throw ZipException("Zip file format does not allow updating split/spanned files")
@@ -304,7 +304,7 @@ public class ZipFile {
         if (fileNamesMap.size == 0) {
             return
         }
-        readZipInfo()
+        this.readZipInfo()
         if (zipModel.isSplitArchive()) {
             throw ZipException("Zip file format does not allow updating split/spanned files")
         }
@@ -317,7 +317,7 @@ public class ZipFile {
         if (File.exists(outputZipFile)) {
             throw ZipException("output Zip File already exists")
         }
-        readZipInfo()
+        this.readZipInfo()
         if (this.isNullzipModel) {
             throw ZipException("zip model is None, corrupt zip file?")
         }
@@ -329,7 +329,7 @@ public class ZipFile {
     // TODO getComment(): String
 
     public func getInputStream(fileHeader: FileHeader): ZipInputStream {
-        readZipInfo()
+        this.readZipInfo()
         if (isNullzipModel) {
             throw ZipException("zip model is None, cannot get inputstream")
         }
@@ -342,8 +342,8 @@ public class ZipFile {
             return false
         }
         try {
-            readZipInfo()
-            if (zipModel.isSplitArchive() && !verifyAllSplitFilesOfZipExists(getSplitZipFiles())) {
+            this.readZipInfo()
+            if (zipModel.isSplitArchive() && !this.verifyAllSplitFilesOfZipExists(this.getSplitZipFiles())) {
                 return false
             }
             return true
@@ -352,7 +352,7 @@ public class ZipFile {
         }
     }
     public func getSplitZipFiles(): ArrayList<Path> {
-        readZipInfo()
+        this.readZipInfo()
         return FileUtils.getSplitZipFiles(zipModel)
     }
 
