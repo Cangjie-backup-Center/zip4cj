@@ -1,0 +1,72 @@
+// RESOURCES: output.zip
+// RESOURCES: 123.txt
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
+
+from zip4cj import  zip4cj.util.*
+from zip4cj import  zip4cj.model.enums.*
+from zip4cj import  zip4cj.model.*
+from zip4cj import  zip4cj.tasks.*
+from zip4cj import  zip4cj.progress.*
+from zip4cj import  zip4cj.exception.*
+from zip4cj import  zip4cj.io.outputstream.*
+from std import collection.*
+from std import fs.*
+from std import io.*
+from std import unittest.*
+from std import unittest.testmacro.*
+from charset import charset.*
+from charset import charset.encoding.*
+main() { 
+
+    let test = modelTest()
+    test.modelTest01()
+    test.modelTest02()
+    test.modelTest03()
+    test.modelTest04()
+    test.modelTest05()
+    return 0
+}
+@Test
+public class modelTest {
+
+    @TestCase
+    public func modelTest01(): Unit {
+        var sc = Zip64EndOfCentralDirectoryLocator()
+        sc.setOffsetZip64EndOfCentralDirectoryRecord(159)
+        let sc1 = sc.getOffsetZip64EndOfCentralDirectoryRecord()
+        @Assert(sc1, 159)
+    }
+
+    @TestCase
+    public func modelTest02(): Unit {
+        var sc = Zip64EndOfCentralDirectoryLocator()
+        sc.setTotalNumberOfDiscs(327)
+        let sc1 = sc.getTotalNumberOfDiscs()
+        @Assert(sc1, 327)
+    }
+
+    @TestCase
+    public func modelTest03(): Unit {
+        var sc = Zip4cjConfig(Charsets.forName("UTF-8").getOrThrow(),1,true)
+        let sc1 = sc.isUseUtf8CharsetForPasswords()
+        @Assert(sc1, true)
+    }
+
+    @TestCase
+    public func modelTest04(): Unit {
+        var sc = UnzipParameters()
+        let sc1 = sc.isExtractSymbolicLinks()
+        @Assert(sc1, true)
+    }
+
+    @TestCase
+    public func modelTest05(): Unit {
+        var sc = UnzipParameters()
+        sc.setExtractSymbolicLinks(false)
+        let sc1 = sc.isExtractSymbolicLinks()
+        @Assert(sc1, false)
+    }
+
+}
+
