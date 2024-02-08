@@ -25,7 +25,7 @@ public enum CompressionMethod <: Equal<CompressionMethod> {
     public operator func ==(that: CompressionMethod): Bool {
         return match ((this, that)) {
             case (STORE, STORE) => true
-            case (DEFLATE, ZIP_STADEFLATENDARD) => true
+            case (DEFLATE, DEFLATE) => true
             case (AES_INTERNAL_ONLY, AES_INTERNAL_ONLY) => true
             case _ => false
         }
