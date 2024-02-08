@@ -8,18 +8,18 @@ public class FileHeaderFactory {
         charset: ?Charset,
         rawIO: RawIO
     ): FileHeader {
-        let fileHeader = FileHeader()
-        fileHeader.setSignature(HeaderSignature.CENTRAL_DIRECTORY)
-        fileHeader.setVersionMadeBy(ZipVersionUtils.determineVersionMadeBy(zipParameters, rawIO))
-        fileHeader.setVersionNeededToExtract(ZipVersionUtils.determineVersionNeededToExtract(zipParameters).getCode())
+        let fh = FileHeader()
+        fh.setSignature(HeaderSignature.CENTRAL_DIRECTORY)
+        fh.setVersionMadeBy(ZipVersionUtils.determineVersionMadeBy(zipParameters, rawIO))
+        fh.setVersionNeededToExtract(ZipVersionUtils.determineVersionNeededToExtract(zipParameters).getCode())
 
         if (zipParameters.isEncryptFiles() && zipParameters.getEncryptionMethod() == EncryptionMethod.AES) {
-            fileHeader.setCompressionMethod(CompressionMethod.AES_INTERNAL_ONLY)
-            fileHeader.setAesExtraDataRecord(generateAESExtraDataRecord(zipParameters))
-            fileHeader.setExtraFieldLength(
-                fileHeader.getExtraFieldLength() + InternalZipConstants.AES_EXTRA_DATA_RECORD_SIZE)
+            fh.setCompressionMethod(CompressionMethod.AES_INTERNAL_ONLY)
+            fh.setAesExtraDataRecord(generateAESExtraDataRecord(zipParameters))
+            fh.setExtraFieldLength(
+                fh.getExtraFieldLength() + InternalZipConstants.AES_EXTRA_DATA_RECORD_SIZE)
         } else {
-            fileHeader.setCompressionMethod(zipParameters.getCompressionMethod())
+            fh.setCompressionMethod(zipParameters.getCompressionMethod())
         }
 
         if (zipParameters.isEncryptFiles()) {
@@ -27,58 +27,58 @@ public class FileHeaderFactory {
                 throw ZipException("Encryption method has to be set when encryptFiles flag is set in zip parameters")
             }
 
-            fileHeader.setEncrypted(true)
-            fileHeader.setEncryptionMethod(zipParameters.getEncryptionMethod())
+            fh.setEncrypted(true)
+            fh.setEncryptionMethod(zipParameters.getEncryptionMethod())
         }
 
         var fileName = validateAndGetFileName(zipParameters.getFileNameInZip().getOrThrow())
-        fileHeader.setFileName(fileName)
-        fileHeader.setFileNameLength(determineFileNameLength(fileName, charset))
-        fileHeader.setDiskNumberStart(if (isSplitZip) {
+        fh.setFileName(fileName)
+        fh.setFileNameLength(determineFileNameLength(fileName, charset))
+        fh.setDiskNumberStart(if (isSplitZip) {
             currentDiskNumberStart
         } else {
             0
         })
-        fileHeader.setLastModifiedTime(Zip4cjUtil.epochToExtendedDosTime(zipParameters.getLastModifiedFileTime()))
+        fh.setLastModifiedTime(Zip4cjUtil.epochToExtendedDosTime(zipParameters.getLastModifiedFileTime()))
 
         var isDirectory = FileUtils.isZipEntryDirectory(fileName)
-        fileHeader.setDirectory(isDirectory)
-        fileHeader.setExternalFileAttributes(FileUtils.getDefaultFileAttributes(isDirectory))
+        fh.setDirectory(isDirectory)
+        fh.setExternalFileAttributes(FileUtils.getDefaultFileAttributes(isDirectory))
 
         if (zipParameters.isWriteExtendedLocalFileHeader() && zipParameters.getEntrySize() == -1) {
-            fileHeader.setUncompressedSize(0)
+            fh.setUncompressedSize(0)
         } else {
-            fileHeader.setUncompressedSize(zipParameters.getEntrySize())
+            fh.setUncompressedSize(zipParameters.getEntrySize())
         }
 
         if (zipParameters.isEncryptFiles() && zipParameters.getEncryptionMethod() == EncryptionMethod.ZIP_STANDARD) {
-            fileHeader.setCrc(zipParameters.getEntryCRC())
+            fh.setCrc(zipParameters.getEntryCRC())
         }
 
-        fileHeader.setGeneralPurposeFlag(determineGeneralPurposeBitFlag(fileHeader.isEncrypted(), zipParameters, charset
+        fh.setGeneralPurposeFlag(determineGeneralPurposeBitFlag(fh.isEncrypted(), zipParameters, charset
         ))
-        fileHeader.setDataDescriptorExists(zipParameters.isWriteExtendedLocalFileHeader())
-        fileHeader.setFileComment(zipParameters.getFileComment())
-        return fileHeader
+        fh.setDataDescriptorExists(zipParameters.isWriteExtendedLocalFileHeader())
+        fh.setFileComment(zipParameters.getFileComment())
+        return fh
     }
 
-    public func generateLocalFileHeader(fileHeader: FileHeader): LocalFileHeader {
+    public func generateLocalFileHeader(fh: FileHeader): LocalFileHeader {
         let localFileHeader = LocalFileHeader()
         localFileHeader.setSignature(HeaderSignature.LOCAL_FILE_HEADER)
-        localFileHeader.setVersionNeededToExtract(fileHeader.getVersionNeededToExtract())
-        localFileHeader.setCompressionMethod(fileHeader.getCompressionMethod())
-        localFileHeader.setLastModifiedTime(fileHeader.getLastModifiedTime())
-        localFileHeader.setUncompressedSize(fileHeader.getUncompressedSize())
-        localFileHeader.setFileNameLength(fileHeader.getFileNameLength())
-        localFileHeader.setFileName(fileHeader.getFileName())
-        localFileHeader.setEncrypted(fileHeader.isEncrypted())
-        localFileHeader.setEncryptionMethod(fileHeader.getEncryptionMethod())
-        localFileHeader.setAesExtraDataRecord(fileHeader.getAesExtraDataRecord())
-        localFileHeader.setCrc(fileHeader.getCrc())
-        localFileHeader.setCompressedSize(fileHeader.getCompressedSize())
-        localFileHeader.setGeneralPurposeFlag(fileHeader.getGeneralPurposeFlag()?.clone())
-        localFileHeader.setDataDescriptorExists(fileHeader.isDataDescriptorExists())
-        localFileHeader.setExtraFieldLength(fileHeader.getExtraFieldLength())
+        localFileHeader.setVersionNeededToExtract(fh.getVersionNeededToExtract())
+        localFileHeader.setCompressionMethod(fh.getCompressionMethod())
+        localFileHeader.setLastModifiedTime(fh.getLastModifiedTime())
+        localFileHeader.setUncompressedSize(fh.getUncompressedSize())
+        localFileHeader.setFileNameLength(fh.getFileNameLength())
+        localFileHeader.setFileName(fh.getFileName())
+        localFileHeader.setEncrypted(fh.isEncrypted())
+        localFileHeader.setEncryptionMethod(fh.getEncryptionMethod())
+        localFileHeader.setAesExtraDataRecord(fh.getAesExtraDataRecord())
+        localFileHeader.setCrc(fh.getCrc())
+        localFileHeader.setCompressedSize(fh.getCompressedSize())
+        localFileHeader.setGeneralPurposeFlag(fh.getGeneralPurposeFlag()?.clone())
+        localFileHeader.setDataDescriptorExists(fh.isDataDescriptorExists())
+        localFileHeader.setExtraFieldLength(fh.getExtraFieldLength())
         return localFileHeader
     }
 
@@ -131,22 +131,22 @@ public class FileHeaderFactory {
     }
 
     private func generateAESExtraDataRecord(parameters: ZipParameters): AESExtraDataRecord {
-        var aesExtraDataRecord = AESExtraDataRecord()
+        var aesData = AESExtraDataRecord()
 
-        aesExtraDataRecord.setAesVersion(parameters.getAesVersion())
+        aesData.setAesVersion(parameters.getAesVersion())
 
         if (parameters.getAesKeyStrength() == AesKeyStrength.KEY_STRENGTH_128) {
-            aesExtraDataRecord.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_128)
+            aesData.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_128)
         } else if (parameters.getAesKeyStrength() == AesKeyStrength.KEY_STRENGTH_192) {
-            aesExtraDataRecord.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_192)
+            aesData.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_192)
         } else if (parameters.getAesKeyStrength() == AesKeyStrength.KEY_STRENGTH_256) {
-            aesExtraDataRecord.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256)
+            aesData.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256)
         } else {
             throw ZipException("invalid AES key strength")
         }
 
-        aesExtraDataRecord.setCompressionMethod(parameters.getCompressionMethod())
-        return aesExtraDataRecord
+        aesData.setCompressionMethod(parameters.getCompressionMethod())
+        return aesData
     }
 
     private func determineFileNameLength(fileName: String, charset: ?Charset): Int64 {

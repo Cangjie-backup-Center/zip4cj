@@ -58,30 +58,30 @@ public class ZipParameters {
     /*
      * Create a clone of given ZipParameters instance
      *
-     * @param zipParameters the ZipParameters instance to clone
+     * @param zipParms the ZipParameters instance to clone
      */
-    public init(zipParameters: ZipParameters) {
-        this.compressionMethod = zipParameters.getCompressionMethod()
-        this.compressionLevel = zipParameters.getCompressionLevel()
-        this.encryptFiles = zipParameters.isEncryptFiles()
-        this.encryptionMethod = zipParameters.getEncryptionMethod()
-        this.readHiddenFiles = zipParameters.isReadHiddenFiles()
-        this.readHiddenFolders = zipParameters.isReadHiddenFolders()
-        this.aesKeyStrength = zipParameters.getAesKeyStrength()
-        this.aesVersion = zipParameters.getAesVersion()
-        this.includeRootFolder = zipParameters.isIncludeRootFolder()
-        this.entryCRC = zipParameters.getEntryCRC()
-        this.defaultFolderPath = zipParameters.getDefaultFolderPath()
-        this.fileNameInZip = zipParameters.getFileNameInZip()
-        this.lastModifiedFileTime = zipParameters.getLastModifiedFileTime()
-        this.entrySize = zipParameters.getEntrySize()
-        this.writeExtendedLocalFileHeader = zipParameters.isWriteExtendedLocalFileHeader()
-        this.overrideExistingFilesInZip = zipParameters.isOverrideExistingFilesInZip()
-        this.rootFolderNameInZip = zipParameters.getRootFolderNameInZip()
-        this.fileComment = zipParameters.getFileComment()
-        this.symbolicLinkAction = zipParameters.getSymbolicLinkAction()
-        this.excludeFileFilter = zipParameters.getExcludeFileFilter()
-        this.unixMode = zipParameters.isUnixMode()
+    public init(zipParms: ZipParameters) {
+        this.compressionMethod = zipParms.getCompressionMethod()
+        this.compressionLevel = zipParms.getCompressionLevel()
+        this.encryptFiles = zipParms.isEncryptFiles()
+        this.encryptionMethod = zipParms.getEncryptionMethod()
+        this.readHiddenFiles = zipParms.isReadHiddenFiles()
+        this.readHiddenFolders = zipParms.isReadHiddenFolders()
+        this.aesKeyStrength = zipParms.getAesKeyStrength()
+        this.aesVersion = zipParms.getAesVersion()
+        this.includeRootFolder = zipParms.isIncludeRootFolder()
+        this.entryCRC = zipParms.getEntryCRC()
+        this.defaultFolderPath = zipParms.getDefaultFolderPath()
+        this.fileNameInZip = zipParms.getFileNameInZip()
+        this.lastModifiedFileTime = zipParms.getLastModifiedFileTime()
+        this.entrySize = zipParms.getEntrySize()
+        this.writeExtendedLocalFileHeader = zipParms.isWriteExtendedLocalFileHeader()
+        this.overrideExistingFilesInZip = zipParms.isOverrideExistingFilesInZip()
+        this.rootFolderNameInZip = zipParms.getRootFolderNameInZip()
+        this.fileComment = zipParms.getFileComment()
+        this.symbolicLinkAction = zipParms.getSymbolicLinkAction()
+        this.excludeFileFilter = zipParms.getExcludeFileFilter()
+        this.unixMode = zipParms.isUnixMode()
     }
 
     /*
@@ -265,15 +265,6 @@ public class ZipParameters {
         return fileNameInZip
     }
 
-    /*
-     * Set the filename that will be used to include a file into the ZIP file to a different name
-     * that given by the source filename added to the ZIP file.  The filenameInZip must
-     * adhere to the ZIP filename specification, including the use of forward slash '/' as the
-     * directory separator, and it must also be a relative file.  If the filenameInZip given is not null and
-     * not empty, the value specified by setRootFolderNameInZip() will be ignored.
-     *
-     * @param fileNameInZip the filename to set in the ZIP. Use null or an empty String to set the default behavior
-     */
     public func setFileNameInZip(fileNameInZip: String) {
         this.fileNameInZip = fileNameInZip
     }
