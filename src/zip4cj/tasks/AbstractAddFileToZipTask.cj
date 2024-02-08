@@ -33,21 +33,21 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         var zipOutputStream: ZipOutputStream = initializeOutputStream(splitOutputStream, zip4jConfig)
         for (fileToAdd in updatedFilesToAdd) {
             verifyIfTaskIsCancelled()
-            var clonedZipParameters: ZipParameters = cloneAndAdjustZipParameters(zipParameters, fileToAdd,
+            var clonedzp: ZipParameters = cloneAndAdjustZipParameters(zipParameters, fileToAdd,
                 progressMonitor)
             progressMonitor.setFileName(fileToAdd.toCanonical().toString())
 
             if (fileToAdd.isSymbolicLink()) {
-                if (addSymlink(clonedZipParameters)) {
-                    addSymlinkToZip(fileToAdd, zipOutputStream, clonedZipParameters, splitOutputStream)
+                if (addSymlink(clonedzp)) {
+                    addSymlinkToZip(fileToAdd, zipOutputStream, clonedzp, splitOutputStream)
 
-                    if (SymbolicLinkAction.INCLUDE_LINK_ONLY == (clonedZipParameters.getSymbolicLinkAction())) {
+                    if (SymbolicLinkAction.INCLUDE_LINK_ONLY == (clonedzp.getSymbolicLinkAction())) {
                         continue
                     }
                 }
             }
 
-            addFileToZip(fileToAdd, zipOutputStream, clonedZipParameters, splitOutputStream, progressMonitor, readBuff)
+            addFileToZip(fileToAdd, zipOutputStream, clonedzp, splitOutputStream, progressMonitor, readBuff)
         }
         zipOutputStream.close()
         splitOutputStream.close()
@@ -59,13 +59,13 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         zipParameters: ZipParameters,
         splitOutputStream: SplitOutputStream
     ) {
-        var clonedZipParameters: ZipParameters = ZipParameters(zipParameters)
-        clonedZipParameters.setFileNameInZip(
+        var clonedzp: ZipParameters = ZipParameters(zipParameters)
+        clonedzp.setFileNameInZip(
             replaceFileNameInZip(zipParameters.getFileNameInZip().getOrThrow(), fileToAdd.fileName.getOrThrow()))
-        clonedZipParameters.setEncryptFiles(false)
-        clonedZipParameters.setCompressionMethod(CompressionMethod.STORE)
+        clonedzp.setEncryptFiles(false)
+        clonedzp.setCompressionMethod(CompressionMethod.STORE)
 
-        zipOutputStream.putNextEntry(clonedZipParameters)
+        zipOutputStream.putNextEntry(clonedzp)
 
         var symLinkTarget: String = FileUtils.readSymbolicLink(fileToAdd)
         zipOutputStream.write(symLinkTarget.toArray())
@@ -177,39 +177,39 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         fileToAdd: Path,
         progressMonitor: ProgressMonitor
     ): ZipParameters {
-        var clonedZipParameters: ZipParameters = ZipParameters(zipParameters)
+        var clonedzp: ZipParameters = ZipParameters(zipParameters)
 
         if (fileToAdd.isDirectory()) {
-            clonedZipParameters.setEntrySize(0)
+            clonedzp.setEntrySize(0)
         } else {
-            clonedZipParameters.setEntrySize(FileInfo(fileToAdd).length)
+            clonedzp.setEntrySize(FileInfo(fileToAdd).length)
         }
         // TODO getLastModifiedFileTime
-        clonedZipParameters.setWriteExtendedLocalFileHeader(false)
+        clonedzp.setWriteExtendedLocalFileHeader(false)
 
         if (!Zip4cjUtil.isStringNotNullAndNotEmpty(zipParameters.getFileNameInZip())) {
             var relativeFileName: String = FileUtils.getRelativeFileName(fileToAdd, zipParameters)
-            clonedZipParameters.setFileNameInZip(relativeFileName)
+            clonedzp.setFileNameInZip(relativeFileName)
         }
 
         if (fileToAdd.isDirectory()) {
-            clonedZipParameters.setCompressionMethod(CompressionMethod.STORE)
-            clonedZipParameters.setEncryptionMethod(EncryptionMethod.NONE)
-            clonedZipParameters.setEncryptFiles(false)
+            clonedzp.setCompressionMethod(CompressionMethod.STORE)
+            clonedzp.setEncryptionMethod(EncryptionMethod.NONE)
+            clonedzp.setEncryptFiles(false)
         } else {
-            if (clonedZipParameters.isEncryptFiles() && clonedZipParameters.getEncryptionMethod() == EncryptionMethod.
+            if (clonedzp.isEncryptFiles() && clonedzp.getEncryptionMethod() == EncryptionMethod.
                 ZIP_STANDARD) {
                 progressMonitor.setCurrentTask(CALCULATE_CRC)
-                clonedZipParameters.setEntryCRC(Int64(CrcUtil.computeFileCrc(fileToAdd, progressMonitor)))
+                clonedzp.setEntryCRC(Int64(CrcUtil.computeFileCrc(fileToAdd, progressMonitor)))
                 progressMonitor.setCurrentTask(ADD_ENTRY)
             }
 
             if (FileInfo(fileToAdd).length == 0) {
-                clonedZipParameters.setCompressionMethod(STORE)
+                clonedzp.setCompressionMethod(STORE)
             }
         }
 
-        return clonedZipParameters
+        return clonedzp
     }
 
     private func removeFilesIfExists(

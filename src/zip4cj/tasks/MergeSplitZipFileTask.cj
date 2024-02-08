@@ -22,7 +22,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
                 throw ZipException("zip archive not a split zip file")
             }
 
-            var splitSignatureOverhead = 0
+            var signatureOverheadSplit = 0
             for (i in 0..totalNumberOfSplitFiles) {
                 try (randomAccessFile = createSplitZipFileStream(zipModel, Int64(i))) {
                     var start = 0
@@ -30,7 +30,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
 
                     if (i == 0) {
                         if (Int64(rawIO.readIntLittleEndian(randomAccessFile)) == HeaderSignature.SPLIT_ZIP.getValue()) {
-                            splitSignatureOverhead = 4
+                            signatureOverheadSplit = 4
                             start = 4
                         } else {
                             randomAccessFile.seek(0)
@@ -45,10 +45,10 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
                     totalBytesWritten += (end - start)
                     if (i == 0) {
                         updateFileHeaderOffsetsForIndex(zipModel.getCentralDirectory().getFileHeaders(), 0, Int64(i),
-                            splitSignatureOverhead)
+                            signatureOverheadSplit)
                     } else {
                         updateFileHeaderOffsetsForIndex(zipModel.getCentralDirectory().getFileHeaders(),
-                            totalBytesWritten, Int64(i), splitSignatureOverhead)
+                            totalBytesWritten, Int64(i), signatureOverheadSplit)
                     }
                     verifyIfTaskIsCancelled()
                 }
@@ -77,11 +77,11 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
         fileHeaders: ArrayList<FileHeader>,
         offsetToAdd: Int64,
         index: Int64,
-        splitSignatureOverhead: Int64
+        signatureOverheadSplit: Int64
     ) {
         for (fileHeader in fileHeaders) {
             if (fileHeader.getDiskNumberStart() == index) {
-                fileHeader.setOffsetLocalHeader(fileHeader.getOffsetLocalHeader() + offsetToAdd - splitSignatureOverhead
+                fileHeader.setOffsetLocalHeader(fileHeader.getOffsetLocalHeader() + offsetToAdd - signatureOverheadSplit
                 )
                 fileHeader.setDiskNumberStart(0)
             }
@@ -154,14 +154,14 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
 
     private func updateSplitZip64EndCentralDirRec(zipModel: ZipModel, totalFileSize: Int64) {
 
-        var zip64EndOfCentralDirectoryRecord: Zip64EndOfCentralDirectoryRecord = zipModel.
+        var zip64end: Zip64EndOfCentralDirectoryRecord = zipModel.
             getZip64EndOfCentralDirectoryRecord()
-        zip64EndOfCentralDirectoryRecord.setNumberOfThisDisk(0)
-        zip64EndOfCentralDirectoryRecord.setNumberOfThisDiskStartOfCentralDirectory(0)
-        zip64EndOfCentralDirectoryRecord.setTotalNumberOfEntriesInCentralDirectoryOnThisDisk(
+        zip64end.setNumberOfThisDisk(0)
+        zip64end.setNumberOfThisDiskStartOfCentralDirectory(0)
+        zip64end.setTotalNumberOfEntriesInCentralDirectoryOnThisDisk(
             zipModel.getEndOfCentralDirectoryRecord().getTotalNumberOfEntriesInCentralDirectory())
-        zip64EndOfCentralDirectoryRecord.setOffsetStartCentralDirectoryWRTStartDiskNumber(
-            zip64EndOfCentralDirectoryRecord.getOffsetStartCentralDirectoryWRTStartDiskNumber() + totalFileSize)
+        zip64end.setOffsetStartCentralDirectoryWRTStartDiskNumber(
+            zip64end.getOffsetStartCentralDirectoryWRTStartDiskNumber() + totalFileSize)
     }
 
     protected func getTask(): ProgressMonitorTask {
