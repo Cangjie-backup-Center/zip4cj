@@ -18,7 +18,7 @@ public class ExtractAllFilesTask <: AbstractExtractFileTask<ExtractAllFilesTaskP
     protected func executeTask(taskParameters: ExtractAllFilesTaskParameters, progressMonitor: ProgressMonitor) {
         let zipInputStream = prepareZipInputStream(taskParameters.zip4jConfig)
         try {
-            for (fileHeader in getZipModel().getCentralDirectory().getFileHeaders()) {
+            for (fileHeader in getZipModel().getCentralDirectory().getOrThrow().getFileHeaders()) {
                 if (fileHeader.getFileName().getOrThrow().startsWith("__MACOSX")) {
                     progressMonitor.updateWorkCompleted(fileHeader.getUncompressedSize())
                     continue
@@ -36,7 +36,7 @@ public class ExtractAllFilesTask <: AbstractExtractFileTask<ExtractAllFilesTaskP
     }
 
     protected func calculateTotalWork(taskParameters: ExtractAllFilesTaskParameters): Int64 {
-        return HeaderUtil.getTotalUncompressedSizeOfAllFileHeaders(getZipModel().getCentralDirectory().getFileHeaders())
+        return HeaderUtil.getTotalUncompressedSizeOfAllFileHeaders(getZipModel().getCentralDirectory().getOrThrow().getFileHeaders())
     }
 
     private func prepareZipInputStream(zip4jConfig: Zip4cjConfig): ZipInputStream {
@@ -48,9 +48,9 @@ public class ExtractAllFilesTask <: AbstractExtractFileTask<ExtractAllFilesTaskP
     }
 
     private func getFirstFileHeader(zipModel: ZipModel): ?FileHeader {
-        if (zipModel.getCentralDirectory().getFileHeaders().size == 0) {
+        if (zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size == 0) {
             return None
         }
-        return zipModel.getCentralDirectory().getFileHeaders()[0]
+        return zipModel.getCentralDirectory().getOrThrow().getFileHeaders()[0]
     }
 }

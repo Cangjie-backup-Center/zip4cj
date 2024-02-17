@@ -2,8 +2,8 @@ package zip4cj.io.outputstream
 
 public class ZipEntryOutputStream <: OutputStream {
     private var numberOfBytesWrittenForThisEntry: Int64 = 0
-    private var outputStream: OutputStream
-    private var entryClosed: Bool
+    var outputStream: OutputStream
+    var entryClosed: Bool
 
     public init(outputStream: OutputStream) {
         this.outputStream = outputStream
@@ -37,5 +37,15 @@ public class ZipEntryOutputStream <: OutputStream {
     }
 
     public func flush(): Unit {}
-    public func close(): Unit {}
+}
+
+extend ZipEntryOutputStream <: Resource {
+    public func isClosed(): Bool {
+        entryClosed
+    }
+
+    public func close(): Unit {
+        // Do nothing
+        // Do not close the outputstream yet. This will be closed by countingOutputStream
+    }
 }

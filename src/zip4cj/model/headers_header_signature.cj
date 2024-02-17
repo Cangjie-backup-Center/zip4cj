@@ -19,7 +19,7 @@ public enum HeaderSignature <: Equatable<HeaderSignature> {
     }
 
     public operator func ==(that: HeaderSignature): Bool {
-        match ((this, that)) {
+        return match ((this, that)) {
             case (LOCAL_FILE_HEADER, LOCAL_FILE_HEADER) => true
             case (EXTRA_DATA_RECORD, EXTRA_DATA_RECORD) => true
             case (CENTRAL_DIRECTORY, CENTRAL_DIRECTORY) => true
@@ -34,7 +34,6 @@ public enum HeaderSignature <: Equatable<HeaderSignature> {
             case (AES_EXTRA_DATA_RECORD, AES_EXTRA_DATA_RECORD) => true
             case _ => false
         }
-        return false
     }
 
     public static func values(): Array<HeaderSignature> {

@@ -41,7 +41,7 @@ public class CRC32 {
         globalCrc = 0
     }
 
-    public func crc32(value: UInt32, buf: Array<UInt8>, start: Int64, length: Int64): UInt32 {
+    func crc32(value: UInt32, buf: Array<UInt8>, start: Int64, length: Int64): UInt32 {
         if (length <= 0) {
             return UInt32(0)
         }
@@ -75,7 +75,7 @@ public class CRC32 {
         return Int64(this.globalCrc) & 4294967295
     }
 
-    public func getFinalCRC() {
+    func getFinalCRC() {
         globalCrc
     }
 }

@@ -9,7 +9,7 @@ func initializeZipModel(zipModel: ZipModel, countingOutputStream: CountingOutput
     return zipModel
 }
 
-public class ZipOutputStream <: OutputStream {
+public class ZipOutputStream <: OutputStream & Resource {
     private var countingOutputStream: CountingOutputStream
     private var password: ?Array<Char>
     private var zipModel: ZipModel
@@ -95,14 +95,12 @@ public class ZipOutputStream <: OutputStream {
 
         fileHeader.getOrThrow().setUncompressedSize(uncompressedSizeForThisEntry)
         localFileHeader.getOrThrow().setUncompressedSize(uncompressedSizeForThisEntry)
-
         if (writeCrc(fileHeader.getOrThrow())) {
             fileHeader.getOrThrow().setCrc(crc32.getValue())
             localFileHeader.getOrThrow().setCrc(crc32.getValue())
         }
-
         zipModel.getLocalFileHeaders().append(localFileHeader.getOrThrow())
-        zipModel.getCentralDirectory().getFileHeaders().append(fileHeader.getOrThrow())
+        zipModel.getCentralDirectory().getOrThrow().getFileHeaders().append(fileHeader.getOrThrow())
 
         if (localFileHeader.getOrThrow().isDataDescriptorExists()) {
             headerWriter.writeExtendedLocalHeader(localFileHeader, countingOutputStream)
@@ -217,4 +215,9 @@ public class ZipOutputStream <: OutputStream {
 
         return clonedZipParameters
     }
+
+    public func isClosed(): Bool {
+        streamClosed
+    }
+
 }

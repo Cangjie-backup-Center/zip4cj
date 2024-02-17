@@ -105,8 +105,8 @@ public class HeaderWriter {
     }
 
     @OverflowWrapping
-    public func writeExtendedLocalHeader(localFileHeader: ?LocalFileHeader, outputStream: ?OutputStream) {
-        if (localFileHeader.isNone() || outputStream.isNone()) {
+    public func writeExtendedLocalHeader(localFileHeader: ?LocalFileHeader, outputStream: OutputStream) {
+        if (localFileHeader.isNone()) {
             throw ZipException("input parameters is None, cannot write extended local header")
         }
         let byteArrayOutputStream = ByteArrayStream()
@@ -125,8 +125,7 @@ public class HeaderWriter {
             rawIO.writeLongLittleEndian(longBuff, 0, localFileHeader.getOrThrow().getUncompressedSize())
             byteArrayOutputStream.write(longBuff[0..4])
         }
-
-        outputStream.getOrThrow().write(byteArrayOutputStream.bytes())
+        outputStream.write(byteArrayOutputStream.bytes())
     }
 
     public func finalizeZipFile(zipModel: ZipModel, outputStream: OutputStream, charset: ?Charset): Unit {
@@ -137,7 +136,7 @@ public class HeaderWriter {
         var sizeOfCentralDir = byteArrayOutputStream.length
 
         if (zipModel.isZip64Format() || offsetCentralDir >= InternalZipConstants.ZIP_64_SIZE_LIMIT ||
-            zipModel.getCentralDirectory().getFileHeaders().size >= InternalZipConstants.ZIP_64_NUMBER_OF_ENTRIES_LIMIT) {
+            zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size >= InternalZipConstants.ZIP_64_NUMBER_OF_ENTRIES_LIMIT) {
             if (zipModel.getZip64EndOfCentralDirectoryLocator().isNone()) {
                 zipModel.setZip64EndOfCentralDirectoryLocator(Zip64EndOfCentralDirectoryLocator())
             }
@@ -177,7 +176,7 @@ public class HeaderWriter {
         var sizeOfCentralDir = byteArrayOutputStream.length
 
         if (zipModel.isZip64Format() || offsetCentralDir >= InternalZipConstants.ZIP_64_SIZE_LIMIT ||
-            zipModel.getCentralDirectory().getFileHeaders().size >= InternalZipConstants.ZIP_64_NUMBER_OF_ENTRIES_LIMIT) {
+            zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size >= InternalZipConstants.ZIP_64_NUMBER_OF_ENTRIES_LIMIT) {
 
             zipModel.getZip64EndOfCentralDirectoryLocator().getOrThrow().setOffsetZip64EndOfCentralDirectoryRecord(
                 offsetCentralDir + sizeOfCentralDir)
@@ -315,11 +314,11 @@ public class HeaderWriter {
         rawIO: RawIO,
         charset: ?Charset
     ) {
-        if (zipModel.getCentralDirectory().getFileHeaders().size <= 0) {
+        if (zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size <= 0) {
             return
         }
 
-        for (fileHeader in zipModel.getCentralDirectory().getFileHeaders()) {
+        for (fileHeader in zipModel.getCentralDirectory().getOrThrow().getFileHeaders()) {
             writeFileHeader(zipModel, fileHeader, byteArrayOutputStream, rawIO, charset)
         }
     }
@@ -567,11 +566,11 @@ public class HeaderWriter {
             zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDiskStartOfCentralDir()
         )
 
-        var numEntries = zipModel.getCentralDirectory().getFileHeaders().size
+        var numEntries = zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size
         var numEntriesOnThisDisk = numEntries
         if (zipModel.isSplitArchive()) {
             numEntriesOnThisDisk = countNumberOfFileHeaderEntriesOnDisk(
-                zipModel.getCentralDirectory().getFileHeaders(),
+                zipModel.getCentralDirectory().getOrThrow().getFileHeaders(),
                 Int64(zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDisk())
             )
         }
@@ -641,8 +640,8 @@ public class HeaderWriter {
         zip64EndOfCentralDirectoryRecord.setSignature(HeaderSignature.ZIP64_END_CENTRAL_DIRECTORY_RECORD)
         zip64EndOfCentralDirectoryRecord.setSizeOfZip64EndCentralDirectoryRecord(44)
 
-        if (zipModel.getCentralDirectory().getFileHeaders().size > 0) {
-            var firstFileHeader = zipModel.getCentralDirectory().getFileHeaders()[0]
+        if (zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size > 0) {
+            var firstFileHeader = zipModel.getCentralDirectory().getOrThrow().getFileHeaders()[0]
             zip64EndOfCentralDirectoryRecord.setVersionMadeBy(firstFileHeader.getVersionMadeBy())
             zip64EndOfCentralDirectoryRecord.setVersionNeededToExtract(firstFileHeader.getVersionNeededToExtract())
         }
@@ -652,11 +651,11 @@ public class HeaderWriter {
         zip64EndOfCentralDirectoryRecord.setNumberOfThisDiskStartOfCentralDirectory(
             zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDiskStartOfCentralDir())
 
-        var numEntries = zipModel.getCentralDirectory().getFileHeaders().size
+        var numEntries = zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size
         var numEntriesOnThisDisk = numEntries
         if (zipModel.isSplitArchive()) {
             numEntriesOnThisDisk = countNumberOfFileHeaderEntriesOnDisk(
-                zipModel.getCentralDirectory().getFileHeaders(),
+                zipModel.getCentralDirectory().getOrThrow().getFileHeaders(),
                 Int64(zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDisk())
             )
         }

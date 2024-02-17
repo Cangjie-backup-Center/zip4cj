@@ -1,12 +1,12 @@
 package zip4cj.io.outputstream
 
-public abstract class CipherOutputStream <: OutputStream {
+public abstract class CipherOutputStream <: OutputStream & Resource {
     protected var outputStream: ZipEntryOutputStream
     protected var zipParameters: ZipParameters
     protected var password: ?Array<Char>
     protected var useUtf8ForPassword: Bool
     protected open prop encrypter: Encrypter
-
+    var closed = false
     public init(
         zipEntryOutputStream: ZipEntryOutputStream,
         zipParameters: ZipParameters,
@@ -43,6 +43,15 @@ public abstract class CipherOutputStream <: OutputStream {
 
     public open func close(): Unit {
         this.outputStream.close()
+        closed = true
+    }
+
+    public open func isClosed(): Bool {
+        if (let Some(v) <- (outputStream as Resource)){
+            v.isClosed()
+        } else {
+            closed
+        }
     }
 
     public open func getNumberOfBytesWrittenForThisEntry(): Int64 {

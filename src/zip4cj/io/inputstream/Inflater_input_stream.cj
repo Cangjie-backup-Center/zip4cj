@@ -13,12 +13,9 @@ public class InflaterInputStream <: DecompressedInputStream {
     }
 
     public func read(): Int64 {
-        var readLen = read(singleByteBuffer)
-
-        if (readLen == -1) {
+        if (read(singleByteBuffer) <= 0) {
             return -1
         }
-
         return Int64(singleByteBuffer[0])
     }
 

@@ -1,10 +1,36 @@
 package zip4cj.util
 
-let letOs = getos().toAsciiLower()
+@When[os == "linux"]
+func isLinuxOS(): Bool {true}
+@When[os != "linux"]
+func isLinuxOS(): Bool {false}
+@When[os == "windows"]
+func isWindowsOS(): Bool {true}
+@When[os != "windows"]
+func isWindowsOS(): Bool {false}
+@When[os == "macOSX"]
+func isMacOS(): Bool {true}
+@When[os != "macOSX"]
+func isMacOS(): Bool {false}
+func getCurrentOS(): (Bool, Bool, Bool) {
+    let islin = isLinuxOS()
+    let iswin = isWindowsOS()
+    let ismac = isMacOS()
 
-let isWindows = letOs.contains("win")
-let isMac = letOs.contains("mac")
-let isUnix = letOs.contains("nux")
+    if (!islin && !iswin && !ismac) {
+        return (false, false, false)
+    } else if (islin) {
+        return (true, false, false)
+    }else if (iswin) {
+        return (false, true, false)
+    }else if (ismac) {
+        return (false, false, true)
+    } else {
+        throw IllegalArgumentException()
+    }
+}
+
+let (isUnix, isWindows, isMac) = getCurrentOS()
 
 public class FileUtils {
     public static let DEFAULT_POSIX_FILE_ATTRIBUTES: Array<Byte> = [0, 0, 164, 129] //-rw-r--r--
@@ -42,8 +68,7 @@ public class FileUtils {
             }
 
             if (isWindows) {
-                // return getWindowsFileAttributes(file)
-                throw Exception("TODO")
+                return getWindowsFileAttributes(file)
             } else if (isMac || isUnix) {
                 return getPosixFileAttributes(file)
             } else {
@@ -344,9 +369,11 @@ public class FileUtils {
         return FileInfo(file).isSymbolicLink()
     }
 
-    // TODO
     public static func readSymbolicLink(file: Path): String {
-        return ""
+        return match (FileInfo(file).symbolicLinkTarget) {
+            case Some(v) => v.toString()
+            case None => ""
+        }
     }
 
     public static func getDefaultFileAttributes(isDirectory: Bool): Array<Byte> {
@@ -387,6 +414,23 @@ public class FileUtils {
             // No file attributes defined
             return
         }
+    }
+
+    private static func getWindowsFileAttributes(file: Path): Array<Byte>  {
+        var fileAttributes = Array<Byte>(4, item:0)
+        try {
+            let dosFileAttributes = FileInfo(file)
+            var windowsAttribute: Byte = 0
+            windowsAttribute = setBitIfApplicable(dosFileAttributes.isReadOnly(), windowsAttribute, 0)
+            windowsAttribute = setBitIfApplicable(dosFileAttributes.isHidden(), windowsAttribute, 1)
+            windowsAttribute = setBitIfApplicable(false, windowsAttribute, 2)
+            windowsAttribute = setBitIfApplicable(dosFileAttributes.isDirectory(), windowsAttribute, 4)
+            windowsAttribute = setBitIfApplicable(true, windowsAttribute, 5)
+            fileAttributes[0] = windowsAttribute
+        } catch (_) {
+            // ignore
+        }
+        return fileAttributes
     }
 
     private static func assertFileExists(path: Path) {

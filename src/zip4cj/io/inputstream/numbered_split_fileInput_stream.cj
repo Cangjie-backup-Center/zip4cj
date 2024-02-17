@@ -26,4 +26,8 @@ public class NumberedSplitFileInputStream <: SplitFileInputStream {
     public func close(): Unit {
         randomAccessFile.close()
     }
+
+    public func isClosed(): Bool {
+        this.randomAccessFile.isClosed()
+    }
 }

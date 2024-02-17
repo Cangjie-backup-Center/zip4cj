@@ -36,9 +36,12 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
 
     public func write(b: Array<Byte>) {
         let len = b.size
+        if (len <= 0) {
+            return
+        }
         if (splitLength == -1) {
             raf.write(b)
-            bytesWrittenForThisPart += b.size
+            bytesWrittenForThisPart += len
             return
         }
         if (bytesWrittenForThisPart >= splitLength) {
@@ -53,7 +56,7 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
             } else {
                 raf.write(b[0..splitLength - bytesWrittenForThisPart])
                 startNextSplitFile()
-                raf.write(b[splitLength - bytesWrittenForThisPart..len - (splitLength - bytesWrittenForThisPart)])
+                raf.write(b[splitLength - bytesWrittenForThisPart..len])
                 bytesWrittenForThisPart = len - (splitLength - bytesWrittenForThisPart)
             }
         } else {
@@ -72,32 +75,30 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
     private func startNextSplitFile() {
         var zipFileWithoutExt = zipFile.fileNameWithoutExtension.getOrThrow()
         var zipFileName = zipFile.toCanonical()
-        var parentPath = zipFile.directoryName.getOrThrow().toString()
-
-        var fileExtension = ".z0${currSplitFileCounter + 1}"
-        if (currSplitFileCounter >= 9) {
-            fileExtension = ".z${currSplitFileCounter + 1}"
+        var parentPath = match (zipFileName.directoryName) {
+            case Some(v) => v.toString()
+            case None => ""
+        }
+        var fileExtension =  if (currSplitFileCounter >= 9) {
+            ".z${currSplitFileCounter + 1}"
+        } else {
+            ".z0${currSplitFileCounter + 1}"
         }
 
-        var currSplitFile = Path(parentPath + zipFileWithoutExt + fileExtension)
-
+        var currSplitFile = Path(parentPath).join(zipFileWithoutExt + fileExtension)
+        raf.flush()
         raf.close()
 
         if (File.exists(currSplitFile)) {
-            throw Exception(
+            throw ZipException(
                 "split file: ${currSplitFile} already exists in the current directory, cannot rename this file")
         }
 
         if (File.exists(currSplitFile)) {
-            throw Exception("cannot rename newly created split file")
+            throw ZipException("cannot rename newly created split file")
         }
-
-        zipFile = zipFileName
-        raf = if (File.exists(zipFile)) {
-            RandomAccessFile(zipFile, OpenOption.Open(true, true))
-        } else {
-            RandomAccessFile(zipFile, OpenOption.CreateOrTruncate(true))
-        }
+        File.move(zipFileName, currSplitFile, true)
+        raf = RandomAccessFile(zipFile, OpenOption.Create(true))
         currSplitFileCounter++
     }
 

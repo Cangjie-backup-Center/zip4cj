@@ -82,10 +82,9 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         readBuff: Array<Byte>
     ) {
         zipOutputStream.putNextEntry(zipParameters)
-        var readLen: Int64 = 0
         if (File.exists(fileToAdd) && !fileToAdd.isDirectory()) {
-            var inputStream = File(fileToAdd, OpenOption.Open(true, false))
-            readLen = inputStream.read(readBuff)
+            let inputStream = File(fileToAdd, OpenOption.Open(true, false))
+            var readLen = inputStream.read(readBuff)
             while (readLen > 0) {
                 zipOutputStream.write(readBuff[0..readLen])
                 progressMonitor.updateWorkCompleted(readLen)
@@ -109,7 +108,6 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         }
 
         fileHeader.setExternalFileAttributes(fileAttributes)
-
         updateLocalFileHeader(fileHeader, splitOutputStream)
     }
 
@@ -178,13 +176,15 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         progressMonitor: ProgressMonitor
     ): ZipParameters {
         var clonedzp: ZipParameters = ZipParameters(zipParameters)
-
+        let fileInfo = FileInfo(fileToAdd)
         if (fileToAdd.isDirectory()) {
             clonedzp.setEntrySize(0)
         } else {
-            clonedzp.setEntrySize(FileInfo(fileToAdd).length)
+            clonedzp.setEntrySize(fileInfo.length)
         }
-        // TODO getLastModifiedFileTime
+        if (zipParameters.getLastModifiedFileTime() <= 0) {
+            clonedzp.setLastModifiedFileTime(fileInfo.lastModificationTime.toUnixTimeStamp().toNanoseconds());
+        }
         clonedzp.setWriteExtendedLocalFileHeader(false)
 
         if (!Zip4cjUtil.isStringNotNullAndNotEmpty(zipParameters.getFileNameInZip())) {
@@ -204,7 +204,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
                 progressMonitor.setCurrentTask(ADD_ENTRY)
             }
 
-            if (FileInfo(fileToAdd).length == 0) {
+            if (fileInfo.length == 0) {
                 clonedzp.setCompressionMethod(STORE)
             }
         }

@@ -1,13 +1,13 @@
 package zip4cj.io.inputstream
 
-public class ZipEntryInputStream <: InputStream {
+public class ZipEntryInputStream <: InputStream & Resource {
     private static let MAX_RAW_READ_FULLY_RETRY_ATTEMPTS: Int64 = 15
 
     private var inputStream: InputStream
     private var numberOfBytesRead: Int64 = 0
     private var singleByteArray: Array<Byte> = [1]
     private var compressedSize: Int64
-
+    var closed = false
     public init(inputStream: InputStream, compressedSize: Int64) {
         this.inputStream = inputStream
         this.compressedSize = compressedSize
@@ -86,6 +86,11 @@ public class ZipEntryInputStream <: InputStream {
             case Some(v) => v.close()
             case _ => ()
         }
+        closed = true
+    }
+
+    public func isClosed(): Bool {
+        closed
     }
 
     public func getNumberOfBytesRead(): Int64 {

@@ -6,7 +6,7 @@ class BinTools {
     public static func bin2hex(b: Array<Byte>): String {
         var sb = StringBuilder(2 * b.size)
         for (i in 0..b.size) {
-            var v = (256 + Int64(b[i])) % 256
+            var v = Int64(b[i]) % 256
             sb.append(hex[((v / 16) & 15)])
             sb.append(hex[((v % 16) & 15)])
         }

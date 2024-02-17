@@ -1,8 +1,8 @@
 package zip4cj.io.outputstream
 
-public class CountingOutputStream <: OutputStream & OutputStreamWithSplitZipSupport {
-    private var outputStream: OutputStream
-
+public class CountingOutputStream <: OutputStream & Resource & OutputStreamWithSplitZipSupport {
+    var outputStream: OutputStream
+    var closed = false
     private var numberOfBytesWritten: Int64 = 0
 
     public init(outputStream: OutputStream) {
@@ -77,14 +77,20 @@ public class CountingOutputStream <: OutputStream & OutputStreamWithSplitZipSupp
         return numberOfBytesWritten
     }
 
+    public func flush(): Unit {
+        outputStream.flush()
+    }
+
+    public func isClosed(): Bool {
+        closed
+    }
+
     public func close(): Unit {
+        this.outputStream.flush()
         match ((outputStream as Resource)) {
             case Some(v) => v.close()
             case None => ()
         }
-    }
-
-    public func flush(): Unit {
-        return
+        closed = true
     }
 }
