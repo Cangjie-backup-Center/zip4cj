@@ -2,7 +2,7 @@ package zip4cj.io.outputstream
 
 public class DeflaterOutputStream <: CompressedOutputStream {
     private var buffer: ?BufferedOutputStream<CipherOutputStream> = None
-    private var isClosed: Bool = false
+    private var closed: Bool = false
     private var compressionLevel: CompressionLevel
     private var cipherOutputStream: CipherOutputStream
     private var bufferSize: Int64
@@ -45,6 +45,6 @@ public class DeflaterOutputStream <: CompressedOutputStream {
     }
 
     public func closeEntry(): Unit {
-        this.isClosed = true
+        super.closeEntry()
     }
 }

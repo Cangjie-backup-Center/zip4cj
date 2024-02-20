@@ -22,27 +22,13 @@ public class Zip4cjUtil {
         if (time < 0) {
             return DOSTIME_BEFORE_1980
         }
-        var dostime: Int64 = epochToDosTime(time)
-        return if (dostime != DOSTIME_BEFORE_1980) {
-            dostime + ((time % 2000) << 32)
-        } else {
-            DOSTIME_BEFORE_1980
-        }
-    }
-
-    private static func epochToDosTime(time: Int64): Int64 {
-        // TODO  Incorrect time display
-        var date: DateTime = DateTime.fromUnixTimeStamp(time * Duration.nanosecond)
-        if (date.year < 1980) {
-            return DOSTIME_BEFORE_1980
-        }
-        return (date.year - 1980) << 25 | ((date.month).value()) << 21 | date.dayOfYear << 16 | date.hour << 11 |
-            date.minute << 5 | date.second >> 1
-    }
-
-    public static func dosToExtendedEpochTme(dosTime: Int64): Int64 {
-        var time: Int64 = dosToEpochTime(dosTime)
-        return time + (dosTime >> 32)
+        let FileTime = DateTime.ofEpoch(second: time / 1000000000, nanosecond: 0)
+        return (FileTime.year - 1980) << 25
+            | FileTime.month.value() << 21
+            | (FileTime.dayOfYear + 1) << 16
+            | (FileTime.hour * 2) << 11
+            | FileTime.minute << 5
+            | FileTime.second >> 1
     }
 
     private static func dosToEpochTime(dosTime: Int64): Int64 {

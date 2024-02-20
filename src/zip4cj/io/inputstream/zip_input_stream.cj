@@ -1,6 +1,6 @@
 package zip4cj.io.inputstream
 
-public class ZipInputStream <: InputStream {
+public class ZipInputStream <: InputStream & Resource {
     private var inputStream: PushbackInputStream
     private var decompressedInputStream: ?DecompressedInputStream = None
     private var headerReader: HeaderReader = HeaderReader()
@@ -152,13 +152,16 @@ public class ZipInputStream <: InputStream {
         }
     }
 
+    public func isClosed(): Bool {
+        streamClosed
+    }
+
     public func close(): Unit {
         if (streamClosed) {
             return
         }
-
-        if (decompressedInputStream.isSome()) {
-            decompressedInputStream.getOrThrow().close()
+        if (let Some(v) <- decompressedInputStream) {
+            v.close()
         }
         this.streamClosed = true
     }
@@ -259,7 +262,7 @@ public class ZipInputStream <: InputStream {
             return
         }
 
-        if (localFileHeader.getOrThrow().getCrc() != Int64(crc32.getFinalCRC())) {
+        if (localFileHeader.getOrThrow().getCrc() != Int64(crc32.getValue())) {
             var exceptionType = ZipExceptionType.CHECKSUM_MISMATCH
 
             if (isEncryptionMethodZipStandard(localFileHeader.getOrThrow())) {

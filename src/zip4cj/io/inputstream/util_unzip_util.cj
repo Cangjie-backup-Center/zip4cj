@@ -13,7 +13,9 @@ public class UnzipUtil {
             }
             return zipInputStream
         } catch (e: IOException) {
-            // TODO resource close
+            if (let Some(v) <- splitInputStream) {
+                v.close()
+            }
             throw e
         }
     }

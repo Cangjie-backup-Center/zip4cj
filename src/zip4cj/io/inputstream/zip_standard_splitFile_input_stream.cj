@@ -60,6 +60,10 @@ public class ZipStandardSplitFileInputStream <: SplitFileInputStream {
         randomAccessFile.seek(fileHeader.getOffsetLocalHeader())
     }
 
+    public func isClosed(): Bool {
+        this.randomAccessFile.isClosed()
+    }
+
     public func close(): Unit {
         randomAccessFile.close()
     }

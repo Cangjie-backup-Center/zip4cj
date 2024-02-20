@@ -21,7 +21,7 @@ public class ExtractFileTask <: AbstractExtractFileTask<ExtractFileTaskParameter
             var readBuff = Array<Byte>(taskParameters.zip4jConfig.getBufferSize(), item: 0)
             for (fileHeader in fileHeadersUnderDirectory) {
                 splitInputStream.prepareExtractionForFileHeader(fileHeader)
-                var newFileName = determineNewFileName(taskParameters.newFileName, taskParameters.fileToExtract,
+                var newFileName = determineNewFileName(taskParameters.newFileName.getOrThrow(), taskParameters.fileToExtract,
                     fileHeader)
                 extractFile(zipInputStream, fileHeader, taskParameters.outputPath, newFileName, progressMonitor,
                     readBuff)
@@ -46,7 +46,7 @@ public class ExtractFileTask <: AbstractExtractFileTask<ExtractFileTaskParameter
         }
 
         return HeaderUtil.getFileHeadersUnderDirectory(
-            getZipModel().getCentralDirectory().getFileHeaders(),
+            getZipModel().getCentralDirectory().getOrThrow().getFileHeaders(),
             fileNameToExtract
         )
     }

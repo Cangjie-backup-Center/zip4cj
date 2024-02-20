@@ -1,6 +1,6 @@
 package zip4cj.io.inputstream
 
-public abstract class CipherInputStream <: InputStream {
+public abstract class CipherInputStream <: InputStream & Resource {
     protected var zipEntryInputStream: ZipEntryInputStream
     protected var lastReadRawDataCache: Array<Byte> = Array<Byte>()
     protected var singleByteBuffer: Array<Byte> = Array<Byte>(1, item: 0)
@@ -8,7 +8,7 @@ public abstract class CipherInputStream <: InputStream {
     protected var password: ?Array<Char>
     protected var useUtf8ForPassword: Bool
     protected open prop decrypter: Decrypter
-
+    var closed = false
     public init(
         zipEntryInputStream: ZipEntryInputStream,
         localFileHeader: LocalFileHeader,
@@ -45,8 +45,17 @@ public abstract class CipherInputStream <: InputStream {
         return readLen
     }
 
-    public func close(): Unit {
+    public open func isClosed():Bool {
+        if(let Some(v) <- (zipEntryInputStream as Resource)) {
+            v.isClosed()
+        } else {
+            this.closed
+        }
+    }
+
+    public open func close(): Unit {
         zipEntryInputStream.close()
+        this.closed = true
     }
 
     public func getLastReadRawDataCache(): Array<Byte> {

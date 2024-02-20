@@ -80,10 +80,10 @@ public class HeaderUtil {
             throw ZipException(
                 "file name is null, cannot determine file header with exact match for fileName: " + fileName)
         }
-        if (zipModel.getCentralDirectory().getFileHeaders().size == 0) {
+        if (zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size == 0) {
             return None
         }
-        for (fileHeader in zipModel.getCentralDirectory().getFileHeaders()) {
+        for (fileHeader in zipModel.getCentralDirectory().getOrThrow().getFileHeaders()) {
             var fileNameForHdr = fileHeader.getFileName()
             if (!Zip4cjUtil.isStringNotNullAndNotEmpty(fileNameForHdr)) {
                 continue

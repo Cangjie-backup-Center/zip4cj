@@ -1,9 +1,9 @@
 package zip4cj.io.inputstream
 
-public abstract class DecompressedInputStream <: InputStream {
+public abstract class DecompressedInputStream <: InputStream & Resource {
     private var cipherInputStream: CipherInputStream
     protected var oneByteBuffer: Array<Byte> = Array<Byte>(1, item: 0)
-
+    var closed = false
     public init(cipherInputStream: CipherInputStream) {
         this.cipherInputStream = cipherInputStream
     }
@@ -25,6 +25,15 @@ public abstract class DecompressedInputStream <: InputStream {
 
     public open func close(): Unit {
         cipherInputStream.close()
+        closed = true
+    }
+
+    public open func isClosed(): Bool {
+        if (let Some(v) <- (this.cipherInputStream as Resource)) {
+            v.isClosed()
+        } else {
+            closed
+        }
     }
 
     public open func endOfEntryReached(inputStream: InputStream, numberOfBytesPushedBack: Int64): Unit {

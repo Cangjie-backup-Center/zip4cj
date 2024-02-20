@@ -10,6 +10,8 @@ import zip4cj.exception.*
 import zip4cj.model.enums.*
 import zip4cj.util.internals.*
 from std import io.*
+from std import os.*
+from std import os.posix.*
 from std import fs.*
 from std import time.*
 from std import collection.*

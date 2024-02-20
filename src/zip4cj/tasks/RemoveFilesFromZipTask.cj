@@ -36,7 +36,7 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
             )
             var currentFileCopyPointer: Int64 = 0
             var sortedFileHeaders: ArrayList<FileHeader> = cloneAndSortFileHeadersByOffset(
-                zipModel.getCentralDirectory().getFileHeaders())
+                zipModel.getCentralDirectory().getOrThrow().getFileHeaders())
 
             for (fileHeader in sortedFileHeaders) {
                 var lengthOfCurrentEntry: Int64 = getOffsetOfNextEntry(sortedFileHeaders, fileHeader, zipModel) -
@@ -44,7 +44,7 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
                 if (shouldEntryBeRemoved(fileHeader, entriesToRemove)) {
                     updateHeaders(sortedFileHeaders, fileHeader, lengthOfCurrentEntry)
 
-                    ListRmove(zipModel.getCentralDirectory().getFileHeaders(), fileHeader)
+                    ListRmove(zipModel.getCentralDirectory().getOrThrow().getFileHeaders(), fileHeader)
                     currentFileCopyPointer = currentFileCopyPointer + lengthOfCurrentEntry
                 } else {
                     // copy complete entry without any changes

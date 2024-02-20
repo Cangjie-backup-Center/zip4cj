@@ -3,6 +3,7 @@ package zip4cj.crypto
 public class StandardDecrypter <: Decrypter {
     private var zipCryptoEngine: ZipCryptoEngine
 
+    @OverflowWrapping
     public init(
         password: ?Array<Char>,
         crc: Int64,

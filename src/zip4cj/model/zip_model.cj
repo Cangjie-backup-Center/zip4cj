@@ -7,7 +7,7 @@ public class ZipModel {
 
     private var archiveExtraDataRecord: ArchiveExtraDataRecord = ArchiveExtraDataRecord()
 
-    private var centralDirectory: CentralDirectory = CentralDirectory()
+    private var centralDirectory: ?CentralDirectory = CentralDirectory()
 
     private var endOfCentralDirectoryRecord: EndOfCentralDirectoryRecord = EndOfCentralDirectoryRecord()
 
@@ -49,11 +49,11 @@ public class ZipModel {
         this.dataDescriptors = dataDescriptors
     }
 
-    public func getCentralDirectory(): CentralDirectory {
+    public func getCentralDirectory(): ?CentralDirectory {
         return centralDirectory
     }
 
-    public func setCentralDirectory(centralDirectory: CentralDirectory): Unit {
+    public func setCentralDirectory(centralDirectory: ?CentralDirectory): Unit {
         this.centralDirectory = centralDirectory
     }
 

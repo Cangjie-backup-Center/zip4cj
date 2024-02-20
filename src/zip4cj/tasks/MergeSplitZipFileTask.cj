@@ -15,7 +15,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
             progressMonitor.endProgressMonitor(e)
             throw e
         }
-        try (outputStream = (taskParameters.outputZipFile)) {
+        try (outputStream = File(taskParameters.outputZipFile, OpenOption.CreateOrTruncate(true))) {
             var totalBytesWritten = 0
             var totalNumberOfSplitFiles = zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDisk()
             if (totalNumberOfSplitFiles <= 0) {
@@ -44,10 +44,10 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
                     FileUtils.copyFile(randomAccessFile, outputStream, start, end, progressMonitor, taskParameters.zip4jConfig.getBufferSize())
                     totalBytesWritten += (end - start)
                     if (i == 0) {
-                        updateFileHeaderOffsetsForIndex(zipModel.getCentralDirectory().getFileHeaders(), 0, Int64(i),
+                        updateFileHeaderOffsetsForIndex(zipModel.getCentralDirectory().getOrThrow().getFileHeaders(), 0, Int64(i),
                             signatureOverheadSplit)
                     } else {
-                        updateFileHeaderOffsetsForIndex(zipModel.getCentralDirectory().getFileHeaders(),
+                        updateFileHeaderOffsetsForIndex(zipModel.getCentralDirectory().getOrThrow().getFileHeaders(),
                             totalBytesWritten, Int64(i), signatureOverheadSplit)
                     }
                     verifyIfTaskIsCancelled()
@@ -135,7 +135,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
     }
 
     private func updateSplitEndCentralDirectory(zipModel: ZipModel) {
-        var numberOfFileHeaders: Int64 = zipModel.getCentralDirectory().getFileHeaders().size
+        var numberOfFileHeaders: Int64 = zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size
         var endOfCentralDirectoryRecord: EndOfCentralDirectoryRecord = zipModel.getEndOfCentralDirectoryRecord()
         endOfCentralDirectoryRecord.setNumberOfThisDisk(0)
         endOfCentralDirectoryRecord.setNumberOfThisDiskStartOfCentralDir(0)

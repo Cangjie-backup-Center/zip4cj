@@ -55,12 +55,12 @@ public class AddStreamToZipTaskParameters <: AbstractZipTaskParameters {
 public class ExtractFileTaskParameters <: AbstractZipTaskParameters {
     var outputPath: String
     var fileToExtract: String
-    var newFileName: String
+    var newFileName: ?String
 
     public ExtractFileTaskParameters(
         outputPath: String,
         fileToExtract: String,
-        newFileName: String,
+        newFileName: ?String,
         zip4jConfig: Zip4cjConfig
     ) {
         super(zip4jConfig)
@@ -71,9 +71,9 @@ public class ExtractFileTaskParameters <: AbstractZipTaskParameters {
 }
 
 public class MergeSplitZipFileTaskParameters <: AbstractZipTaskParameters {
-    var outputZipFile: File
+    var outputZipFile: Path
 
-    public MergeSplitZipFileTaskParameters(outputZipFile: File, zip4jConfig: Zip4cjConfig) {
+    public MergeSplitZipFileTaskParameters(outputZipFile: Path, zip4jConfig: Zip4cjConfig) {
         super(zip4jConfig)
         this.outputZipFile = outputZipFile
     }

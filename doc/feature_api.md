@@ -4720,7 +4720,7 @@ public class MergeSplitZipFileTaskParameters<: AbstractZipTaskParameters {
      * 参数 outputZipFile - File 类型
      * 参数 zip4jConfig - Zip4cjConfig 对象
      */
-    public init(outputZipFile: File, zip4jConfig: Zip4cjConfig) 
+    public init(outputZipFile: Path, zip4jConfig: Zip4cjConfig) 
 }
 
 public class RenameFilesTaskParameters<: AbstractZipTaskParameters {

@@ -36,7 +36,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
             // it might be that a file name has changed because of other file name, ex: if a directory name has to be changed
             // and the file is part of that directory, by the time the file has to be changed, its name might have changed
             // when changing the name of the directory. There is some overhead with this approach, but is safer.
-            var sortedFileHeaders = cloneAndSortFileHeadersByOffset(zipModel.getCentralDirectory().getFileHeaders())
+            var sortedFileHeaders = cloneAndSortFileHeadersByOffset(zipModel.getCentralDirectory().getOrThrow().getFileHeaders())
 
             for (fileHeader in sortedFileHeaders) {
                 var fileNameMapForThisEntry: Option<(String, String)> = getCorrespondingEntryFromMap(
