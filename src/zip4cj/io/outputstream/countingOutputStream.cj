@@ -1,6 +1,6 @@
 package zip4cj.io.outputstream
 
-public class CountingOutputStream <: OutputStream & Resource & OutputStreamWithSplitZipSupport {
+class CountingOutputStream <: OutputStream & Resource & OutputStreamWithSplitZipSupport {
     var outputStream: OutputStream
     var closed = false
     private var numberOfBytesWritten: Int64 = 0
@@ -9,18 +9,9 @@ public class CountingOutputStream <: OutputStream & Resource & OutputStreamWithS
         this.outputStream = outputStream
     }
 
-    @OverflowWrapping
-    public func write(b: Int32): Unit {
-        this.write([UInt8(b)])
-    }
-
     public func write(b: Array<UInt8>): Unit {
         this.outputStream.write(b)
         numberOfBytesWritten += b.size
-    }
-
-    public func write(b: Array<UInt8>, off: Int64, len: Int64): Unit {
-        this.write(b[off..off + len])
     }
 
     public func getCurrentSplitFileCounter(): Int32 {

@@ -1,6 +1,7 @@
 package zip4cj.io.inputstream
 
 public class UnzipUtil {
+    private init() {}
     public static func createZipInputStream(zipModel: ZipModel, fileHeader: FileHeader, password: ?Array<Char>): ZipInputStream {
         var splitInputStream: ?SplitFileInputStream = None
         try {
@@ -12,7 +13,7 @@ public class UnzipUtil {
                 throw ZipException("Could not locate local file header for corresponding file header")
             }
             return zipInputStream
-        } catch (e: IOException) {
+        } catch (e: IOException | ZipIOException) {
             if (let Some(v) <- splitInputStream) {
                 v.close()
             }

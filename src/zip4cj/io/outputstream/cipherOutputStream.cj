@@ -19,18 +19,9 @@ public abstract class CipherOutputStream <: OutputStream & Resource {
         this.useUtf8ForPassword = useUtf8ForPassword
     }
 
-    public open func write(b: Int32): Unit {
-        this.outputStream.write(b)
-    }
-
     public open func write(b: Array<UInt8>): Unit {
-        encrypter.encryptData(b, 0, b.size)
+        encrypter.encryptData(b)
         this.outputStream.write(b)
-    }
-
-    public open func write(b: Array<UInt8>, off: Int64, len: Int64): Unit {
-        encrypter.encryptData(b, off, len)
-        this.outputStream.write(b, off, len)
     }
 
     public open func writeHeaders(b: Array<UInt8>): Unit {

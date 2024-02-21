@@ -1,6 +1,7 @@
 package zip4cj.headers
 
 public class HeaderUtil {
+    private init() {}
     public static func getFileHeader(zipModel: ZipModel, fileNameArg: String): ?FileHeader {
         var fileName = fileNameArg
         var fileHeader = getFileHeaderWithExactMatch(zipModel, fileName)
@@ -57,6 +58,8 @@ public class HeaderUtil {
                 if (v.startsWith(fileName)) {
                     fileHeadersUnderDirectory.append(fileHeader)
                 }
+            } else {
+                throw NoneValueException("FileHeader.getFileName() is null.")
             }
         }
         return fileHeadersUnderDirectory

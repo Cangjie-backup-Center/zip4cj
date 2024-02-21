@@ -8,19 +8,8 @@ public abstract class DecompressedInputStream <: InputStream & Resource {
         this.cipherInputStream = cipherInputStream
     }
 
-    public open func read(): Int64 {
-        if (read(oneByteBuffer) == -1) {
-            return -1
-        }
-        return Int64(oneByteBuffer[0])
-    }
-
     public open func read(b: Array<Byte>): Int64 {
         return cipherInputStream.read(b)
-    }
-
-    public open func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
-        return this.read(b[off..off + len])
     }
 
     public open func close(): Unit {
@@ -40,7 +29,7 @@ public abstract class DecompressedInputStream <: InputStream & Resource {
         cipherInputStream.endOfEntryReached(inputStream, numberOfBytesPushedBack)
     }
 
-    public open func pushBackInputStreamIfNecessary(pushbackInputStream: PushbackInputStream): Int64 {
+    public open func pushBackInputStreamIfNecessary(pushbackInputStream: InputStream): Int64 {
         // Do nothing by default
         return 0
     }

@@ -48,7 +48,7 @@ public class AddStreamToZipTask <: AbstractAddFileToZipTask<AddStreamToZipTaskPa
                 !zipParameters.getFileNameInZip().getOrThrow().endsWith("\\")) {
                 readLen = taskParameters.inputStream.read(readBuff)
                 while (readLen > 0) {
-                    zipOutputStream.write(readBuff, 0, readLen)
+                    zipOutputStream.write(readBuff[0..readLen])
                     readLen = taskParameters.inputStream.read(readBuff)
                 }
             }

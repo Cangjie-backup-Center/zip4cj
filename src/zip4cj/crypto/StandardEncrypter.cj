@@ -27,7 +27,7 @@ public class StandardEncrypter <: Encrypter {
         return encryptData(buff, 0, buff.size)
     }
 
-    public func encryptData(buff: Array<Byte>, start: Int64, len: Int64): Int64 {
+    func encryptData(buff: Array<Byte>, start: Int64, len: Int64): Int64 {
         if (len < 0) {
             throw ZipException("invalid length specified to decrpyt data")
         }

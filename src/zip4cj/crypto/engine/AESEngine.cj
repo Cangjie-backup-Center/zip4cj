@@ -1,6 +1,5 @@
 package zip4cj.crypto.engine
 
-// import static net.lingala.zip4j.util.InternalZipConstants.AES_BLOCK_SIZE    
 let AES_BLOCK_SIZE: Int32 = 16
 
 let S: Array<Int8> = [99, 124, 119, 123, -14, 107, 111, -59, 48, 1, 103, 43, -2, -41, -85, 118, -54, -126, -55, 125, -6,
@@ -69,7 +68,6 @@ public class AESEngine {
     private var C3: Int64 = 0
 
     public init(key: Array<Int8>) {
-        // workingKey = generateWorkingKey(key)   
         var kc: Int64 = key.size / 4
         var t: Int64
 
@@ -107,10 +105,6 @@ public class AESEngine {
     }
 
     public func processBlock(input: Array<Int8>, inOff: Int64, out: Array<Int8>, outOff: Int64) {
-        // if (workingKey == null) {
-        //     throw ZipException("AES engine not initialised")    
-        // }
-
         if ((inOff + (32 / 2)) > input.size) {
             throw ZipException("input buffer too short")
         }

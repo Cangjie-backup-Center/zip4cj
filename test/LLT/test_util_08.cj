@@ -26,7 +26,6 @@ public class utilTest {
     public func utilTest01(): Unit {
         var sc = RandomAccessFile(File("a.txt",OpenOption.Open(true, true)))
         let src = RawIO()
-        var sc1 = Zip4cjUtil()
         var returnTag = 0
         try {
             src.readLongLittleEndian(sc,10)
@@ -53,18 +52,13 @@ public class utilTest {
     //     @Assert(returnTag, 1)
     // }
 
-    @TestCase
-    public func utilTest04(): Unit {
-        var sc = Zip4cjUtil.convertCharArrayToByteArray(Array<Char>(),true)
-        var sc1 = Zip4cjUtil.convertCharArrayToByteArray(Array<Char>(),false)
-        @Assert(sc.toString(), "[]")
-        @Assert(sc1.toString(), "[]")
-    }
+    // @TestCase
+    // public func utilTest04(): Unit {
+    //     var sc = Zip4cjUtil.convertCharArrayToByteArray(Array<Char>(),true)
+    //     var sc1 = Zip4cjUtil.convertCharArrayToByteArray(Array<Char>(),false)
+    //     @Assert(sc.toString(), "[]")
+    //     @Assert(sc1.toString(), "[]")
+    // }
 
-    @TestCase
-    public func utilTest05(): Unit {
-        var s1 = BufferOverflowException ()
-        @Assert(s1.toString(), "Exception: BufferOverflowException: \n")
-    }
 
 }

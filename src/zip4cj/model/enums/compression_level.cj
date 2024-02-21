@@ -1,30 +1,34 @@
 package zip4cj.model.enums
 
-public class CompressionLevel <: Equal<CompressionLevel> {
-    public static let NO_COMPRESSION: CompressionLevel = CompressionLevel(0)
-    public static let FASTEST: CompressionLevel = CompressionLevel(1)
-    public static let FASTER: CompressionLevel = CompressionLevel(2)
-    public static let FAST: CompressionLevel = CompressionLevel(3)
-    public static let MEDIUM_FAST: CompressionLevel = CompressionLevel(4)
-    public static let NORMAL: CompressionLevel = CompressionLevel(5)
-    public static let HIGHER: CompressionLevel = CompressionLevel(6)
-    public static let MAXIMUM: CompressionLevel = CompressionLevel(7)
-    public static let PRE_ULTRA: CompressionLevel = CompressionLevel(8)
-    public static let ULTRA: CompressionLevel = CompressionLevel(9)
-    private let level: Int32
-    init(level: Int32) {
-        this.level = level
-    }
+public enum CompressionLevel <: Equal<CompressionLevel> {
+    | NO_COMPRESSION
+    | FASTEST
+    | FASTER
+    | FAST
+    | MEDIUM_FAST
+    | NORMAL
+    | HIGHER
+    | MAXIMUM
+    | PRE_ULTRA
+    | ULTRA
+    
 
     public func getLevel(): Int32 {
-        return level
+        return match(this) {
+            case NO_COMPRESSION => 0
+            case FASTEST => 1
+            case FASTER => 2
+            case FAST => 3
+            case MEDIUM_FAST => 4
+            case NORMAL => 5
+            case HIGHER => 6
+            case MAXIMUM => 7
+            case PRE_ULTRA => 8
+            case ULTRA  => 9
+        }
     }
 
     public operator func ==(that: CompressionLevel): Bool {
-        if (that.level == this.level) {
-            return true
-        } else {
-            return false
-        }
+        that.getLevel() == this.getLevel()
     }
 }

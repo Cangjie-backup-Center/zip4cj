@@ -31,7 +31,7 @@ public class FileHeaderFactory {
             fh.setEncryptionMethod(zipParameters.getEncryptionMethod())
         }
 
-        var fileName = validateAndGetFileName(zipParameters.getFileNameInZip().getOrThrow())
+        var fileName = validateAndGetFileName(zipParameters.getFileNameInZip())
         fh.setFileName(fileName)
         fh.setFileNameLength(determineFileNameLength(fileName, charset))
         fh.setDiskNumberStart(if (isSplitZip) {
@@ -76,7 +76,7 @@ public class FileHeaderFactory {
         localFileHeader.setAesExtraDataRecord(fh.getAesExtraDataRecord())
         localFileHeader.setCrc(fh.getCrc())
         localFileHeader.setCompressedSize(fh.getCompressedSize())
-        localFileHeader.setGeneralPurposeFlag(fh.getGeneralPurposeFlag()?.clone())
+        localFileHeader.setGeneralPurposeFlag(fh.getGeneralPurposeFlag().getOrThrow({=> throw NoneValueException("FileHeader.getGeneralPurposeFlag() is null")}).clone())
         localFileHeader.setDataDescriptorExists(fh.isDataDescriptorExists())
         localFileHeader.setExtraFieldLength(fh.getExtraFieldLength())
         return localFileHeader
@@ -123,11 +123,11 @@ public class FileHeaderFactory {
         return firstByte
     }
 
-    private func validateAndGetFileName(fileNameInZip: String): String {
+    private func validateAndGetFileName(fileNameInZip: ?String): String {
         if (!Zip4cjUtil.isStringNotNullAndNotEmpty(fileNameInZip)) {
             throw ZipException("fileNameInZip is null or empty")
         }
-        return fileNameInZip
+        return fileNameInZip.getOrThrow()
     }
 
     private func generateAESExtraDataRecord(parameters: ZipParameters): AESExtraDataRecord {

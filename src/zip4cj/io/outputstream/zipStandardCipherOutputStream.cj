@@ -47,19 +47,8 @@ class ZipStandardCipherOutputStream <: CipherOutputStream {
         return encrypter
     }
 
-    @OverflowThrowing
-    public func write(b: Int32): Unit {
-        var src: Array<UInt8> = Array<UInt8>(1, item: 0)
-        src.set(0, UInt8(b))
-        write(src)
-    }
-
     public func write(b: Array<UInt8>): Unit {
-        super.write(b, 0, b.size)
-    }
-
-    public func write(b: Array<UInt8>, off: Int64, len: Int64): Unit {
-        this.write(b, off, len);
+        super.write(b)
     }
 
     public func getEncryptionKey(): Int64 {

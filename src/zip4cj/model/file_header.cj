@@ -76,7 +76,7 @@ public class FileHeader <: AbstractFileHeader & ToString & Hashable & Equatable<
     }
 
     public override func toString(): String {
-        return getFileName().getOrThrow()
+        return getFileName().toString()
     }
 
     public operator func ==(that: FileHeader): Bool {

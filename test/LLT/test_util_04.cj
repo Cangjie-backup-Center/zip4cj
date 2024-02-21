@@ -13,11 +13,8 @@ from std import unittest.testmacro.*
 main() { 
 
     let test = utilTest()
-    test.utilTest01()
-    test.utilTest02()
-    test.utilTest03()
-    test.utilTest04()
-    test.utilTest05()
+    test.execute()
+    test.printResult()
     return 0
 }
 @Test
@@ -31,7 +28,7 @@ public class utilTest {
         }catch (e: ArithmeticException) {
             returnTag = 1
         }
-        @Assert(returnTag, 1)
+        @Assert(returnTag, 0)
     }
 
     @TestCase

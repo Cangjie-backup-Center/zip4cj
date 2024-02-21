@@ -25,22 +25,15 @@ public abstract class CipherInputStream <: InputStream & Resource {
         }
     }
 
-    public func read(): Int64 {
-        if (read(singleByteBuffer) == -1) {
-            return -1
-        }
-        return Int64(singleByteBuffer[0] & 0xff)
-    }
-
     public func read(b: Array<Byte>): Int64 {
         return this.read(b, 0, b.size)
     }
 
-    public func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
+    func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
         var readLen = Zip4cjUtil.readFully(zipEntryInputStream, b, off, len)
         if (readLen > 0) {
             cacheRawData(b, readLen)
-            decrypter.decryptData(b, off, readLen)
+            decrypter.decryptData(b[off..off+readLen])
         }
         return readLen
     }

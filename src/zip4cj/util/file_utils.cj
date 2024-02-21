@@ -85,6 +85,9 @@ public class FileUtils {
         zipParameters: ZipParameters,
         paths!: ArrayList<Path> = ArrayList<Path>()
     ): ArrayList<Path> {
+        if (!File.exists(path) || !Directory.exists(path)) {
+            return ArrayList<Path>()
+        }
         if (!path.isDirectory() || !FileInfo(path).canRead()) {
             return paths
         }
@@ -172,13 +175,23 @@ public class FileUtils {
 
     public static func getRelativeFileName(fileToAdd: Path, zipParameters: ZipParameters): String {
         var fileName: String
+        let FileExists = try{
+            fileToAdd.toCanonical()
+            true
+        } catch (e: Exception) {
+            if (e.message.toString() == "Failed to canonical: the path may not exist or permission denied!") {
+                false
+            } else {
+                true
+            }
+        }
         try {
-            var fileCanonicalPath: Path = fileToAdd.toCanonical()
             var defaultFolderPath = match (zipParameters.getDefaultFolderPath()) {
                 case Some(v) => v.trim()
                 case None => ""
             }
             if (defaultFolderPath.size != 0) {
+                var fileCanonicalPath: Path = fileToAdd.toCanonical()
                 var rootFolderFile = Path(defaultFolderPath)
                 var rootFolderFileRef = rootFolderFile.toCanonical().toString()
 
@@ -203,7 +216,7 @@ public class FileUtils {
                     tmpFileName = unsafe { String.fromUtf8Unchecked(tmpFileName.toArray()[1..]) }
                 }
 
-                var tmpFile = fileCanonicalPath.toCanonical()
+                var tmpFile = fileCanonicalPath
 
                 if (tmpFile.isDirectory()) {
                     tmpFileName = tmpFileName.replace("\\\\", InternalZipConstants.ZIP_FILE_SEPARATOR)
@@ -219,10 +232,13 @@ public class FileUtils {
 
                 fileName = tmpFileName
             } else {
-                var relFile = fileCanonicalPath.toCanonical()
-                fileName = getNameOfFileInZip(relFile, zipParameters.getFileNameInZip())
-                if (relFile.isDirectory()) {
-                    fileName += InternalZipConstants.ZIP_FILE_SEPARATOR
+                if (FileExists) {
+                    fileName = getNameOfFileInZip(fileToAdd, zipParameters.getFileNameInZip())
+                    if (fileToAdd.isDirectory()) {
+                        fileName += InternalZipConstants.ZIP_FILE_SEPARATOR
+                    }
+                } else {
+                    fileName = fileToAdd.fileName.getOrThrow()
                 }
             }
         } catch (e: IOException) {
