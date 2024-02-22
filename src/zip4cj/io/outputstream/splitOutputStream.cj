@@ -29,11 +29,6 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
         this.bytesWrittenForThisPart = 0
     }
 
-    @OverflowThrowing
-    public func write(b: Int32) {
-        this.write([UInt8(b)])
-    }
-
     public func write(b: Array<Byte>) {
         let len = b.size
         if (len <= 0) {
@@ -63,13 +58,6 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
             raf.write(b)
             bytesWrittenForThisPart += len
         }
-    }
-
-    public func write(b: Array<Byte>, off: Int64, len: Int64): Unit {
-        if (len <= 0) {
-            return
-        }
-        this.write(b[off..off + len])
     }
 
     private func startNextSplitFile() {

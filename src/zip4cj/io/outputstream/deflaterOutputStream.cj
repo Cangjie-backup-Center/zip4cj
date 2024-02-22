@@ -1,6 +1,6 @@
 package zip4cj.io.outputstream
 
-public class DeflaterOutputStream <: CompressedOutputStream {
+class DeflaterOutputStream <: CompressedOutputStream {
     private var buffer: ?BufferedOutputStream<CipherOutputStream> = None
     private var closed: Bool = false
     private var compressionLevel: CompressionLevel
@@ -34,14 +34,6 @@ public class DeflaterOutputStream <: CompressedOutputStream {
         }
         deflater.write(b)
         deflater.close()
-    }
-
-    public func write(bval: Int32): Unit {
-        this.write([UInt8(bval)])
-    }
-
-    public func write(b: Array<UInt8>, off: Int64, len: Int64): Unit {
-        this.write(b[off..off + len])
     }
 
     public func closeEntry(): Unit {

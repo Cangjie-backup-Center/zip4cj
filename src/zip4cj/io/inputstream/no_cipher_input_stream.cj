@@ -1,11 +1,7 @@
 package zip4cj.io.inputstream
 
 class NoDecrypter <: Decrypter {
-    public func decryptData(buff: Array<Byte>, start: Int64, len: Int64): Int64 {
-        return len
-    }
-
-    public func decryptData(buff: Array<Byte>): Int64 {
+    public override func decryptData(buff: Array<Byte>): Int64 {
         return buff.size
     }
 }

@@ -13,20 +13,11 @@ public class ZipEntryInputStream <: InputStream & Resource {
         this.compressedSize = compressedSize
     }
 
-    public func read(): Int64 {
-        var readLen: Int64 = read(singleByteArray)
-        if (readLen == -1) {
-            return -1
-        }
-
-        return Int64(singleByteArray[0])
-    }
-
     public func read(b: Array<Byte>): Int64 {
         return read(b, 0, b.size)
     }
 
-    public func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
+    func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
         var length = len
         if (compressedSize != -1) {
             if (numberOfBytesRead >= compressedSize) {
@@ -47,14 +38,14 @@ public class ZipEntryInputStream <: InputStream & Resource {
         var readLen: Int64 = inputStream.read(b)
 
         if (readLen == -1) {
-            throw IOException("Unexpected EOF reached when trying to read stream")
+            throw ZipIOException("Unexpected EOF reached when trying to read stream")
         }
 
         if (readLen != b.size) {
             readLen = readUntilBufferIsFull(b, readLen)
 
             if (readLen != b.size) {
-                throw IOException("Cannot read fully into byte buffer")
+                throw ZipIOException("Cannot read fully into byte buffer")
             }
         }
 

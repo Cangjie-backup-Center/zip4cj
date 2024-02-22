@@ -35,18 +35,13 @@ public class StandardDecrypter <: Decrypter {
         }
     }
 
-    public func decryptData(buff: Array<Byte>, start: Int64, len: Int64): Int64 {
-        if (start < 0 || len < 0) {
-            throw ZipException("one of the input parameters were null in standard decrypt data")
-        }
-
-        for (i in start..start + len) {
+    public func decryptData(buff: Array<Byte>): Int64 {
+        for (i in 0..buff.size) {
             var val = UInt8(buff[i] & 0xff)
             val = UInt8((val ^ zipCryptoEngine.decryptByte()) & 0xff)
             zipCryptoEngine.updateKeys(val)
             buff[i] = val
         }
-
-        return len
+        return buff.size
     }
 }

@@ -1,6 +1,6 @@
 package zip4cj.io.inputstream
 
-public class PushbackInputStream <: InputStream {
+class PushbackInputStream <: InputStream {
     protected var buf: Array<Byte>
 
     protected var pos: Int64
@@ -23,20 +23,11 @@ public class PushbackInputStream <: InputStream {
         this(input, 1)
     }
 
-    public func read(): Int64 {
-        ensureOpen()
-        if (pos < buf.size) {
-            return Int64(buf[pos + 1] & 0xff)
-        }
-        return input.read()
-    }
-
     public func read(b: Array<Byte>): Int64 {
-        ensureOpen()
-        return input.read(b)
+        return this.read(b, 0, b.size)
     }
 
-    public func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
+    func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
         ensureOpen()
         var off_p = off
         var len_p = len
@@ -72,7 +63,7 @@ public class PushbackInputStream <: InputStream {
     public func unread(b: Int64) {
         ensureOpen()
         if (pos == 0) {
-            throw IOException("Push back buffer is full")
+            throw ZipIOException("Push back buffer is full")
         }
         buf[pos - 1] = UInt8(b)
     }
@@ -80,7 +71,7 @@ public class PushbackInputStream <: InputStream {
     public func unread(b: Array<Byte>, off: Int64, len: Int64) {
         ensureOpen()
         if (len > pos) {
-            throw IOException("Push back buffer is full")
+            throw ZipIOException("Push back buffer is full")
         }
         pos -= len
         b.copyTo(buf, off, pos, len)
@@ -111,7 +102,7 @@ public class PushbackInputStream <: InputStream {
     }
 
     public func reset() {
-        throw IOException("mark/reset not supported")
+        throw ZipIOException("mark/reset not supported")
     }
 
     public func close() {

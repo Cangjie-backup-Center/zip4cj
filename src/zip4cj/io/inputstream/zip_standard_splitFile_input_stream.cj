@@ -1,6 +1,6 @@
 package zip4cj.io.inputstream
 
-public class ZipStandardSplitFileInputStream <: SplitFileInputStream {
+class ZipStandardSplitFileInputStream <: SplitFileInputStream {
     protected var randomAccessFile: RandomAccessFile
     protected var zipFile: Path
     private var lastSplitZipFileNumber: Int64
@@ -19,20 +19,11 @@ public class ZipStandardSplitFileInputStream <: SplitFileInputStream {
         }
     }
 
-    public func read(): Int64 {
-        var readLen = read(singleByteArray)
-        if (readLen == -1) {
-            return -1
-        }
-
-        return Int64(singleByteArray[0])
-    }
-
     public func read(b: Array<Byte>): Int64 {
         return read(b, 0, b.size)
     }
 
-    public func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
+    func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
         var readLen = randomAccessFile.read(b, off, len)
 
         if ((readLen != len || readLen == -1) && isSplitZipArchive) {

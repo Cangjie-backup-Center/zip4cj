@@ -432,14 +432,14 @@ public class ZipFile {
     }
 
     private func readZipInfo() {
-        try (randomAccessFile = initializeRandomAccessFileForHeaderReading()) {
+        try (randomAccessFile = initializeRandomAccessFileForHeaderReading(zipFile)) {
             var headerReader = HeaderReader()
             zipModel = headerReader.readAllHeaders(randomAccessFile, buildConfig())
             isNullzipModel = false
             zipModel.setZipFile(zipFile)
         } catch (e: ZipException) {
             throw e
-        } catch (e: IOException) {
+        } catch (e: IOException | ZipIOException) {
             throw ZipException(e.message)
         }
     }
@@ -447,20 +447,6 @@ public class ZipFile {
     private func createNewZipModel() {
         zipModel = ZipModel()
         zipModel.setZipFile(zipFile)
-    }
-
-    private func initializeRandomAccessFileForHeaderReading(): RandomAccessFile {
-        if (FileUtils.isNumberedSplitFile(zipFile)) {
-            var allSplitFiles = FileUtils.getAllSortedNumberedSplitFiles(zipFile)
-            var numberedSplitRandomAccessFile = NumberedSplitRandomAccessFile(zipFile,
-                RandomAccessFileMode.READ.getValue(), allSplitFiles)
-            numberedSplitRandomAccessFile.openLastSplitFileForReading()
-            return numberedSplitRandomAccessFile
-        }
-        if (!File.exists(zipFile)) {
-            File.create(zipFile)
-        }
-        return RandomAccessFile(zipFile, OpenOption.Open(true, true))
     }
 
     private func buildAsyncParameters(): AsyncTaskParameters {
@@ -526,3 +512,4 @@ public class ZipFile {
         this.useUtf8CharsetForPasswords = useUtf8CharsetForPasswords
     }
 }
+

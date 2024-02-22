@@ -1,6 +1,7 @@
 package zip4cj.util
 
 public class ZipVersionUtils {
+    init(){}
     public static func determineVersionMadeBy(zipParameters: ZipParameters, rawIO: RawIO): Int32 {
         let versionMadeBy = Array<Byte>(2, item: 0);
         versionMadeBy[0] = VersionMadeBy.SPECIFICATION_VERSION.getCode()

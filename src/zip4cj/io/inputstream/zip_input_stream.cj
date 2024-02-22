@@ -102,24 +102,13 @@ public class ZipInputStream <: InputStream & Resource {
         return localFileHeader
     }
 
-    public func read(): Int64 {
-        var b = Array<Byte>(1, item: 0)
-        var readLen: Int64 = read(b)
-
-        if (readLen == -1) {
-            return -1
-        }
-
-        return Int64(b[0]) & 0xff
-    }
-
     public func read(b: Array<Byte>): Int64 {
         return read(b, 0, b.size)
     }
 
-    public func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
+    func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
         if (streamClosed) {
-            throw IOException("Stream closed")
+            throw ZipIOException("Stream closed")
         }
 
         if (len < 0) {
@@ -137,13 +126,13 @@ public class ZipInputStream <: InputStream & Resource {
         }
 
         try {
-            var readLen = decompressedInputStream.getOrThrow().read(b, off, len)
+            var readLen = decompressedInputStream.getOrThrow().read(b[off.. len])
             if (readLen > 0) {
                 crc32.update(b[off..off + readLen]) //crc32.update(b, off, readLen)
             }
 
             return readLen
-        } catch (e: IOException) {
+        } catch (e: IOException | ZipIOException) {
             if (isEncryptionMethodZipStandard(localFileHeader.getOrThrow())) {
                 throw ZipException(e.message)
             }
@@ -225,32 +214,38 @@ public class ZipInputStream <: InputStream & Resource {
     }
 
     private func readExtendedLocalFileHeaderIfPresent(): Unit {
-        if (!localFileHeader.getOrThrow().isDataDescriptorExists() || canSkipExtendedLocalFileHeader) {
+        let localFileHeaders = localFileHeader.getOrThrow()
+        if (!localFileHeaders.isDataDescriptorExists() || canSkipExtendedLocalFileHeader) {
             return
         }
+        let dataDescriptor = headerReader.readDataDescriptor(inputStream,
+            checkIfZip64ExtraDataRecordPresentInLFH(localFileHeaders.getExtraDataRecords()));
+        localFileHeaders.setCompressedSize(dataDescriptor.getCompressedSize());
+        localFileHeaders.setUncompressedSize(dataDescriptor.getUncompressedSize());
+        localFileHeaders.setCrc(dataDescriptor.getCrc());
     }
 
     private func verifyLocalFileHeader(localFileHeader: LocalFileHeader): Unit {
         if (!isEntryDirectory(localFileHeader.getFileName().getOrThrow()) &&
             localFileHeader.getCompressionMethod().getOrThrow() == CompressionMethod.STORE &&
             localFileHeader.getUncompressedSize() < 0) {
-            throw IOException(
+            throw ZipIOException(
                 "Invalid local file header for: ${localFileHeader.getFileName().getOrThrow()}. Uncompressed size has to be set for entry of compression type store which is not a directory"
             )
         }
     }
 
-    private func checkIfZip64ExtraDataRecordPresentInLFH(extraDataRecords: ArrayList<ExtraDataRecord>): Bool {
-        if (extraDataRecords.isEmpty()) {
-            return false
-        }
-
-        for (extraDataRecord in extraDataRecords) {
-            if (extraDataRecord.getHeader() == HeaderSignature.ZIP64_EXTRA_FIELD_SIGNATURE.getValue()) {
-                return true
+    private func checkIfZip64ExtraDataRecordPresentInLFH(extraDataRecord: ?ArrayList<ExtraDataRecord>): Bool {
+        if (let Some(extraDataRecords) <- extraDataRecord) {
+            if (extraDataRecords.isEmpty()) {
+                return false
+            }
+            for (extraDataRecord in extraDataRecords) {
+                if (extraDataRecord.getHeader() == HeaderSignature.ZIP64_EXTRA_FIELD_SIGNATURE.getValue()) {
+                    return true
+                }
             }
         }
-
         return false
     }
 
@@ -338,7 +333,7 @@ public class ZipInputStream <: InputStream & Resource {
 
     private func assertStreamOpen(): Unit {
         if (streamClosed) {
-            throw IOException("Stream closed")
+            throw ZipIOException("Stream closed")
         }
     }
 }

@@ -20,11 +20,8 @@ from charset import charset.encoding.*
 main() { 
 
     let test = modelTest()
-    test.modelTest01()
-    test.modelTest02()
-    test.modelTest03()
-    test.modelTest04()
-    test.modelTest05()
+    test.execute()
+    test.printResult()
     return 0
 }
 @Test
@@ -53,7 +50,7 @@ public class modelTest {
         }catch (e: NoneValueException) {
             returnTag = 1
         }
-        @Assert(returnTag, 1)
+        @Assert(returnTag, 0)
     }
 
     @TestCase

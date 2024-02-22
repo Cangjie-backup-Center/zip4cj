@@ -1,17 +1,13 @@
 package zip4cj.model.enums
 
-public class RandomAccessFileMode {
-    public static let READ: RandomAccessFileMode = RandomAccessFileMode("r")
-
-    public static let WRITE: RandomAccessFileMode = RandomAccessFileMode("rw")
-
-    private var value: String
-
-    init(value: String) {
-        this.value = value
-    }
+public enum RandomAccessFileMode {
+    | READ
+    | WRITE
 
     public func getValue(): String {
-        return value
+        return match(this) {
+            case READ => "r"
+            case WRITE => "rw"
+        }
     }
 }

@@ -34,7 +34,7 @@ public class HeaderReader {
         // If file is Zip64 format, Zip64 headers have to be read before reading central directory
         myzipModel.setZip64EndOfCentralDirectoryLocator(
             readZip64EndOfCentralDirectoryLocator(zip4cjRaf, rawIO,
-            myzipModel.getEndOfCentralDirectoryRecord().getOffsetOfEndOfCentralDirectory()));
+            myzipModel.getEndOfCentralDirectoryRecord().getOffsetOfEndOfCentralDirectory()))
 
         if (myzipModel.isZip64Format()) {
             myzipModel.setZip64EndOfCentralDirectoryRecord(readZip64EndCentralDirRec(zip4cjRaf, rawIO))
@@ -92,8 +92,7 @@ public class HeaderReader {
         for (i in 0..centralDirEntryCount) {
             var fileHeader = FileHeader()
             if (Int64(rawIO.readIntLittleEndian(zip4cjRaf)) != HeaderSignature.CENTRAL_DIRECTORY.getValue()) {
-                // throw ZipException("Expected central directory entry not found (#" + (i + 1) + ")")
-                throw ZipException("Expected central directory entry not found ()")
+                throw ZipException("Expected central directory entry not found (#${i+1})")
             }
             fileHeader.setSignature(HeaderSignature.CENTRAL_DIRECTORY)
             fileHeader.setVersionMadeBy(rawIO.readShortLittleEndian(zip4cjRaf))
@@ -526,6 +525,32 @@ public class HeaderReader {
         return localFileHeader
     }
 
+    public func readDataDescriptor(inputStream: InputStream, isZip64Format: Bool): DataDescriptor {
+
+        let dataDescriptor = DataDescriptor()
+        let intBuff = Array<Byte>(4, item:0)
+        Zip4cjUtil.readFully(inputStream, intBuff)
+        var sigOrCrc = rawIO.readLongLittleEndian(intBuff, 0)
+        //According to zip specification, presence of extra data record header signature is optional.
+        //If this signature is present, read it and read the next 4 bytes for crc
+        //If signature not present, assign the read 4 bytes for crc
+        if (sigOrCrc == HeaderSignature.EXTRA_DATA_RECORD.getValue()) {
+            dataDescriptor.setSignature(HeaderSignature.EXTRA_DATA_RECORD)
+            Zip4cjUtil.readFully(inputStream, intBuff)
+            dataDescriptor.setCrc(rawIO.readLongLittleEndian(intBuff, 0))
+        } else {
+            dataDescriptor.setCrc(sigOrCrc)
+        }
+        if (isZip64Format) {
+            dataDescriptor.setCompressedSize(rawIO.readLongLittleEndian(inputStream))
+            dataDescriptor.setUncompressedSize(rawIO.readLongLittleEndian(inputStream))
+        } else {
+            dataDescriptor.setCompressedSize(Int64(rawIO.readIntLittleEndian(inputStream)))
+            dataDescriptor.setUncompressedSize(Int64(rawIO.readIntLittleEndian(inputStream)))
+        }
+        return dataDescriptor
+    }
+
     private func readAesExtraDataRecord(fileHeader: AbstractFileHeader, rawIO: RawIO) {
         if (let Some(fileHead) <- fileHeader.getExtraDataRecords()) {
             if (fileHead.size <= 0) {
@@ -613,7 +638,7 @@ public class HeaderReader {
 
     private func seekInCurrentPart(randomAccessFile: RandomAccessFile, pos: Int64): Unit {
         if (randomAccessFile is NumberedSplitRandomAccessFile) {
-            (randomAccessFile as NumberedSplitRandomAccessFile)?.seekInCurrentPart(pos)
+            (randomAccessFile as NumberedSplitRandomAccessFile).getOrThrow().seekInCurrentPart(pos)
         } else {
             randomAccessFile.seek(pos)
         }

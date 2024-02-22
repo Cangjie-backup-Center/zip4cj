@@ -620,19 +620,6 @@ public class InflaterInputStream<: DecompressedInputStream {
     public func close (): Unit
 }
 
-public class NoDecrypter<: Decrypter {
-    
-    /*
-     * 解密数据
-     * 
-     * 参数 buff - 数据缓冲区
-     * 参数 start - 开始位置
-     * 参数 len - 长度
-     * 返回值 Int64 - 解密的数据量
-     */
-    public func decryptData (buff: Array<Byte>, start: Int64, len: Int64): Int64
-}
-
 public interface Decrypter {
 
     /*
@@ -809,6 +796,11 @@ public class ZipStandardSplitFileInputStream<: SplitFileInputStream {
 }
 
 public class HeaderReader {
+    
+    /*
+     * 构造 
+     */
+    public init ()
     
     /*
      * 读取文件头
@@ -1370,6 +1362,11 @@ public class ZipOutputStream<: OutputStream {
 public class HeaderWriter {
     
     /*
+     * 构造 
+     */
+    public init ()
+    
+    /*
      * 写文件头
      * 
      * 参数 zipModel - 压缩模型
@@ -1565,6 +1562,11 @@ public class HeaderUtil {
 
 public class FileHeaderFactory {
     
+    /*
+     * 构造 
+     */
+    public init ()
+
     /*
      * 生成文件头
      * 
@@ -1809,7 +1811,7 @@ public class FileUtils {
      * 参数 file - 文件路径
      * 参数 lastModifiedTime - 修改时间
      */
-    public static func setFileLastModifiedTime (file: Path, lastModifiedTime: Int64)
+    public static func setFileLastModifiedTime (file: Path, lastModifiedTime: Int64): Unit
     
     /*
      * 设置 FileLastModifiedTimeWithout
@@ -1817,7 +1819,7 @@ public class FileUtils {
      * 参数 file - 文件路径
      * 参数 lastModifiedTime - 修改时间
      */
-    public static func setFileLastModifiedTimeWithoutNio (file: Path, lastModifiedTime: Int64)
+    public static func setFileLastModifiedTimeWithoutNio (file: Path, lastModifiedTime: Int64): Unit
     
     /*
      * 获取 FileAttribu
@@ -2131,6 +2133,11 @@ public enum VersionNeededToExtract {
 }
 
 public class RawIO {
+
+    /*
+     * 构造 
+     */
+    public init ()
     
     /*
      * 读取小端文件
@@ -2340,7 +2347,7 @@ public class Zip4cjUtil {
      * 获取 CompressionMet
      * 
      * 参数 localFileHeader - AbstractFileHeader对象
-     * 返回值 CompressionMethod - CompressionMethod对象
+     * 返回值 CompressionMethod - CompressionMethod对象, 传入参数AbstractFileHeader的成员为空时, 会抛NoneValueException.
      */
     public static func getCompressionMethod (localFileHeader: AbstractFileHeader): CompressionMethod
     
@@ -2365,130 +2372,6 @@ public class Zip4cjUtil {
     public static func readFully (inputStream: InputStream, b: Array<Byte>, offset: Int64, length: Int64): Int64
 }
 
-public class BufferOverflowException<: Exception {
-    
-    /*
-     * 构造 
-     */
-    public init ()
-}
-
-public abstract class Buffer<: Object&ToString {
-    
-    /*
-     * Buffer 的容量大小
-
-     * 返回值 Int64 -  容量大小
-     */
-    public func capacity (): Int64
-    
-    /*
-     * 获取当前光标位置
-     * 
-     * 返回值 Int64 - 光标位置
-     */
-    public func position (): Int64
-    
-    /*
-     * 设置光标位置
-     * 
-     * 参数 newPosit - 光标位置
-     * 返回值 Buffer - 设置光标后的Buffer
-     */
-    public open func position (newPosit: Int64): Buffer
-    
-    /*
-     * 获取读取的限制大小
-     * 
-     * 返回值 Int64 - 限制大小
-     */
-    public func limit (): Int64
-    
-    /*
-     * 设置读取的限制大小
-     * 
-     * 参数 newLimits - 读取的限制大小
-     * 返回值 Buffer - 设置读取的限制后的Buffer
-     */
-    public open func limit (newLimits: Int64): Buffer
-    
-    /*
-     * 标记位置
-     * 
-     * 返回值 Buffer - 返回标记后的Buffer
-     */
-    public func mark (): Buffer
-    
-    /*
-     * 重置状态
-     * 
-     * 返回值 Buffer - Buffer对象
-     */
-    public open func reset (): Buffer
-    
-    /*
-     * 删除Buffer的数据
-     * 
-     * 返回值 Buffer - Buffer对象
-     */
-    public open func clear (): Buffer
-    
-    /*
-     * 改变 Buffer 状态
-     * 
-     * 返回值 Buffer - Buffer对象
-     */
-    public open func flip (): Buffer
-    
-    /*
-     * 倒回 Buffer 状态
-     * 
-     * 返回值 Buffer - Buffer对象
-     */
-    public open func rewind (): Buffer
-    
-    /*
-     * 获取剩余的大小
-     * 
-     * 返回值 Int64 - 数据大小
-     */
-    public func remaining (): Int64
-    
-    /*
-     * 判断是否可以读写
-     * 
-     * 返回值 Bool - 是否达到读写的限制
-     */
-    public func hasRemaining (): Bool
-    
-    /*
-     * 获取阵列偏移
-     * 
-     * 返回值 Int64 - 偏移大小
-     */
-    public func arrayOffset (): Int64
-    
-    /*
-     * 返回切片后 Buffer
-     * 
-     * 返回值 Buffer - Buffer对象
-     */
-    public func slice (): Buffer
-    
-    /*
-     * 复制Buffer
-     * 
-     * 返回值 Buffer - Buffer对象
-     */
-    public func duplicate (): Buffer
-    
-    /*
-     * 获取数据集合
-     * 
-     * 返回值 Array<UInt8> - 数据集合
-     */
-    public func array (): Array<UInt8>
-}
 
 public abstract class ZipHeader {
     
@@ -2636,6 +2519,11 @@ public class EndOfCentralDirectoryRecord<: ZipHeader {
 }
 
 public class Zip64EndOfCentralDirectoryLocator<: ZipHeader {
+
+    /*
+     * 构造 
+     */
+    public init ()
     
     /*
      * 获取磁盘开始数
@@ -2684,6 +2572,11 @@ public class Zip64EndOfCentralDirectoryLocator<: ZipHeader {
 }
 
 public abstract class AbstractFileHeader<: ZipHeader&Equatable<AbstractFileHeader> {
+
+    /*
+     * 构造 
+     */
+    public init ()
     
     /*
      * 获取版本
@@ -2988,6 +2881,11 @@ public abstract class AbstractFileHeader<: ZipHeader&Equatable<AbstractFileHeade
 }
 
 public class CentralDirectory {
+
+    /*
+     * 构造 
+     */
+    public init ()
     
     /*
      * 获取文件头
@@ -3564,6 +3462,11 @@ public class Zip4cjConfig {
 }
 
 public class Zip64EndOfCentralDirectoryRecord<: ZipHeader {
+
+    /*
+     * 构造 
+     */
+    public init ()
     
     /*
      * 获取结束中央目录记录大小
@@ -3817,6 +3720,11 @@ public class Zip64ExtendedInfo<: ZipHeader&Equatable<Zip64ExtendedInfo> {
 }
 
 public class DataDescriptor<: ZipHeader {
+
+    /*
+     * 构造 
+     */
+    public init ()
     
     /*
      * 获取检测原始数据
@@ -3891,7 +3799,7 @@ public class ZipParameters {
      * 
      * 参数 compressionMethod - 压缩方法
      */
-    public func setCompressionMethod (compressionMethod: CompressionMethod)
+    public func setCompressionMethod (compressionMethod: CompressionMethod): Unit
     
     /*
      * 判断是否加密文件 
@@ -3905,7 +3813,7 @@ public class ZipParameters {
      * 
      * 参数 encryptFiles - 是否加密文件 
      */
-    public func setEncryptFiles (encryptFiles: Bool)
+    public func setEncryptFiles (encryptFiles: Bool): Unit
     
     /*
      * 获取加密方法
@@ -3919,7 +3827,7 @@ public class ZipParameters {
      * 
      * 参数 encryptionMethod - 加密方法
      */
-    public func setEncryptionMethod (encryptionMethod: EncryptionMethod)
+    public func setEncryptionMethod (encryptionMethod: EncryptionMethod): Unit
     
     /*
      * 获取压缩级别
@@ -3933,7 +3841,7 @@ public class ZipParameters {
      * 
      * 参数 compressionLevel - 压缩级别
      */
-    public func setCompressionLevel (compressionLevel: CompressionLevel)
+    public func setCompressionLevel (compressionLevel: CompressionLevel): Unit
     
     /*
      * 判断文件属性为是否可读
@@ -3947,7 +3855,7 @@ public class ZipParameters {
      * 
      * 参数 readHiddenFiles - 文件属性是否为可读
      */
-    public func setReadHiddenFiles (readHiddenFiles: Bool)
+    public func setReadHiddenFiles (readHiddenFiles: Bool): Unit
     
     /*
      * 判断是否读取隐藏文件夹 
@@ -3961,7 +3869,7 @@ public class ZipParameters {
      * 
      * 参数 readHiddenFolders - 是否读取隐藏文件夹
      */
-    public func setReadHiddenFolders (readHiddenFolders: Bool)
+    public func setReadHiddenFolders (readHiddenFolders: Bool): Unit
     
     /*
      * 获取AES加密密钥长度
@@ -3975,7 +3883,7 @@ public class ZipParameters {
      * 
      * 参数 aesKeyStrength - AES加密密钥长度
      */
-    public func setAesKeyStrength (aesKeyStrength: AesKeyStrength)
+    public func setAesKeyStrength (aesKeyStrength: AesKeyStrength): Unit
     
     /*
      * 获取AES加密版本
@@ -3989,7 +3897,7 @@ public class ZipParameters {
      * 
      * 参数 aesVersion - AES加密版本
      */
-    public func setAesVersion (aesVersion: AesVersion)
+    public func setAesVersion (aesVersion: AesVersion): Unit
     
     /*
      * 判断是否包括根文件夹
@@ -4003,7 +3911,7 @@ public class ZipParameters {
      * 
      * 参数 includeRootFolder - 是否包括根文件夹
      */
-    public func setIncludeRootFolder (includeRootFolder: Bool)
+    public func setIncludeRootFolder (includeRootFolder: Bool): Unit
     
     /*
      * 获取CRC校验
@@ -4016,7 +3924,7 @@ public class ZipParameters {
      * 
      * 参数 entryCRC - CRC校验
      */
-    public func setEntryCRC (entryCRC: Int64)
+    public func setEntryCRC (entryCRC: Int64): Unit
     
     /*
      * 获取默认文件夹路径
@@ -4029,7 +3937,7 @@ public class ZipParameters {
      * 
      * 参数 defaultFolderPath - 默认文件夹路径
      */
-    public func setDefaultFolderPath (defaultFolderPath: String)
+    public func setDefaultFolderPath (defaultFolderPath: String): Unit
     
     /*
      * 获取Zip中的文件名
@@ -4043,7 +3951,7 @@ public class ZipParameters {
      * 
      * 参数 fileNameInZip - Zip中的文件名
      */
-    public func setFileNameInZip (fileNameInZip: String)
+    public func setFileNameInZip (fileNameInZip: String): Unit
     
     /*
      * 获取上次修改的文件时间
@@ -4057,7 +3965,7 @@ public class ZipParameters {
      * 
      * 参数 lastModifiedFileTime - 上次修改的文件时间
      */
-    public func setLastModifiedFileTime (lastModifiedFileTime: Int64)
+    public func setLastModifiedFileTime (lastModifiedFileTime: Int64): Unit
     
     /*
      * 获取条目大小
@@ -4070,7 +3978,7 @@ public class ZipParameters {
      * 
      * 参数 entrySize - 
      */
-    public func setEntrySize (entrySize: Int64)
+    public func setEntrySize (entrySize: Int64): Unit
     
     /*
      * 判断是否写入扩展的本地文件头 
@@ -4083,7 +3991,7 @@ public class ZipParameters {
      * 
      * 参数 writeExtendedLocalFileHeader - 是否写入扩展的本地文件头 
      */
-    public func setWriteExtendedLocalFileHeader (writeExtendedLocalFileHeader: Bool)
+    public func setWriteExtendedLocalFileHeader (writeExtendedLocalFileHeader: Bool): Unit
     
     /*
      * 判断是否覆盖现有文件 
@@ -4097,7 +4005,7 @@ public class ZipParameters {
      * 
      * 参数 overrideExistingFilesInZip - 是否覆盖现有文件 
      */
-    public func setOverrideExistingFilesInZip (overrideExistingFilesInZip: Bool)
+    public func setOverrideExistingFilesInZip (overrideExistingFilesInZip: Bool): Unit
     
     /*
      * 获取Zip中的根文件夹名称
@@ -4111,7 +4019,7 @@ public class ZipParameters {
      * 
      * 参数 rootFolderNameInZip - Zip中的根文件夹名称
      */
-    public func setRootFolderNameInZip (rootFolderNameInZip: String)
+    public func setRootFolderNameInZip (rootFolderNameInZip: String): Unit
     
     /*
      * 获取文件注释
@@ -4125,7 +4033,7 @@ public class ZipParameters {
      * 
      * 参数 fileComment - 文件注释
      */
-    public func setFileComment (fileComment: String)
+    public func setFileComment (fileComment: String): Unit
     
     /*
      * 获取符号链接
@@ -4139,7 +4047,7 @@ public class ZipParameters {
      * 
      * 参数 symbolicLinkAction - 符号链接
      */
-    public func setSymbolicLinkAction (symbolicLinkAction: SymbolicLinkAction)
+    public func setSymbolicLinkAction (symbolicLinkAction: SymbolicLinkAction): Unit
     
     /*
      * 获取文件过滤器
@@ -4153,7 +4061,7 @@ public class ZipParameters {
      * 
      * 参数 excludeFileFilter - 文件过滤器
      */
-    public func setExcludeFileFilter (excludeFileFilter: ExcludeFileFilter)
+    public func setExcludeFileFilter (excludeFileFilter: ExcludeFileFilter): Unit
     
     /*
      * 判断是否是Unix模式 
@@ -4167,10 +4075,15 @@ public class ZipParameters {
      * 
      * 参数 unixMode - 是否是Unix模式 
      */
-    public func setUnixMode (unixMode: Bool)
+    public func setUnixMode (unixMode: Bool): Unit
 }
 
 public class UnzipParameters {
+
+    /*
+     * 构造 
+     */
+    public init ()
     
     /*
      * 判断是否提取符号链接 
@@ -4189,6 +4102,11 @@ public class UnzipParameters {
 }
 
 public class DigitalSignature<: ZipHeader {
+
+    /*
+     * 构造 
+     */
+    public init ()
     
     /*
      * 获取数据大小
@@ -4222,6 +4140,11 @@ public class DigitalSignature<: ZipHeader {
 }
 
 public class ArchiveExtraDataRecord<: ZipHeader {
+
+    /*
+     * 构造 
+     */
+    public init ()
     
     /*
      * 获取额外字段长度
@@ -4309,6 +4232,11 @@ public class LocalFileHeader<: AbstractFileHeader {
 }
 
 public class ExtraDataRecord<: ZipHeader {
+
+    /*
+     * 构造 
+     */
+    public init ()
     
     /*
      * 获取Header
@@ -4387,7 +4315,18 @@ public enum CompressionMethod<: Equal<CompressionMethod> {
     public operator func ==(that: CompressionMethod): Bool
 }
 
-public class CompressionLevel<: Equal<CompressionLevel> {
+public enum CompressionLevel<: Equal<CompressionLevel> {
+    | NO_COMPRESSION
+    | FASTEST
+    | FASTER
+    | FAST
+    | MEDIUM_FAST
+    | NORMAL
+    | HIGHER
+    | MAXIMUM
+    | PRE_ULTRA
+    | ULTRA
+    
     
     /*
      * 获取压缩级别
@@ -4405,7 +4344,9 @@ public class CompressionLevel<: Equal<CompressionLevel> {
     public operator func == (that: CompressionLevel): Bool
 }
 
-public class RandomAccessFileMode {
+public enum RandomAccessFileMode {
+    | READ
+    | WRITE
     
     /*
      * 获取随机访问文件模式
@@ -4415,8 +4356,11 @@ public class RandomAccessFileMode {
     public func getValue (): String
 }
 
-public class AesKeyStrength<: Equal<AesKeyStrength> {
-    
+public enum AesKeyStrength<: Equal<AesKeyStrength> {
+    | KEY_STRENGTH_128
+    | KEY_STRENGTH_192
+    | KEY_STRENGTH_256
+
     /*
      * 获取原始代码
      * 
@@ -4478,8 +4422,10 @@ public enum EncryptionMethod<: Equal<EncryptionMethod> {
     public operator func ==(that: EncryptionMethod): Bool
 }
 
-public class AesVersion<: Equal<AesVersion> {
-    
+public enum AesVersion<: Equal<AesVersion> {
+    | ONE
+    | TWO
+
     /*
      * 获取版本号
      * 
@@ -4490,7 +4436,7 @@ public class AesVersion<: Equal<AesVersion> {
     /*
      * 获取版本号
      * 
-     * 参数 versionNumber - 版本号
+     * 参数 versionNumber - 版本号1或者2
      * 
      */
     public static func getFromVersionNumber (versionNumber: Int32): AesVersion
@@ -4973,7 +4919,7 @@ public class PBKDF2Parameters {
      * 参数 iterationCount - 迭代计数
      * 
      */
-    public func setIterationCount(iterationCount: Int32)
+    public func setIterationCount(iterationCount: Int32): Unit
 
     /*
      * 获取语法盐
@@ -4988,7 +4934,7 @@ public class PBKDF2Parameters {
      * 参数 salt - 语法盐
      * 
      */
-    public func setSalt(salt: Array<Byte>)
+    public func setSalt(salt: Array<Byte>): Unit
 
     /*
      * 获取派生密钥
@@ -5002,7 +4948,7 @@ public class PBKDF2Parameters {
      * 
      * 参数 derivedKey - 派生密钥
      */
-    public func setDerivedKey(derivedKey: Array<Byte>)
+    public func setDerivedKey(derivedKey: Array<Byte>): Unit
 
     /*
      * 获取hash算法
@@ -5016,7 +4962,7 @@ public class PBKDF2Parameters {
      * 
      * 参数 hashAlgorithm - hash算法
      */
-    public func setHashAlgorithm(hashAlgorithm: String)
+    public func setHashAlgorithm(hashAlgorithm: String): Unit
 }
 
 public interface Encrypter {

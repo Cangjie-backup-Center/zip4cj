@@ -10,21 +10,28 @@ func getFileModle(mode: String): OpenOption {
     }
 }
 
-public class NumberedSplitRandomAccessFile <: RandomAccessFile {
+public func initializeRandomAccessFileForHeaderReading(zipFile: Path): RandomAccessFile {
+    if (FileUtils.isNumberedSplitFile(zipFile)) {
+        var allSplitFiles = FileUtils.getAllSortedNumberedSplitFiles(zipFile)
+        var numberedSplitRandomAccessFile = NumberedSplitRandomAccessFile(zipFile,
+            RandomAccessFileMode.READ.getValue(), allSplitFiles)
+        numberedSplitRandomAccessFile.openLastSplitFileForReading()
+        return numberedSplitRandomAccessFile
+    }
+    if (!File.exists(zipFile)) {
+        File.create(zipFile)
+    }
+    return RandomAccessFile(zipFile, OpenOption.Open(true, true))
+}
+
+
+class NumberedSplitRandomAccessFile <: RandomAccessFile {
     private var splitLength: Int64
     private var allSortedSplitFiles: Array<Path>
     private var randomAccessFile: RandomAccessFile
     private var singleByteBuffer = Array<Byte>(1, item: 0)
     private var currentOpenSplitFileCounter: Int64 = 0
     private var rwMode: String
-
-    public init(name: String, mode: String) {
-        this(Path(name), mode)
-    }
-
-    public init(file: Path, mode: String) {
-        this(file, mode, FileUtils.getAllSortedNumberedSplitFiles(file))
-    }
 
     public init(file: Path, mode: String, allSortedSplitFiles: Array<Path>) {
         super(file, getFileModle(mode))
@@ -39,13 +46,6 @@ public class NumberedSplitRandomAccessFile <: RandomAccessFile {
         this.allSortedSplitFiles = allSortedSplitFiles
         this.splitLength = this.rawFile.length
         this.rwMode = mode
-    }
-
-    public func readByte(): Int64 {
-        if (read(singleByteBuffer) <= 0) {
-            return -1
-        }
-        return Int64(singleByteBuffer[0])
     }
 
     public func read(b: Array<Byte>): Int64 {
@@ -64,18 +64,6 @@ public class NumberedSplitRandomAccessFile <: RandomAccessFile {
         }
 
         return readLen
-    }
-
-    public func write(b: Int32) {
-        throw UnsupportedOperationException()
-    }
-
-    public func write(b: Array<Byte>) {
-        write(b, 0, b.size)
-    }
-
-    public func write(buffer: Array<Byte>, off: Int64, count: Int64) {
-        throw UnsupportedOperationException()
     }
 
     public func seek(pos: Int64) {
@@ -103,7 +91,7 @@ public class NumberedSplitRandomAccessFile <: RandomAccessFile {
         super.close()
     }
 
-    public func seekInCurrentPart(pos: Int64) {
+    func seekInCurrentPart(pos: Int64) {
         randomAccessFile.seek(pos)
     }
 

@@ -25,24 +25,6 @@ public class ZipOutputStream <: OutputStream & Resource {
     private var streamClosed: Bool
     private var entryClosed: Bool = true
 
-    public init(outputStream: OutputStream) {
-        this(outputStream, Array<Char>(), Option<Charset>.None)
-    }
-
-    public init(outputStream: OutputStream, charset: Option<Charset>) {
-        this(outputStream, Array<Char>(), charset)
-    }
-
-    public init(outputStream: OutputStream, password: ?Array<Char>) {
-        this(outputStream, password, Option<Charset>.None)
-    }
-
-    public init(outputStream: OutputStream, password: ?Array<Char>, charset: Option<Charset>) {
-        this(outputStream, password,
-            Zip4cjConfig(charset, InternalZipConstants.BUFF_SIZE,
-            InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING), ZipModel())
-    }
-
     public init(outputStream: OutputStream, password: ?Array<Char>, zip4cjConfig: Zip4cjConfig, zipModel: ZipModel) {
         if (zip4cjConfig.getBufferSize() < InternalZipConstants.MIN_BUFF_SIZE) {
             throw IllegalArgumentException(
@@ -72,18 +54,6 @@ public class ZipOutputStream <: OutputStream & Resource {
         crc32.update(b)
         compressedOutputStream.write(b)
         uncompressedSizeForThisEntry += b.size
-    }
-
-    @OverflowThrowing
-    public func write(bval: Int32): Unit {
-        this.write([UInt8(bval)])
-    }
-
-    public func write(b: Array<UInt8>, off: Int64, len: Int64): Unit {
-        ensureStreamOpen()
-        crc32.update(b[off..off + len])
-        this.compressedOutputStream.write(b[off..off + len])
-        uncompressedSizeForThisEntry += len
     }
 
     public func closeEntry(): FileHeader {
@@ -122,13 +92,13 @@ public class ZipOutputStream <: OutputStream & Resource {
     }
 
 
-    public func ensureStreamOpen(): Unit {
+    func ensureStreamOpen(): Unit {
         if (streamClosed) {
             throw Exception("Stream is closed")
         }
     }
 
-    public func initializeAndWriteFileHeader(zipParameters: ZipParameters): Unit {
+    func initializeAndWriteFileHeader(zipParameters: ZipParameters): Unit {
         fileHeader = fileHeaderFactory.generateFileHeader(zipParameters, countingOutputStream.isSplitZipFile(),
             Int64(countingOutputStream.getCurrentSplitFileCounter()), zip4cjConfig.getCharset(), rawIO)
         fileHeader.getOrThrow().setOffsetLocalHeader(countingOutputStream.getOffsetForNextEntry())
@@ -144,13 +114,13 @@ public class ZipOutputStream <: OutputStream & Resource {
         compressedOutputStream.close()
     }
 
-    public func initializeCompressedOutputStream(zipParameters: ZipParameters): CompressedOutputStream {
+    func initializeCompressedOutputStream(zipParameters: ZipParameters): CompressedOutputStream {
         var zipEntryOutputStream: ZipEntryOutputStream = ZipEntryOutputStream(this.countingOutputStream)
         var cipherOutputStream: CipherOutputStream = initializeCipherOutputStream(zipEntryOutputStream, zipParameters)
         return initializeCompressedOutputStream(cipherOutputStream, zipParameters)
     }
 
-    public func initializeCipherOutputStream(zipEntryOutputStream: ZipEntryOutputStream, zipParameters: ZipParameters): CipherOutputStream {
+    func initializeCipherOutputStream(zipEntryOutputStream: ZipEntryOutputStream, zipParameters: ZipParameters): CipherOutputStream {
         if (!zipParameters.isEncryptFiles()) {
             return NoCipherOutputStream(zipEntryOutputStream, zipParameters, Array<Char>())
         }
@@ -164,14 +134,13 @@ public class ZipOutputStream <: OutputStream & Resource {
             return ZipStandardCipherOutputStream(zipEntryOutputStream, zipParameters, password.getOrThrow(),
                 zip4cjConfig.isUseUtf8CharsetForPasswords())
         } else if (zipParameters.getEncryptionMethod() == EncryptionMethod.ZIP_STANDARD_VARIANT_STRONG) {
-            // throw ZipException("${EncryptionMethod.ZIP_STANDARD_VARIANT_STRONG} encryption method is not supported")
-            throw ZipException("encryption method is not supported")
+            throw ZipException("ZIP_STANDARD_VARIANT_STRONG encryption method is not supported")
         } else {
             throw ZipException("Invalid encryption method")
         }
     }
 
-    public func initializeCompressedOutputStream(cipherOutputStream: CipherOutputStream, zipParameters: ZipParameters): CompressedOutputStream {
+    func initializeCompressedOutputStream(cipherOutputStream: CipherOutputStream, zipParameters: ZipParameters): CompressedOutputStream {
         if (zipParameters.getCompressionMethod() == CompressionMethod.DEFLATE) {
             return DeflaterOutputStream(cipherOutputStream, zipParameters.getCompressionLevel(),
                 zip4cjConfig.getBufferSize())
@@ -191,7 +160,7 @@ public class ZipOutputStream <: OutputStream & Resource {
         }
     }
 
-    public func writeCrc(fileHeader: FileHeader): Bool {
+    func writeCrc(fileHeader: FileHeader): Bool {
         var isAesEncrypted: Bool = fileHeader.isEncrypted() && fileHeader.getEncryptionMethod() == (EncryptionMethod.AES)
         if (!isAesEncrypted) {
             return true
@@ -199,7 +168,7 @@ public class ZipOutputStream <: OutputStream & Resource {
         return fileHeader.getAesExtraDataRecord().getOrThrow().getAesVersion() == (AesVersion.ONE)
     }
 
-    public func cloneAndPrepareZipParameters(zipParameters: ZipParameters): ZipParameters {
+    func cloneAndPrepareZipParameters(zipParameters: ZipParameters): ZipParameters {
         var clonedZipParameters: ZipParameters = ZipParameters(zipParameters)
 
         if (FileUtils.isZipEntryDirectory(zipParameters.getFileNameInZip().getOrThrow())) {
