@@ -1,16 +1,26 @@
 
-/* EXEC: cjc %import-path %L %l %f
-EXEC: ./main
- */
+// RESOURCES: unexpected-eof-when-reading-stream
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
+
 from zip4cj import  zip4cj.*
 from std import os.posix.*
 from std import fs.*
 from std import sync.*
 from std import time.*
 
-// zip64 测试用例
+// zip 流式 测试用例
 main() { 
-    let zipFile = ZipFile("/home/liyanqing/zip64test.zip")
-    zipFile.renameFile("FILE_0", "NEW_FILE_0");
-    // zipFile.renameFile("NEW_FILE_0", "FILE_0");
+    try {
+            let zipParameters = ZipParameters();
+        zipParameters.setFileNameInZip("123");
+        zipParameters.setCompressionMethod(CompressionMethod.STORE)
+        let zipFile = ZipFile("unexpected-eof-when-reading-stream.zip")
+        let files = File("unexpected-eof-when-reading-stream", Open(true, true))
+        zipFile.createSplitZipFile(files, zipParameters, false, 20)
+        return 0
+    } catch (e: Exception) {
+        return 1
+    }
 }
+

@@ -29,7 +29,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
             var outputStream = SplitOutputStream(temporaryFile)
 
             var currentFileCopyPointer = 0
-            var charset = taskParameters.zip4jConfig.getCharset()
+            var charset = taskParameters.zip4cjConfig.getCharset()
 
             // Maintain a different list to iterate, so that when the file name is changed in the central directory
             // we still have access to the original file names. If iterating on the original list from central directory,
@@ -54,13 +54,13 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
 
                     currentFileCopyPointer = copyEntryAndChangeFileName(newFileNameBytes, fileHeader,
                         currentFileCopyPointer, lengthToCopy, inputStream, outputStream, progressMonitor,
-                        taskParameters.zip4jConfig.getBufferSize())
+                        taskParameters.zip4cjConfig.getBufferSize())
 
                     updateHeadersInZipModel(sortedFileHeaders, fileHeader, newFileName, newFileNameBytes, headersOffset)
                 } else {
                     // copy complete entry without any changes
                     currentFileCopyPointer += copyFile(inputStream, outputStream, currentFileCopyPointer, lengthToCopy,
-                        progressMonitor, taskParameters.zip4jConfig.getBufferSize())
+                        progressMonitor, taskParameters.zip4cjConfig.getBufferSize())
                 }
 
                 verifyIfTaskIsCancelled()

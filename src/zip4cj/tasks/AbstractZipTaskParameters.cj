@@ -1,18 +1,18 @@
 package zip4cj.tasks
 
 public abstract class AbstractZipTaskParameters {
-    protected var zip4jConfig: Zip4cjConfig
+    protected var zip4cjConfig: Zip4cjConfig
 
-    protected init(zip4jConfig: Zip4cjConfig) {
-        this.zip4jConfig = zip4jConfig
+    protected init(zip4cjConfig: Zip4cjConfig) {
+        this.zip4cjConfig = zip4cjConfig
     }
 }
 
 public class ExtractAllFilesTaskParameters <: AbstractZipTaskParameters {
     let outputPath: String
 
-    public ExtractAllFilesTaskParameters(outputPath: String, zip4jConfig: Zip4cjConfig) {
-        super(zip4jConfig)
+    public ExtractAllFilesTaskParameters(outputPath: String, zip4cjConfig: Zip4cjConfig) {
+        super(zip4cjConfig)
         this.outputPath = outputPath
     }
 }
@@ -20,8 +20,8 @@ public class ExtractAllFilesTaskParameters <: AbstractZipTaskParameters {
 public class RemoveFilesFromZipTaskParameters <: AbstractZipTaskParameters {
     let filesToRemove: Collection<String>
 
-    public init(filesToRemove: Collection<String>, zip4jConfig: Zip4cjConfig) {
-        super(zip4jConfig)
+    public init(filesToRemove: Collection<String>, zip4cjConfig: Zip4cjConfig) {
+        super(zip4cjConfig)
         this.filesToRemove = filesToRemove
     }
 }
@@ -30,8 +30,8 @@ public class AddFolderToZipTaskParameters <: AbstractZipTaskParameters {
     let folderToAdd: Path
     let zipParameters: ZipParameters
 
-    public init(folderToAdd: Path, zipParameters: ZipParameters, zip4jConfig: Zip4cjConfig) {
-        super(zip4jConfig)
+    public init(folderToAdd: Path, zipParameters: ZipParameters, zip4cjConfig: Zip4cjConfig) {
+        super(zip4cjConfig)
         this.folderToAdd = folderToAdd
         this.zipParameters = zipParameters
     }
@@ -44,9 +44,9 @@ public class AddStreamToZipTaskParameters <: AbstractZipTaskParameters {
     public AddStreamToZipTaskParameters(
         inputStream: InputStream,
         zipParameters: ZipParameters,
-        zip4jConfig: Zip4cjConfig
+        zip4cjConfig: Zip4cjConfig
     ) {
-        super(zip4jConfig)
+        super(zip4cjConfig)
         this.inputStream = inputStream
         this.zipParameters = zipParameters
     }
@@ -61,9 +61,9 @@ public class ExtractFileTaskParameters <: AbstractZipTaskParameters {
         outputPath: String,
         fileToExtract: String,
         newFileName: ?String,
-        zip4jConfig: Zip4cjConfig
+        zip4cjConfig: Zip4cjConfig
     ) {
-        super(zip4jConfig)
+        super(zip4cjConfig)
         this.outputPath = outputPath
         this.fileToExtract = fileToExtract
         this.newFileName = newFileName
@@ -73,8 +73,8 @@ public class ExtractFileTaskParameters <: AbstractZipTaskParameters {
 public class MergeSplitZipFileTaskParameters <: AbstractZipTaskParameters {
     var outputZipFile: Path
 
-    public MergeSplitZipFileTaskParameters(outputZipFile: Path, zip4jConfig: Zip4cjConfig) {
-        super(zip4jConfig)
+    public MergeSplitZipFileTaskParameters(outputZipFile: Path, zip4cjConfig: Zip4cjConfig) {
+        super(zip4cjConfig)
         this.outputZipFile = outputZipFile
     }
 }
@@ -82,8 +82,8 @@ public class MergeSplitZipFileTaskParameters <: AbstractZipTaskParameters {
 public class RenameFilesTaskParameters <: AbstractZipTaskParameters {
     let fileNamesMap: Map<String, String>
 
-    public RenameFilesTaskParameters(fileNamesMap: Map<String, String>, zip4jConfig: Zip4cjConfig) {
-        super(zip4jConfig)
+    public RenameFilesTaskParameters(fileNamesMap: Map<String, String>, zip4cjConfig: Zip4cjConfig) {
+        super(zip4cjConfig)
         this.fileNamesMap = fileNamesMap
     }
 }
@@ -91,8 +91,8 @@ public class RenameFilesTaskParameters <: AbstractZipTaskParameters {
 public class SetCommentTaskTaskParameters <: AbstractZipTaskParameters {
     var comment: String
 
-    public SetCommentTaskTaskParameters(comment: String, zip4jConfig: Zip4cjConfig) {
-        super(zip4jConfig)
+    public SetCommentTaskTaskParameters(comment: String, zip4cjConfig: Zip4cjConfig) {
+        super(zip4cjConfig)
         this.comment = comment
     }
 }
@@ -101,8 +101,8 @@ public class AddFilesToZipTaskParameters <: AbstractZipTaskParameters {
     let filesToAdd: Collection<Path>
     let zipParameters: ZipParameters
 
-    public init(filesToAdd: Collection<Path>, zipParameters: ZipParameters, zip4jConfig: Zip4cjConfig) {
-        super(zip4jConfig)
+    public init(filesToAdd: Collection<Path>, zipParameters: ZipParameters, zip4cjConfig: Zip4cjConfig) {
+        super(zip4cjConfig)
         this.filesToAdd = filesToAdd
         this.zipParameters = zipParameters
     }

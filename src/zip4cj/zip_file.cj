@@ -32,19 +32,12 @@ public class ZipFile {
     private var bufferSize: Int64 = InternalZipConstants.BUFF_SIZE
     private let openInputStreams = ArrayList<InputStream>()
     private var useUtf8CharsetForPasswords = InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING
-    public init(zipFile: String) {
-        this(Path(zipFile), None)
+
+    public init(zipFile: String, password!: ?Array<Char> = None) {
+        this(Path(zipFile), password: password)
     }
 
-    public init(zipFile: String, password: ?Array<Char>) {
-        this(Path(zipFile), password)
-    }
-
-    public init(zipFile: Path) {
-        this(zipFile, None)
-    }
-
-    public init(zipFile: Path, password: ?Array<Char>) {
+    public init(zipFile: Path, password!: ?Array<Char> = None) {
         this.zipFile = zipFile
         this.password = password
         this.runInThread = false
@@ -107,33 +100,21 @@ public class ZipFile {
         if (splitArchive) {
             zipModel.setSplitLength(splitLength)
         }
-        addFolder(folderToAdd, parameters, false)
+        addFolder(folderToAdd, parameters: parameters, checkSplitArchive: false)
     }
 
-    public func addFile(fileToAdd: String) {
-        addFile(fileToAdd, ZipParameters())
-    }
-
-    public func addFile(fileToAdd: String, zipParameters: ZipParameters) {
+    public func addFile(fileToAdd: String, parameters!: ZipParameters = ZipParameters()) {
         if (!Zip4cjUtil.isStringNotNullAndNotEmpty(fileToAdd)) {
             throw ZipException("file to add is None or empty")
         }
-        addFiles([Path(fileToAdd)], zipParameters)
+        addFiles([Path(fileToAdd)], parameters: parameters)
     }
 
-    public func addFile(fileToAdd: Path) {
-        addFiles([fileToAdd], ZipParameters())
+    public func addFile(fileToAdd: Path, parameters!: ZipParameters = ZipParameters()) {
+        addFiles([fileToAdd], parameters: parameters)
     }
 
-    public func addFile(fileToAdd: Path, parameters: ZipParameters) {
-        addFiles([fileToAdd], parameters)
-    }
-
-    public func addFiles(filesToAdd: Collection<Path>) {
-        addFiles(filesToAdd, ZipParameters())
-    }
-
-    public func addFiles(filesToAdd: Collection<Path>, parameters: ZipParameters) {
+    public func addFiles(filesToAdd: Collection<Path>, parameters!: ZipParameters = ZipParameters()) {
         if (filesToAdd.size == 0) {
             throw ZipException("input file List is None or empty")
         }
@@ -145,18 +126,10 @@ public class ZipFile {
             AddFilesToZipTaskParameters(filesToAdd, parameters, buildConfig()))
     }
 
-    public func addFolder(folderToAdd: Path) {
-        addFolder(folderToAdd, ZipParameters())
-    }
-
-    public func addFolder(folderToAdd: Path, zipParameters: ZipParameters) {
+    public func addFolder(folderToAdd: Path, parameters!: ZipParameters = ZipParameters(), checkSplitArchive!: Bool = true) {
         if (!folderToAdd.isDirectory()) {
             throw ZipException("input folder is not a directory")
         }
-        addFolder(folderToAdd, zipParameters, true)
-    }
-
-    private func addFolder(folderToAdd: Path, zipParameters: ZipParameters, checkSplitArchive: Bool) {
         this.readZipInfo()
         if (checkSplitArchive) {
             if (zipModel.isSplitArchive()) {
@@ -165,7 +138,7 @@ public class ZipFile {
             }
         }
         AddFolderToZipTask(zipModel, password, headerWriter, buildAsyncParameters()).execute(
-            AddFolderToZipTaskParameters(folderToAdd, zipParameters, buildConfig()))
+            AddFolderToZipTaskParameters(folderToAdd, parameters, buildConfig()))
     }
 
     public func addStream(inputStream: InputStream, parameters: ZipParameters) {
@@ -175,14 +148,10 @@ public class ZipFile {
             throw ZipException("Zip file already exists. Zip file format does not allow updating split/spanned files")
         }
         AddStreamToZipTask(zipModel, password, headerWriter, buildAsyncParameters()).execute(
-        AddStreamToZipTaskParameters(inputStream, parameters, buildConfig()));
+            AddStreamToZipTaskParameters(inputStream, parameters, buildConfig()));
     }
 
-    public func extractAll(destinationPath: String) {
-        extractAll(destinationPath, UnzipParameters())
-    }
-
-    public func extractAll(destinationPath: String, unzipParameters: UnzipParameters) {
+    public func extractAll(destinationPath: String, unzipParameters!: UnzipParameters = UnzipParameters()) {
         if (!Zip4cjUtil.isStringNotNullAndNotEmpty(destinationPath)) {
             throw ZipException("output path is None or invalid")
         }
@@ -200,44 +169,20 @@ public class ZipFile {
             ExtractAllFilesTaskParameters(destinationPath, buildConfig()))
     }
 
-    public func extractFile(fileHeader: FileHeader, destinationPath: String) {
-        extractFile(fileHeader, destinationPath, None, UnzipParameters())
-    }
-
-    public func extractFile(fileHeader: FileHeader, destinationPath: String, unzipParameters: ?UnzipParameters) {
-        extractFile(fileHeader, destinationPath, None, unzipParameters)
-    }
-
     public func extractFile(
         fileHeader: FileHeader,
         destinationPath: String,
-        newFileName: ?String,
-        unzipParameters: ?UnzipParameters
+        newFileName!: ?String = None,
+        parameters!: UnzipParameters = UnzipParameters()
     ) {
-        extractFile(fileHeader.getFileName().getOrThrow(), destinationPath, newFileName, unzipParameters)
-    }
-
-    public func extractFile(fileName: String, destinationPath: String) {
-        extractFile(fileName, destinationPath, None, UnzipParameters())
-    }
-
-    public func extractFile(fileName: String, destinationPath: String, unzipParameters: ?UnzipParameters) {
-        extractFile(fileName, destinationPath, None, unzipParameters)
-    }
-
-    public func extractFile(fileName: String, destinationPath: String, newFileName: ?String) {
-        extractFile(fileName, destinationPath, newFileName, UnzipParameters())
-    }
-
-    public func extractFile(fileHeader: FileHeader, destinationPath: String, newFileName: ?String) {
-        extractFile(fileHeader, destinationPath, newFileName, UnzipParameters())
+        extractFile(fileHeader.getFileName().getOrThrow(), destinationPath, newFileName: newFileName, parameters: parameters)
     }
 
     public func extractFile(
         fileName: String,
         destinationPath: String,
-        newFileName: ?String,
-        unzipParameters: ?UnzipParameters
+        newFileName!: ?String = None,
+        parameters!: UnzipParameters = UnzipParameters()
     ) {
         
         if (!Zip4cjUtil.isStringNotNullAndNotEmpty(fileName)) {
@@ -246,13 +191,9 @@ public class ZipFile {
         if (!Zip4cjUtil.isStringNotNullAndNotEmpty(destinationPath)) {
             throw ZipException("destination path is empty or None, cannot extract file")
         }
-        var unzipParametersVar = match( unzipParameters) {
-            case Some(v) => v
-            case None => UnzipParameters()       
-        }
         this.readZipInfo()
-        ExtractFileTask(zipModel, password, unzipParametersVar, buildAsyncParameters()).execute(
-        ExtractFileTaskParameters(destinationPath, fileName, newFileName, buildConfig()));
+        ExtractFileTask(zipModel, password, parameters, buildAsyncParameters()).execute(
+            ExtractFileTaskParameters(destinationPath, fileName, newFileName, buildConfig()));
     }
 
     public func getFileHeaders(): ArrayList<FileHeader> {

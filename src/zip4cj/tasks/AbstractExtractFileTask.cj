@@ -39,7 +39,7 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
         verifyNextEntry(zipInputStream, fileHeader)
         if (fileHeader.isDirectory()) {
             if (!Directory.exists(outputFile)) {
-                Directory.create(outputFile)
+                Directory.create(outputFile, recursive: true)
             }
         } else if (isSymbolicLink) {
             // TODO createSymLink
@@ -67,6 +67,11 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
         progressMonitor: ProgressMonitor,
         buff: Array<Byte>
     ) {
+        if (let Some(parentDir) <- outputFile.directoryName) {
+            if (!Directory.exists(parentDir)) {
+                Directory.create(parentDir, recursive: true)
+            }
+        }
         try (file = File(outputFile, OpenOption.CreateOrTruncate(true))) {
             let outputStream = BufferedOutputStream<File>(file)
             var readLength = inputStream.read(buff)

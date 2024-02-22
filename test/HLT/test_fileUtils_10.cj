@@ -23,11 +23,11 @@ public class FileUtilsTest {
 
     @TestCase
     func FileUtils02(): Unit {
-        var returnTag = 0
+        var returnTag = 1
         try {
             FileUtils.isSymbolicLink(Path(""))
         } catch (e: FSException) {
-            returnTag = 1
+            returnTag = 0
         }
         @Assert(returnTag , 1)
     }
@@ -46,33 +46,33 @@ public class FileUtilsTest {
 
     @TestCase
     func FileUtils05(): Unit {
-        var returnTag = 0
+        var returnTag = 1
         try {
             FileUtils.isSymbolicLink(Path("12125.98"))
         } catch (e: FSException) {
-            returnTag = 1
+            returnTag = 0
         }
         @Assert(returnTag , 1)
     }
 
     @TestCase
     func FileUtils06(): Unit {
-        var returnTag = 0
+        var returnTag = 1
         try {
             FileUtils.isSymbolicLink(Path("#%^$^#$^%"))
         } catch (e: FSException) {
-            returnTag = 1
+            returnTag = 0
         }
         @Assert(returnTag , 1)
     }
 
     @TestCase
     func FileUtils07(): Unit {
-        var returnTag = 0
+        var returnTag = 1
         try {
             FileUtils.isSymbolicLink(Path("zhon中国78893413#%^$^#$^%"))
         } catch (e: FSException) {
-            returnTag = 1
+            returnTag = 0
         }
         @Assert(returnTag , 1)
     }

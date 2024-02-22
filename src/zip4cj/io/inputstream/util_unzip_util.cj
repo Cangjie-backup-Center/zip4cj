@@ -5,10 +5,10 @@ public class UnzipUtil {
     public static func createZipInputStream(zipModel: ZipModel, fileHeader: FileHeader, password: ?Array<Char>): ZipInputStream {
         var splitInputStream: ?SplitFileInputStream = None
         try {
-            splitInputStream = createSplitInputStream(zipModel)
-            splitInputStream.getOrThrow().prepareExtractionForFileHeader(fileHeader)
-
-            var zipInputStream = ZipInputStream(splitInputStream.getOrThrow(), password)
+            let split = createSplitInputStream(zipModel)
+            splitInputStream = split
+            split.prepareExtractionForFileHeader(fileHeader)
+            let zipInputStream = ZipInputStream(split, password: password)
             if (zipInputStream.getNextEntry(fileHeader, false).isNone()) {
                 throw ZipException("Could not locate local file header for corresponding file header")
             }

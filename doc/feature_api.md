@@ -30,23 +30,67 @@ public class ZipFile {
      * 构造 
      * 
      * 参数 zipFile - 文件路径字符串
+     * 参数 password - 密码, 暂时不支持为None
      */
-    public init (zipFile: String)
+    public init (zipFile: String, password!: ?Array<Char> = None)
     
     /*
      * 构造 
      * 
      * 参数 zipFile - 文件路径对象
+     * 参数 password - 密码, 暂时不支持为None
      */
-    public init (zipFile: Path)
+    public init (zipFile: Path, password!: ?Array<Char> = None)
     
     /*
-     * 创建压缩文件，并将指定的文件添加到压缩文件中
+     * 是否在子线程中执行
+     * 
+     * 返回值 Bool - 布尔值
+     */
+    public func isRunInThread(): Bool 
+
+    /*
+     * 设置是否在子线程中执行
+     * 
+     * 参数 Bool - 布尔值
+     * 返回值 Unit - Unit
+     */
+    public func setRunInThread(runInThread: Bool) : Unit
+    
+    /*
+     * 添加压缩文件
+     * 
+     * 参数 fileToAdd - 文件字符串
+     * 参数 parameters - 参数, 默认为初始类
+     * 返回值 Unit - Unit
+     */
+    public func addFile(fileToAdd: String, parameters!: ZipParameters = ZipParameters())
+
+    /*
+     * 添加压缩文件
+     * 
+     * 参数 fileToAdd - 文件路径
+     * 参数 parameters - 参数, 默认为初始类
+     * 返回值 Unit - Unit
+     */
+    public func addFile(fileToAdd: Path, parameters!: ZipParameters = ZipParameters())
+    
+    /*
+     * 添加多个压缩文件
+     * 
+     * 参数 filesToAdd - 文件路径集合
+     * 参数 parameters - 参数, 默认为初始类
+     * 返回值 Unit - Unit
+     */
+    public func addFiles(filesToAdd: Collection<Path>, parameters!: ZipParameters = ZipParameters()) 
+
+    /*
+     * 创建分卷压缩文件，并将指定的文件添加到压缩文件中
      * 
      * 参数 filesToAdd - 压缩文件列表
      * 参数 parameters - 压缩参数
      * 参数 splitArchive - 是否分卷
-     * 参数 splitLength - 分卷大小
+     * 参数 splitLength - 分卷大小, 若选择需要分卷, 分卷大小需要大于等于65536
      */
     public func createSplitZipFile (filesToAdd: Array<Path>, parameters: ZipParameters, splitArchive: Bool, splitLength: Int64)
     
@@ -56,7 +100,7 @@ public class ZipFile {
      * 参数 inputStream - 压缩流
      * 参数 parameters - 压缩参数
      * 参数 splitArchive - 是否分卷
-     * 参数 splitLength - 分卷大小
+     * 参数 splitLength - 分卷大小, 若选择需要分卷, 分卷大小需要大于等于65536
      */
     public func createSplitZipFile (inputStream: InputStream, parameters: ZipParameters, splitArchive: Bool, splitLength: Int64)
     
@@ -66,7 +110,7 @@ public class ZipFile {
      * 参数 folderToAdd - 压缩文件夹路径
      * 参数 parameters - 压缩参数
      * 参数 splitArchive - 是否分卷
-     * 参数 splitLength - 分卷大小
+     * 参数 splitLength - 分卷大小, 若选择需要分卷, 分卷大小需要大于等于65536
      */
     public func createSplitZipFileFromFolder (folderToAdd: Path, parameters: ZipParameters, splitArchive: Bool, splitLength: Int64)
     
@@ -76,6 +120,38 @@ public class ZipFile {
      * 参数 destinationPath - 解压路径
      */
     public func extractAll (destinationPath: String)
+    
+    /*
+     * 解压
+     * 
+     * 参数 destinationPath - 解压路径
+     * 参数 unzipParameters - 解压参数
+     */
+    public func extractAll(destinationPath: String, unzipParameters: UnzipParameters)
+
+    /*
+     * 添加 文件夹
+     * 
+     * 参数 folderToAdd - Path路径
+     * 参数 zipParameters - zipParameters压缩参数
+     * 参数 checkSplitArchive - 是否选中拆分存档, 默认为true
+     */
+    public func addFolder(folderToAdd: Path, zipParameters!: ZipParameters = ZipParameters(), checkSplitArchive!: Bool = true)
+
+    /*
+     * 删除文件
+     * 
+     * 参数 fileName - fileName
+     */
+    public func removeFile (fileName: String)
+
+    /*
+     * 重命名文件
+     * 
+     * 参数 fileNameToRename - 旧文件名
+     * 参数 newFileName - 新文件名
+     */
+    public func renameFile (fileNameToRename: String, newFileName: String)
 }
 ```
 
@@ -449,76 +525,19 @@ public abstract class SplitFileInputStream<: InputStream {
 }
 
 public class ZipInputStream<: InputStream {
-    
+
     /*
      * 构造 
      * 
      * 参数 inputStream - 输入流
-     */
-    public init (inputStream: InputStream)
-    
-    /*
-     * 构造 
-     * 
-     * 参数 inputStream - 输入流
-     * 参数 charset - charset对象
-     */
-    public init (inputStream: InputStream, charset: Charset)
-    
-    /*
-     * 构造 
-     * 
-     * 参数 inputStream - 输入流
-     * 参数 password - 密码
-     */
-    public init (inputStream: InputStream, password: ?Array<Char>)
-    
-    /*
-     * 构造 
-     * 
-     * 参数 inputStream - 输入流
-     * 参数 passwordCallback - 密码回调
-     */
-    public init (inputStream: InputStream, passwordCallback: PasswordCallback)
-    
-    /*
-     * 构造 
-     * 
-     * 参数 inputStream - 输入流
-     * 参数 password - 密码
-     * 参数 charset - charset对象
-     */
-    public init (inputStream: InputStream, password: ?Array<Char>, charset: ?Charset)
-    
-    /*
-     * 构造 
-     * 
-     * 参数 inputStream - 输入流
-     * 参数 passwordCallback - 密码回调
-     * 参数 charset - charset对象
-     */
-    public init (inputStream: InputStream, passwordCallback: PasswordCallback, charset: ?Charset)
-    
-    /*
-     * 构造 
-     * 
-     * 参数 inputStream - 输入流
-     * 参数 password - 密码
-     * 参数 zip4cjConfig - zip配置对象
-     */
-    public init (inputStream: InputStream, password: ?Array<Char>, zip4cjConfig: Zip4cjConfig)
-    
-    /*
-     * 构造 
-     * 
-     * 参数 inputStream - 输入流
-     * 参数 passwordCallback - 密码回调
+     * 参数 password - 密码, 暂时不支持, 默认为None
+     * 参数 passwordCallback - 密码回调, 默认为None
      * 参数 zip4jConfig - zip配置对象
      */
-    public init (inputStream: InputStream, passwordCallback: PasswordCallback, zip4jConfig: Zip4cjConfig)
-    
+    public init (inputStream: InputStream, password!: ?Array<Char> = None, passwordCallback!: ?PasswordCallback = None, zip4jConfig!: Zip4cjConfig = Zip4cjConfig(Option<Charset>.None, InternalZipConstants.BUFF_SIZE, InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING))
+
     /*
-     * 获取 NextEn
+     * 获取 下一个条目
      * 
      * 参数 fileHeader - 文件头
      * 参数 readUntilEndOfCurrentEntryIfOpen - 是否读取到当前结束
@@ -1211,42 +1230,11 @@ public class ZipOutputStream<: OutputStream {
      * 构造 
      * 
      * 参数 outputStream - 输出流
-     */
-    public init (outputStream: OutputStream)
-    
-    /*
-     * 构造 
-     * 
-     * 参数 outputStream - 输出流
-     * 参数 charset - Charset对象
-    public init (outputStream: OutputStream, charset: Option<Charset>)
-    
-    /*
-     * 构造 
-     * 
-     * 参数 outputStream - 输出流
-     * 参数 password - 密码
-     */
-    public init (outputStream: OutputStream, password: ?Array<Char>)
-    
-    /*
-     * 构造 
-     * 
-     * 参数 outputStream - 输出流
-     * 参数 password - 密码
-     * 参数 charset - Charset对象
-     */
-    public init (outputStream: OutputStream, password: ?Array<Char>, charset: Option<Charset>)
-    
-    /*
-     * 构造 
-     * 
-     * 参数 outputStream - 输出流
      * 参数 password - 密码
      * 参数 zip4cjConfig - 配置对象
      * 参数 zipModel - zip模型
      */
-    public init (outputStream: OutputStream, password: ?Array<Char>, zip4cjConfig: Zip4cjConfig, zipModel: ZipModel)
+    public init (outputStream: OutputStream, password!: ?Array<Char>, zip4cjConfig!: Zip4cjConfig, zipModel!: ZipModel)
     
     /*
      * 存入压缩参数

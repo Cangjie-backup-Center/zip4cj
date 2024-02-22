@@ -30,11 +30,11 @@ public class FileUtilsTest {
 
     @TestCase
     func FileUtils02(): Unit {
-        var returnTag = 0
+        var returnTag = 1
         try {
             FileUtils.assertFilesExist(ArrayList<Path>([Path("jar-dir-lfh-and-fh-entry-size-2.jar")]),SymbolicLinkAction.INCLUDE_LINK_ONLY)
         } catch (e: ZipException) {
-            returnTag = 1
+            returnTag = 0
         }
         @Assert(returnTag , 1)
     }
@@ -44,7 +44,7 @@ public class FileUtilsTest {
         var returnTag = 0
         try {
             FileUtils.assertFilesExist(ArrayList<Path>([Path("dsad")]),SymbolicLinkAction.INCLUDE_LINK_ONLY)
-        } catch (e: FSException) {
+        } catch (e: ZipException) {
             returnTag = 1
         }
         @Assert(returnTag , 1)
@@ -55,7 +55,7 @@ public class FileUtilsTest {
         var returnTag = 0
         try {
             FileUtils.assertFilesExist(ArrayList<Path>([Path("dsad你好456")]),SymbolicLinkAction.INCLUDE_LINK_ONLY)
-        } catch (e: FSException) {
+        } catch (e: ZipException) {
             returnTag = 1
         }
         @Assert(returnTag , 1)
@@ -63,11 +63,11 @@ public class FileUtilsTest {
 
     @TestCase
     func FileUtils05(): Unit {
-        var returnTag = 0
+        var returnTag = 1
         try {
             FileUtils.assertFilesExist(ArrayList<Path>([Path("archive_with_invalid_zip64_headers.zip")]),SymbolicLinkAction.INCLUDE_LINK_ONLY)
         } catch (e: ZipException) {
-            returnTag = 1
+            returnTag = 0
         }
         @Assert(returnTag , 1)
     }

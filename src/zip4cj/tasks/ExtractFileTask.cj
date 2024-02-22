@@ -16,9 +16,9 @@ public class ExtractFileTask <: AbstractExtractFileTask<ExtractFileTaskParameter
 
     protected func executeTask(taskParameters: ExtractFileTaskParameters, progressMonitor: ProgressMonitor) {
         var fileHeadersUnderDirectory = getFileHeadersToExtract(taskParameters.fileToExtract)
-        var zipInputStream = createZipInputStream(taskParameters.zip4jConfig)
+        var zipInputStream = createZipInputStream(taskParameters.zip4cjConfig)
         try {
-            var readBuff = Array<Byte>(taskParameters.zip4jConfig.getBufferSize(), item: 0)
+            var readBuff = Array<Byte>(taskParameters.zip4cjConfig.getBufferSize(), item: 0)
             for (fileHeader in fileHeadersUnderDirectory) {
                 splitInputStream.prepareExtractionForFileHeader(fileHeader)
                 var newFileName = determineNewFileName(taskParameters.newFileName.getOrThrow(), taskParameters.fileToExtract,
@@ -51,9 +51,9 @@ public class ExtractFileTask <: AbstractExtractFileTask<ExtractFileTaskParameter
         )
     }
 
-    private func createZipInputStream(zip4jConfig: Zip4cjConfig): ZipInputStream {
+    private func createZipInputStream(zip4cjConfig: Zip4cjConfig): ZipInputStream {
         splitInputStream = UnzipUtil.createSplitInputStream(getZipModel())
-        return ZipInputStream(splitInputStream, password, zip4jConfig)
+        return ZipInputStream(splitInputStream, password: password, config: zip4cjConfig)
     }
 
     private func determineNewFileName(
