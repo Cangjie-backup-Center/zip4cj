@@ -1,0 +1,50 @@
+//3rd_party_lib:zip4cj/build/release/zip4cj
+//3rd_party_lib:zip4cj/build/release/charset
+//3rd_party_lib:zip4cj/build/release/crypto4cj
+from std import collection.*
+from std import fs.*
+from std import io.*
+from std import unittest.*
+from std import math.*
+from std import unittest.testmacro.*
+from charset import charset.*
+from charset import charset.encoding.*
+from zip4cj import zip4cj.*
+@Test
+public class AesKeyStrengthTest {
+    @TestCase
+    func AesKeyStrength01(): Unit {
+        var zipIOException=ZipIOException("")
+        @Assert(zipIOException.toString(), "ZipIOException")
+    }
+
+    @TestCase
+    func AesKeyStrength02(): Unit {
+        var zipIOException=ZipIOException("nihao中国")
+        @Assert(zipIOException.toString(), "ZipIOException: nihao中国")
+    }
+
+    @TestCase
+    func AesKeyStrength03(): Unit {
+        var zipIOException=ZipIOException("27404242")
+        @Assert(zipIOException.toString(), "ZipIOException: 27404242")
+    }
+
+    @TestCase
+    func AesKeyStrength04(): Unit {
+        var zipIOException=ZipIOException("dsadp[drwdvbn，jh")
+        @Assert(zipIOException.toString(), "ZipIOException: dsadp[drwdvbn，jh")
+    }
+
+    @TestCase
+    func AesKeyStrength05(): Unit {
+        var zipIOException=ZipIOException("@$%^&*()dsadp[drwdvbn，jh")
+        @Assert(zipIOException.toString(), "ZipIOException: @$%^&*()dsadp[drwdvbn，jh")
+    }
+
+    @TestCase
+    func AesKeyStrength06(): Unit {
+        var zipIOException=UnsupportedOperationException()
+        @Assert(zipIOException.toString(), "UnsupportedOperationException")
+    }
+}
