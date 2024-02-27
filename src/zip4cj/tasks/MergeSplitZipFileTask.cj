@@ -41,7 +41,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
                         end = zipModel.getEndOfCentralDirectoryRecord().getOffsetOfStartOfCentralDirectory()
                     }
 
-                    FileUtils.copyFile(randomAccessFile, outputStream, start, end, progressMonitor, taskParameters.zip4jConfig.getBufferSize())
+                    FileUtils.copyFile(randomAccessFile, outputStream, start, end, progressMonitor, taskParameters.zip4cjConfig.getBufferSize())
                     totalBytesWritten += (end - start)
                     if (i == 0) {
                         updateFileHeaderOffsetsForIndex(zipModel.getCentralDirectory().getOrThrow().getFileHeaders(), 0, Int64(i),
@@ -54,7 +54,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
                 }
             }
             updateHeadersForMergeSplitFileAction(zipModel, totalBytesWritten, outputStream,
-                taskParameters.zip4jConfig.getCharset().getOrThrow())
+                taskParameters.zip4cjConfig.getCharset().getOrThrow())
             progressMonitor.endProgressMonitor()
         } catch (e: Exception) {
             throw ZipException(e.message)

@@ -15,7 +15,7 @@ main() {
     let zipParameters = ZipParameters();
     zipParameters.setCompressionMethod(CompressionMethod.STORE);
     let zipFile = ZipFile("output123.zip")
-    zipFile.addFolder(Path("output"), zipParameters);
+    zipFile.addFolder(Path("output"), parameters: zipParameters);
     let path = Path("output").join("123").join("123.txt")
     if (FileInfo(path).length != 1) {
         return 1

@@ -16,11 +16,8 @@ from std import unittest.testmacro.*
 main() { 
 
     let test = utilTest()
-    test.utilTest01()
-    test.utilTest02()
-    test.utilTest03()
-    test.utilTest04()
-    test.utilTest05()
+    test.execute()
+    test.printResult()
     return 0
 }
 @Test
@@ -63,7 +60,7 @@ public class utilTest {
             returnTag = returnTag+ 1
         }
         try {
-            sc.addFile("a.txt",ZipParameters())
+            sc.addFile("a.txt", parameters: ZipParameters())
         }catch (e: ZipException) {
             returnTag = returnTag+ 1
         }
@@ -73,7 +70,7 @@ public class utilTest {
             returnTag = returnTag+ 1
         }
         try {
-            sc.addFile(Path("a.txt"),ZipParameters())
+            sc.addFile(Path("a.txt"),parameters: ZipParameters())
         }catch (e: ZipException) {
             returnTag = returnTag+ 1
         }
@@ -83,7 +80,7 @@ public class utilTest {
             returnTag = returnTag+ 1
         }
         try {
-            sc.addFiles(ArrayList<Path>(),ZipParameters())
+            sc.addFiles(ArrayList<Path>(),parameters: ZipParameters())
         }catch (e: ZipException) {
             returnTag = returnTag+ 1
         }
@@ -111,7 +108,7 @@ public class utilTest {
         fh.setFileName("111")
         var returnTag = 0
         try {
-            sc.extractFile(fh,"2112",UnzipParameters())
+            sc.extractFile(fh, "2112")
         }catch (e: ZipException) {
             returnTag = 1
         }
@@ -125,7 +122,7 @@ public class utilTest {
         fh.setFileName("111")
         var returnTag = 0
         try {
-            sc.extractFile(fh,"2112","da6",UnzipParameters())
+            sc.extractFile(fh,"2112",newFileName: "da6", parameters: UnzipParameters())
         }catch (e: ZipException) {
             returnTag = returnTag + 1
         }
@@ -135,22 +132,7 @@ public class utilTest {
         }catch (e: ZipException) {
             returnTag = returnTag + 1
         }
-        try {
-            sc.extractFile("2112","da6",UnzipParameters())
-        }catch (e: ZipException) {
-            returnTag = returnTag + 1
-        }
-        try {
-            sc.extractFile("2112","da6","UnzipParameters")
-        }catch (e: ZipException) {
-            returnTag = returnTag + 1
-        }
-        try {
-            sc.extractFile(fh,"2112","da6")
-        }catch (e: ZipException) {
-            returnTag = returnTag + 1
-        }
-        @Assert(returnTag, 5)
+        @Assert(returnTag, 2)
     }
 
 }

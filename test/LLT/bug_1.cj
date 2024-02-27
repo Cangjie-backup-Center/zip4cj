@@ -1,4 +1,6 @@
 // RESOURCES: MobaXtermbackup.zip
+// RESOURCES: unexpected-eof-when-reading-stream
+// RESOURCES: archive_with_invalid_zip64_headers.zip
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
@@ -117,6 +119,7 @@ public class IssuesFix {
     func I92AIM () : Unit {
         try {
             FileUtils.getRelativeFileName(Path("你好"), ZipParameters())
+            FileUtils.getRelativeFileName(Path(""), ZipParameters())
         } catch (_) {
             throw Exception()
         }
@@ -136,6 +139,54 @@ public class IssuesFix {
         let sc = FileUtils.getFilesInDirectoryRecursive(Path(""), ZipParameters())
     }
 
+
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I92XWL
+    func I92XWL () : Unit {
+        @Assert(FileUtils.readSymbolicLink(Path("")), "") 
+    }
+
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I92XKE
+    func I92XKE () : Unit {
+        let zipParameters = ZipParameters();
+        zipParameters.setFileNameInZip("123");
+        zipParameters.setCompressionMethod(CompressionMethod.STORE)
+        let zipFile = ZipFile("I92XKE.zip")
+        let files = File("unexpected-eof-when-reading-stream", Open(true, true))
+        zipFile.createSplitZipFile(files, zipParameters, false, 20) 
+        @Assert(File.exists("I92XKE.zip"), true)
+    }
+
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I92XJ5
+    func I92XJ5 () : Unit {
+        try {
+             let zipParameters = ZipParameters();
+            zipParameters.setCompressionMethod(CompressionMethod.STORE)
+            let zipFile = ZipFile("I92XJ5.zip")
+            let files = File("unexpected-eof-when-reading-stream", Open(true, true))
+            zipFile.createSplitZipFile(files, zipParameters, false, 20) 
+            throw Exception(" I92XJ5 ")
+        } catch (e: ZipException) {
+            ()
+        }
+    } 
+    
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I93PKN?from=project-issue
+    func I93PKN () : Unit {
+        try {
+            let input = File("archive_with_invalid_zip64_headers.zip", Open(true, true))
+            var buf:Array<Char>=Array<Char>([])
+            var buf1:Array<UInt8>=Array<UInt8>([1,2,3,4,5,6,85,4,2,1,22,1,5,2,1,1,2])
+            var config=Zip4cjConfig(Charsets.UTF8,666,true)
+            var zipoutputstream=ZipOutputStream(input)//,password: buf,zip4cjConfig: config, zipModel: ZipModel())
+            zipoutputstream.write(buf1)
+        } catch (e: NoneValueException) {
+            @Assert(e.message, "please add an entry first, call the putNextEntry function, and then write the operation.")
+        }
+    }
 
 }
 

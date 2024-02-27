@@ -16,6 +16,13 @@ public class Zip4cjUtil {
 
     public static func createDirectoryIfNotExists(file: Path): Bool {
         /* Temporal and Temporal Implementation */
+        if (File.exists(file)) {
+            throw ZipException("output directory is not valid")
+        } else {
+            if (!Directory.exists(file)) {
+                Directory.create(file, recursive: true)
+            }
+        }
         return true
     }
 

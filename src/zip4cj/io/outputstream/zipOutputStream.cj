@@ -14,6 +14,7 @@ public class ZipOutputStream <: OutputStream & Resource {
     private var password: ?Array<Char>
     private var zipModel: ZipModel
     private var compressedOutputStream: CompressedOutputStream = unsafe { zeroValue<CompressedOutputStream>() }
+    private var compressedOutputStreamInit: Bool = false
     private var fileHeader: ?FileHeader = None
     private var localFileHeader: ?LocalFileHeader = None
     private var fileHeaderFactory: FileHeaderFactory = FileHeaderFactory()
@@ -25,7 +26,10 @@ public class ZipOutputStream <: OutputStream & Resource {
     private var streamClosed: Bool
     private var entryClosed: Bool = true
 
-    public init(outputStream: OutputStream, password: ?Array<Char>, zip4cjConfig: Zip4cjConfig, zipModel: ZipModel) {
+    public init(outputStream: OutputStream, 
+                password!: ?Array<Char> = None, 
+                zip4cjConfig!: Zip4cjConfig = Zip4cjConfig(None, InternalZipConstants.BUFF_SIZE, InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING), 
+                zipModel!: ZipModel = ZipModel()) {
         if (zip4cjConfig.getBufferSize() < InternalZipConstants.MIN_BUFF_SIZE) {
             throw IllegalArgumentException(
                 "Buffer size cannot be less than ${InternalZipConstants.MIN_BUFF_SIZE} bytes")
@@ -46,10 +50,14 @@ public class ZipOutputStream <: OutputStream & Resource {
         initializeAndWriteFileHeader(clonedZipParameters)
 
         compressedOutputStream = initializeCompressedOutputStream(clonedZipParameters)
+        this.compressedOutputStreamInit = true
         this.entryClosed = false
     }
 
     public func write(b: Array<UInt8>): Unit {
+        if (!this.compressedOutputStreamInit) {
+            throw NoneValueException("please add an entry first, call the putNextEntry function, and then write the operation.")
+        }
         ensureStreamOpen()
         crc32.update(b)
         compressedOutputStream.write(b)
@@ -148,7 +156,7 @@ public class ZipOutputStream <: OutputStream & Resource {
         return StoreOutputStream(cipherOutputStream)
     }
 
-    public func verifyZipParameters(zipParameters: ZipParameters): Unit {
+    func verifyZipParameters(zipParameters: ZipParameters): Unit {
         if (Zip4cjUtil.isStringNullOrEmpty(zipParameters.getFileNameInZip())) {
             throw IllegalArgumentException("fileNameInZip is null or empty")
         }

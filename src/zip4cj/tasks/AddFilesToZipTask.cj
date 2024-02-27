@@ -13,7 +13,7 @@ public class AddFilesToZipTask <: AbstractAddFileToZipTask<AddFilesToZipTaskPara
     protected func executeTask(taskParameters: AddFilesToZipTaskParameters, progressMonitor: ProgressMonitor) {
         verifyZipParameters(taskParameters.zipParameters)
         var filesToAdd = determineActualFilesToAdd(taskParameters)
-        addFilesToZip(filesToAdd, progressMonitor, taskParameters.zipParameters, taskParameters.zip4jConfig)
+        addFilesToZip(filesToAdd, progressMonitor, taskParameters.zipParameters, taskParameters.zip4cjConfig)
     }
 
     protected func calculateTotalWork(taskParameters: AddFilesToZipTaskParameters): Int64 {

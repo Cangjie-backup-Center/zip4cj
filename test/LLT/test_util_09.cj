@@ -25,7 +25,7 @@ public class utilTest {
     @TestCase
     public func utilTest05(): Unit {
         var sc = ZipFile(Path("123.txt"))
-        ZipFile(Path("123.txt"),Array<Char>())
+        ZipFile(Path("123.txt"), password: Array<Char>())
         var returnTag = 0
         try {
             sc.createSplitZipFile(ByteArrayStream(),ZipParameters(),true,6)

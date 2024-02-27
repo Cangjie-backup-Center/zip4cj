@@ -22,7 +22,7 @@ public class SetCommentTask <: AsyncZipTask<SetCommentTaskTaskParameters> {
 
             var headerWriter: HeaderWriter = HeaderWriter()
             headerWriter.finalizeZipFileWithoutValidations(zipModel, outputStream,
-                taskParameters.zip4jConfig.getCharset())
+                taskParameters.zip4cjConfig.getCharset())
         }
     }
 

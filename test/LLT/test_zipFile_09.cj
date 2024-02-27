@@ -1,6 +1,6 @@
-/* EXEC: cjc %import-path %L %l %f
-EXEC: ./main
- */
+// EXEC: cjc %import-path %L %l %f
+// EXEC: ./main
+
 from zip4cj import zip4cj.*
 from std import os.posix.*
 from std import fs.*
@@ -9,13 +9,15 @@ from std import sync.*
 from std import random.*
 from std import time.*
 // "/home/liyanqing/NEW_FILE_0"
-// zip64 测试用例
+// zip64 测试重命名文件
 main() { 
     let entrySize = 4294967296
     let zipParameters = ZipParameters();
     zipParameters.setCompressionMethod(CompressionMethod.STORE);
     zipParameters.setEntrySize(entrySize);
     createZip64FileWithEntries(1, entrySize, zipParameters);
+    let zipFile = ZipFile("output.zip")
+    zipFile.renameFile("FILE_0", "NEW_FILE_0");
     0
 }
 

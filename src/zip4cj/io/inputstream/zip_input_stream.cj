@@ -10,61 +10,26 @@ public class ZipInputStream <: InputStream & Resource {
     private var crc32: CRC32 = CRC32()
     private var endOfEntryBuffer: Array<Byte> = Array<Byte>()
     private var canSkipExtendedLocalFileHeader: Bool = false
-    private var zip4jConfig: Zip4cjConfig
+    private var zip4cjConfig: Zip4cjConfig
     private var streamClosed: Bool = false
     private var entryEOFReached: Bool = false
 
-    public init(inputStream: InputStream) {
-        this(inputStream, Array<Char>(), None)
-    }
-
-    public init(inputStream: InputStream, charset: Charset) {
-        this(inputStream, Array<Char>(), charset)
-    }
-
-    public init(inputStream: InputStream, password: ?Array<Char>) {
-        this(inputStream, password, None)
-    }
-
-    public init(inputStream: InputStream, passwordCallback: PasswordCallback) {
-        this(inputStream, passwordCallback, None)
-    }
-
-    public init(inputStream: InputStream, password: ?Array<Char>, charset: ?Charset) {
-        this(inputStream, password,
-            Zip4cjConfig(charset, InternalZipConstants.BUFF_SIZE,
-            InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING))
-    }
-
-    public init(inputStream: InputStream, passwordCallback: PasswordCallback, charset: ?Charset) {
-        this(inputStream, passwordCallback,
-            Zip4cjConfig(charset, InternalZipConstants.BUFF_SIZE,
-            InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING))
-    }
-
-    public init(inputStream: InputStream, password: ?Array<Char>, zip4cjConfig: Zip4cjConfig) {
-        this(inputStream, password, None, zip4cjConfig)
-    }
-
-    public init(inputStream: InputStream, passwordCallback: PasswordCallback, zip4jConfig: Zip4cjConfig) {
-        this(inputStream, Array<Char>(), passwordCallback, zip4jConfig)
-    }
-
-    private init(
+    public init(
         inputStream: InputStream,
-        password: ?Array<Char>,
-        passwordCallback: ?PasswordCallback,
-        zip4jConfig: Zip4cjConfig
+        password!: ?Array<Char> = None, 
+        passwordCallback!: ?PasswordCallback = None ,
+        config!: Zip4cjConfig = Zip4cjConfig(None, InternalZipConstants.BUFF_SIZE,
+            InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING)
     ) {
-        if (zip4jConfig.getBufferSize() < InternalZipConstants.MIN_BUFF_SIZE) {
+        if (config.getBufferSize() < InternalZipConstants.MIN_BUFF_SIZE) {
             throw IllegalArgumentException(
                 "Buffer size cannot be less than  ${InternalZipConstants.MIN_BUFF_SIZE} bytes")
         }
 
-        this.inputStream = PushbackInputStream(inputStream, Int64(zip4jConfig.getBufferSize()))
+        this.inputStream = PushbackInputStream(inputStream, Int64(config.getBufferSize()))
         this.password = password
         this.passwordCallback = passwordCallback
-        this.zip4jConfig = zip4jConfig
+        this.zip4cjConfig = config
     }
 
     public func getNextEntry(fileHeader: ?FileHeader, readUntilEndOfCurrentEntryIfOpen: Bool): ?LocalFileHeader {
@@ -72,7 +37,7 @@ public class ZipInputStream <: InputStream & Resource {
             readUntilEndOfEntry()
         }
 
-        localFileHeader = headerReader.readLocalFileHeader(inputStream, zip4jConfig.getCharset())
+        localFileHeader = headerReader.readLocalFileHeader(inputStream, zip4cjConfig.getCharset())
 
         if (localFileHeader.isNone()) {
             return None
@@ -185,7 +150,7 @@ public class ZipInputStream <: InputStream & Resource {
     ): CipherInputStream {
         if (!localFileHeader.isEncrypted()) {
             return NoCipherInputStream(zipEntryInputStream, localFileHeader, password,
-                Int64(zip4jConfig.getBufferSize()))
+                Int64(zip4cjConfig.getBufferSize()))
         }
 
         if (localFileHeader.getEncryptionMethod() == EncryptionMethod.AES) {
@@ -193,7 +158,7 @@ public class ZipInputStream <: InputStream & Resource {
             throw ZipException("AES Not Supported")
         } else if (localFileHeader.getEncryptionMethod() == EncryptionMethod.ZIP_STANDARD) {
             return ZipStandardCipherInputStream(zipEntryInputStream, localFileHeader, password,
-                Int64(zip4jConfig.getBufferSize()), zip4jConfig.isUseUtf8CharsetForPasswords())
+                Int64(zip4cjConfig.getBufferSize()), zip4cjConfig.isUseUtf8CharsetForPasswords())
         } else {
             let message: String = "Entry ${localFileHeader.getFileName()} Strong Encryption not supported"
             throw ZipException(message, ZipExceptionType.UNSUPPORTED_ENCRYPTION)
@@ -207,7 +172,7 @@ public class ZipInputStream <: InputStream & Resource {
         var compressionMethod = localFileHeader.getCompressionMethod().getOrThrow()
 
         if (compressionMethod == CompressionMethod.DEFLATE) {
-            return InflaterInputStream(cipherInputStream, Int64(zip4jConfig.getBufferSize()))
+            return InflaterInputStream(cipherInputStream, Int64(zip4cjConfig.getBufferSize()))
         }
 
         return StoreInputStream(cipherInputStream)

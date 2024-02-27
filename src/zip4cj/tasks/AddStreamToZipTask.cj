@@ -17,7 +17,7 @@ public class AddStreamToZipTask <: AbstractAddFileToZipTask<AddStreamToZipTaskPa
             throw ZipException("fileNameInZip has to be set in zipParameters when adding stream")
         }
 
-        removeFileIfExists(getZipModel(), taskParameters.zip4jConfig,
+        removeFileIfExists(getZipModel(), taskParameters.zip4cjConfig,
             taskParameters.zipParameters.getFileNameInZip().getOrThrow(), progressMonitor)
 
         // For streams, it is necessary to write extended local file header because of Zip standard encryption.
@@ -35,10 +35,10 @@ public class AddStreamToZipTask <: AbstractAddFileToZipTask<AddStreamToZipTaskPa
             getZipModel().getZipFile().getOrThrow(),
             getZipModel().getSplitLength()
         )
-        var zipOutputStream = initializeOutputStream(splitOutputStream, taskParameters.zip4jConfig)
+        var zipOutputStream = initializeOutputStream(splitOutputStream, taskParameters.zip4cjConfig)
 
         try {
-            var readBuff = Array<Byte>(taskParameters.zip4jConfig.getBufferSize(), item: 0)
+            var readBuff = Array<Byte>(taskParameters.zip4cjConfig.getBufferSize(), item: 0)
             var readLen: Int64
 
             var zipParameters = taskParameters.zipParameters
@@ -68,13 +68,13 @@ public class AddStreamToZipTask <: AbstractAddFileToZipTask<AddStreamToZipTaskPa
 
     private func removeFileIfExists(
         zipModel: ZipModel,
-        zip4jConfig: Zip4cjConfig,
+        zip4cjConfig: Zip4cjConfig,
         fileNameInZip: String,
         progressMonitor: ProgressMonitor
     ) {
         var fileHeader = HeaderUtil.getFileHeader(zipModel, fileNameInZip)
         if (fileHeader.isSome()) {
-            removeFile(fileHeader.getOrThrow(), progressMonitor, zip4jConfig)
+            removeFile(fileHeader.getOrThrow(), progressMonitor, zip4cjConfig)
         }
     }
 }

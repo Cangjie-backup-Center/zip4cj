@@ -49,11 +49,11 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
                 } else {
                     // copy complete entry without any changes
                     currentFileCopyPointer = currentFileCopyPointer + super.copyFile(inputStream, outputStream, currentFileCopyPointer,
-                        lengthOfCurrentEntry, progressMonitor, taskParameters.zip4jConfig.getBufferSize())
+                        lengthOfCurrentEntry, progressMonitor, taskParameters.zip4cjConfig.getBufferSize())
                 }
                 this.verifyIfTaskIsCancelled()
             }
-            headerWriter.finalizeZipFile(zipModel, outputStream, taskParameters.zip4jConfig.getCharset())
+            headerWriter.finalizeZipFile(zipModel, outputStream, taskParameters.zip4cjConfig.getCharset())
             successFlag = true
         } finally {
             this.cleanupFile(successFlag, zipModel.getZipFile().getOrThrow(), temporaryZipFile)

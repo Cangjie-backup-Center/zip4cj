@@ -21,16 +21,16 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         filesToAdd: ArrayList<Path>,
         progressMonitor: ProgressMonitor,
         zipParameters: ZipParameters,
-        zip4jConfig: Zip4cjConfig
+        config: Zip4cjConfig
     ) {
-        var readBuff = Array<Byte>(zip4jConfig.getBufferSize(), item: 0)
+        var readBuff = Array<Byte>(config.getBufferSize(), item: 0)
         var updatedFilesToAdd: ArrayList<Path> = removeFilesIfExists(filesToAdd, zipParameters, progressMonitor,
-            zip4jConfig)
+            config)
         var splitOutputStream: SplitOutputStream = SplitOutputStream(
             zipModel.getZipFile().getOrThrow(),
             zipModel.getSplitLength()
         )
-        var zipOutputStream: ZipOutputStream = initializeOutputStream(splitOutputStream, zip4jConfig)
+        var zipOutputStream: ZipOutputStream = initializeOutputStream(splitOutputStream, config)
         for (fileToAdd in updatedFilesToAdd) {
             verifyIfTaskIsCancelled()
             var clonedzp: ZipParameters = cloneAndAdjustZipParameters(zipParameters, fileToAdd,
@@ -136,11 +136,11 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         return totalWork
     }
 
-    func initializeOutputStream(splitOutputStream: SplitOutputStream, zip4jConfig: Zip4cjConfig): ZipOutputStream {
+    func initializeOutputStream(splitOutputStream: SplitOutputStream, zip4cjConfig: Zip4cjConfig): ZipOutputStream {
         if (File.exists(zipModel.getZipFile().getOrThrow())) {
             splitOutputStream.seek(HeaderUtil.getOffsetStartOfCentralDirectory(zipModel))
         }
-        return ZipOutputStream(splitOutputStream, password, zip4jConfig, zipModel)
+        return ZipOutputStream(splitOutputStream, password: password, zip4cjConfig: zip4cjConfig, zipModel: zipModel)
     }
 
     func verifyZipParameters(parameteres: ?ZipParameters) {
@@ -216,7 +216,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         files: ArrayList<Path>,
         zipParameters: ZipParameters,
         progressMonitor: ProgressMonitor,
-        zip4jConfig: Zip4cjConfig
+        config: Zip4cjConfig
     ): ArrayList<Path> {
         var filesToAdd: ArrayList<Path> = files
         if (!File.exists(zipModel.getZipFile().getOrThrow())) {
@@ -236,7 +236,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
             if (fileHeader.isSome()) {
                 if (zipParameters.isOverrideExistingFilesInZip()) {
                     progressMonitor.setCurrentTask(REMOVE_ENTRY)
-                    removeFile(fileHeader.getOrThrow(), progressMonitor, zip4jConfig)
+                    removeFile(fileHeader.getOrThrow(), progressMonitor, config)
                     verifyIfTaskIsCancelled()
                     progressMonitor.setCurrentTask(ADD_ENTRY)
                 } else {
@@ -248,7 +248,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         return filesToAdd
     }
 
-    func removeFile(fileHeader: FileHeader, progressMonitor: ProgressMonitor, zip4jConfig: Zip4cjConfig) {
+    func removeFile(fileHeader: FileHeader, progressMonitor: ProgressMonitor, zip4cjConfig: Zip4cjConfig) {
         var asyncTaskParameters: AsyncTaskParameters = AsyncTaskParameters(None, false, progressMonitor)
         // TODO RemoveFilesFromZipTask
     }
