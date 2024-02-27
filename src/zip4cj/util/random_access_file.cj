@@ -4,11 +4,18 @@ public open class RandomAccessFile <: Resource {
     public var postion_: Int64
     protected var rawFile: File = unsafe { zeroValue<File>() }
 
-    public open prop length: Int64 {
+    public open prop remainLength: Int64 {
         get() {
             rawFile.remainLength
         }
     }
+    
+    public open prop length: Int64 {
+        get() {
+            rawFile.length
+        }
+    }
+
     public init(path: String, mode: OpenOption) {
         this.postion_ = 0
         this.rawFile = File(path, mode)

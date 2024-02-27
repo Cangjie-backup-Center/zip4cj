@@ -1,42 +1,57 @@
 package zip4cj.io.outputstream
 
+enum OUTPUT <: OutputStream & Resource {
+    | DEFLATE(CompressOutputStream)
+    | BUFFER(BufferedOutputStream<CipherOutputStream>)
+
+    public func write(b: Array<UInt8>): Unit {
+        match(this) {
+            case DEFLATE(v) => v.write(b)
+            case BUFFER(v) => v.write(b)
+        }
+    } 
+
+    public func close(): Unit {
+        match(this) {
+            case DEFLATE(v) => v.close()
+            case BUFFER(v) => v.close()
+        }
+    }
+
+    public func isClosed(): Bool {
+        match(this) {
+            case DEFLATE(v) => false
+            case BUFFER(v) => v.isClosed()
+        }
+    }
+
+    public func flush(): Unit {
+        match(this) {
+            case DEFLATE(v) => v.flush()
+            case BUFFER(v) => v.flush()
+        }
+    }
+}
+
 class DeflaterOutputStream <: CompressedOutputStream {
-    private var buffer: ?BufferedOutputStream<CipherOutputStream> = None
-    private var closed: Bool = false
-    private var compressionLevel: CompressionLevel
-    private var cipherOutputStream: CipherOutputStream
-    private var bufferSize: Int64
+    var deflater: OUTPUT
     public init(cipherOutputStream: CipherOutputStream, compressionLevel: CompressionLevel, bufferSize: Int64) {
         super(cipherOutputStream)
-        this.cipherOutputStream = cipherOutputStream
-        this.compressionLevel = compressionLevel
-        this.bufferSize = bufferSize
+        this.deflater = match (compressionLevel.getLevel()) {
+            case 0 => OUTPUT.BUFFER(BufferedOutputStream<CipherOutputStream>(cipherOutputStream))
+            case 1 | 2 | 3 => OUTPUT.DEFLATE(CompressOutputStream(cipherOutputStream, compressLevel: BestSpeed, bufLen: bufferSize))
+            case 4 | 5 | 6 => OUTPUT.DEFLATE(CompressOutputStream(cipherOutputStream, compressLevel: DefaultCompression, bufLen: bufferSize))
+            case 7 | 8 | 9 => OUTPUT.DEFLATE(CompressOutputStream(cipherOutputStream, compressLevel: BestCompression, bufLen: bufferSize))
+            case _ => throw NoneValueException()
+        }
     }
 
     public func write(b: Array<UInt8>): Unit {
-        if (compressionLevel.getLevel() == 0) {
-            if (let Some(v) <- this.buffer) {
-                v.write(b)
-            } else {
-                let buf = BufferedOutputStream<CipherOutputStream>(cipherOutputStream, bufferSize)
-                buf.write(b)
-                this.buffer = buf
-            }
-            return
-        }
-        let deflater = match (compressionLevel.getLevel()) {
-            case 1 | 2 | 3 => CompressOutputStream(cipherOutputStream, compressLevel: BestSpeed, bufLen: bufferSize)
-            case 4 | 5 | 6 => CompressOutputStream(cipherOutputStream, compressLevel: DefaultCompression,
-                bufLen: bufferSize)
-            case 7 | 8 | 9 => CompressOutputStream(cipherOutputStream, compressLevel: BestCompression,
-                bufLen: bufferSize)
-            case _ => throw NoneValueException()
-        }
-        deflater.write(b)
-        deflater.close()
+        this.deflater.write(b)
     }
 
     public func closeEntry(): Unit {
+        this.deflater.close()
         super.closeEntry()
     }
 }

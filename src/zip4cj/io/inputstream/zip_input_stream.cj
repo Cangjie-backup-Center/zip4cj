@@ -68,6 +68,9 @@ public class ZipInputStream <: InputStream & Resource {
     }
 
     public func read(b: Array<Byte>): Int64 {
+        if (b.size == 0) {
+            return -1
+        }
         return read(b, 0, b.size)
     }
 

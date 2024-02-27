@@ -262,14 +262,18 @@ public class ZipFile {
     }
 
     public func renameFile(fileHeader: FileHeader, newFileName: String) {
-        renameFile(fileHeader.getFileName().getOrThrow(), newFileName)
+        if (let Some(v) <- fileHeader.getFileName()) {
+            renameFile(v, newFileName)
+        } else {
+            throw NoneValueException("The fileName of the FileHeader class is None.")
+        }
     }
 
     public func renameFile(fileNameToRename: String, newFileName: String) {
-        if (fileNameToRename == "" || fileNameToRename == "\0") {
+        if (Zip4cjUtil.isStringNullOrEmpty(fileNameToRename)) {
             throw ZipException("file name to be changed is None or empty")
         }
-        if (newFileName == "" || newFileName == "\0") {
+        if (Zip4cjUtil.isStringNullOrEmpty(newFileName)) {
             throw ZipException("newFileName is None or empty")
         }
         renameFiles(HashMap<String, String>([(fileNameToRename, newFileName)]))
@@ -323,10 +327,11 @@ public class ZipFile {
         if (isNullzipModel) {
             throw ZipException("zip model is None, cannot get inputstream")
         }
-        var zipInputStream = UnzipUtil.createZipInputStream(zipModel, fileHeader, password.getOrThrow())
+        var zipInputStream = UnzipUtil.createZipInputStream(zipModel, fileHeader, password)
         openInputStreams.append(zipInputStream)
         return zipInputStream
     }
+
     public func isValidZipFile(): Bool {
         if (!File.exists(zipFile)) {
             return false
@@ -373,6 +378,9 @@ public class ZipFile {
     }
 
     private func readZipInfo() {
+        if (!isNullzipModel) {
+            return 
+        }
         try (randomAccessFile = initializeRandomAccessFileForHeaderReading(zipFile)) {
             var headerReader = HeaderReader()
             zipModel = headerReader.readAllHeaders(randomAccessFile, buildConfig())
@@ -386,7 +394,8 @@ public class ZipFile {
     }
 
     private func createNewZipModel() {
-        zipModel = ZipModel()
+        this.zipModel = ZipModel()
+        isNullzipModel = false
         zipModel.setZipFile(zipFile)
     }
 

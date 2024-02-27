@@ -20,12 +20,14 @@ class ZipStandardSplitFileInputStream <: SplitFileInputStream {
     }
 
     public func read(b: Array<Byte>): Int64 {
+        if (b.isEmpty()) {
+            return 0
+        }
         return read(b, 0, b.size)
     }
 
     func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
         var readLen = randomAccessFile.read(b, off, len)
-
         if ((readLen != len || readLen == -1) && isSplitZipArchive) {
             openRandomAccessFileForIndex(currentSplitFileCounter + 1)
             currentSplitFileCounter++
@@ -38,7 +40,6 @@ class ZipStandardSplitFileInputStream <: SplitFileInputStream {
                 readLen += newlyRead
             }
         }
-
         return readLen
     }
 

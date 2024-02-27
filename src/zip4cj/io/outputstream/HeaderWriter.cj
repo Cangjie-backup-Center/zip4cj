@@ -18,7 +18,11 @@ public class HeaderWriter {
         var byteArrayOutputStream = ByteArrayStream()
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(localFileHeader.getSignature().getOrThrow().getValue()))
         rawIO.writeShortLittleEndian(byteArrayOutputStream, localFileHeader.getVersionNeededToExtract())
-        byteArrayOutputStream.write(localFileHeader.getGeneralPurposeFlag().getOrThrow())
+        if (let Some(v) <- localFileHeader.getGeneralPurposeFlag()) {
+            byteArrayOutputStream.write(v)
+        } else {
+            throw NoneValueException("cannot read the array length because array is None")
+        }
         rawIO.writeShortLittleEndian(
             byteArrayOutputStream,
             localFileHeader.getCompressionMethod().getOrThrow().getCode()

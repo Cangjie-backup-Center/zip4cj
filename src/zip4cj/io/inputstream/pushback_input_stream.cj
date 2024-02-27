@@ -49,7 +49,7 @@ class PushbackInputStream <: InputStream {
         }
         if (len > 0) {
             len_p = input.read(b[off_p..off_p + len_p]) //read(b, off_p, len_p)
-            if (len_p == -1) {
+            if (len_p == 0) {
                 if (avail == 0) {
                     return -1
                 }

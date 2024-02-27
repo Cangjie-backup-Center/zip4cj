@@ -7,7 +7,7 @@ public class Zip4cjUtil {
     private static let MAX_RAW_READ_FULLY_RETRY_ATTEMPTS: Int32 = 15
 
     public static func isStringNullOrEmpty(str: ?String): Bool {
-        return str.isNone() || str.getOrThrow().trim().size == 0
+        return str.isNone() || str.getOrThrow().trim().size == 0 || str.getOrThrow().trim() == "\0"
     }
 
     public static func isStringNotNullAndNotEmpty(str: ?String): Bool {
