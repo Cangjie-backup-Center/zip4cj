@@ -1,6 +1,6 @@
 package zip4cj.io.inputstream
 
-public abstract class DecompressedInputStream <: InputStream & Resource {
+abstract class DecompressedInputStream <: InputStream & Resource {
     private var cipherInputStream: CipherInputStream
     protected var oneByteBuffer: Array<Byte> = Array<Byte>(1, item: 0)
     var closed = false

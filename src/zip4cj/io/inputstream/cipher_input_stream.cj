@@ -1,6 +1,6 @@
 package zip4cj.io.inputstream
 
-public abstract class CipherInputStream <: InputStream & Resource {
+abstract class CipherInputStream <: InputStream & Resource {
     protected var zipEntryInputStream: ZipEntryInputStream
     protected var lastReadRawDataCache: Array<Byte> = Array<Byte>()
     protected var singleByteBuffer: Array<Byte> = Array<Byte>(1, item: 0)

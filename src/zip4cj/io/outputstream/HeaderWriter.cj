@@ -15,7 +15,7 @@ public class HeaderWriter {
         outputStream: OutputStream,
         charset: ?Charset
     ) {
-        var byteArrayOutputStream = ByteArrayStream()
+        let byteArrayOutputStream = ByteArrayStream()
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(localFileHeader.getSignature().getOrThrow().getValue()))
         rawIO.writeShortLittleEndian(byteArrayOutputStream, localFileHeader.getVersionNeededToExtract())
         if (let Some(v) <- localFileHeader.getGeneralPurposeFlag()) {
@@ -133,11 +133,11 @@ public class HeaderWriter {
     }
 
     public func finalizeZipFile(zipModel: ZipModel, outputStream: OutputStream, charset: ?Charset): Unit {
-        var byteArrayOutputStream = ByteArrayStream()
+        let byteArrayOutputStream = ByteArrayStream()
         processHeaderData(zipModel, outputStream)
-        var offsetCentralDir = getOffsetOfCentralDirectory(zipModel)
+        let offsetCentralDir = getOffsetOfCentralDirectory(zipModel)
         writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO, charset)
-        var sizeOfCentralDir = byteArrayOutputStream.length
+        let sizeOfCentralDir = byteArrayOutputStream.length
 
         if (zipModel.isZip64Format() || offsetCentralDir >= InternalZipConstants.ZIP_64_SIZE_LIMIT ||
             zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size >= InternalZipConstants.ZIP_64_NUMBER_OF_ENTRIES_LIMIT) {
@@ -174,10 +174,10 @@ public class HeaderWriter {
     }
 
     public func finalizeZipFileWithoutValidations(zipModel: ZipModel, outputStream: OutputStream, charset: ?Charset) {
-        var byteArrayOutputStream: ByteArrayStream = ByteArrayStream()
-        var offsetCentralDir = getOffsetOfCentralDirectory(zipModel)
+        let byteArrayOutputStream: ByteArrayStream = ByteArrayStream()
+        let offsetCentralDir = getOffsetOfCentralDirectory(zipModel)
         writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO, charset)
-        var sizeOfCentralDir = byteArrayOutputStream.length
+        let sizeOfCentralDir = byteArrayOutputStream.length
 
         if (zipModel.isZip64Format() || offsetCentralDir >= InternalZipConstants.ZIP_64_SIZE_LIMIT ||
             zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size >= InternalZipConstants.ZIP_64_NUMBER_OF_ENTRIES_LIMIT) {

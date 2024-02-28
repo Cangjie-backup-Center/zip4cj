@@ -249,8 +249,10 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
     }
 
     func removeFile(fileHeader: FileHeader, progressMonitor: ProgressMonitor, zip4cjConfig: Zip4cjConfig) {
-        var asyncTaskParameters: AsyncTaskParameters = AsyncTaskParameters(None, false, progressMonitor)
-        // TODO RemoveFilesFromZipTask
+        let asyncTaskParameters: AsyncTaskParameters = AsyncTaskParameters(None, false, progressMonitor)
+        let removeFilesFromZipTask = RemoveFilesFromZipTask(zipModel, headerWriter, asyncTaskParameters)
+        let parameters = RemoveFilesFromZipTaskParameters([fileHeader.getFileName().getOrThrow()], zip4cjConfig)
+        removeFilesFromZipTask.execute(parameters)
     }
 
     protected open func replaceFileNameInZip(fileInZipWithPath: String, newFileName: String): String {
@@ -258,7 +260,6 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
             return fileInZipWithPath[0..fileInZipWithPath.lastIndexOf(InternalZipConstants.ZIP_FILE_SEPARATOR).
                     getOrThrow() + 1] + newFileName
         }
-
         return newFileName
     }
 

@@ -31,12 +31,11 @@ public class AddStreamToZipTask <: AbstractAddFileToZipTask<AddStreamToZipTaskPa
             taskParameters.zipParameters.setEntrySize(0)
         }
 
-        var splitOutputStream = SplitOutputStream(
+        let splitOutputStream = SplitOutputStream(
             getZipModel().getZipFile().getOrThrow(),
             getZipModel().getSplitLength()
         )
-        var zipOutputStream = initializeOutputStream(splitOutputStream, taskParameters.zip4cjConfig)
-
+        let zipOutputStream = initializeOutputStream(splitOutputStream, taskParameters.zip4cjConfig)
         try {
             var readBuff = Array<Byte>(taskParameters.zip4cjConfig.getBufferSize(), item: 0)
             var readLen: Int64
@@ -59,6 +58,8 @@ public class AddStreamToZipTask <: AbstractAddFileToZipTask<AddStreamToZipTaskPa
                 updateLocalFileHeader(fileHeader, splitOutputStream)
             }
         } finally {
+            zipOutputStream.close()
+            splitOutputStream.close()
         }
     }
 

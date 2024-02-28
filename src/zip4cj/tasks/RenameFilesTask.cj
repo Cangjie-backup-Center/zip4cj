@@ -25,9 +25,9 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
 
         let temporaryFile = getTemporaryFile(zipModel.getZipFile().getOrThrow().toCanonical().toString())
         var successFlag = false
-        try (inputStream = RandomAccessFile(zipModel.getZipFile().getOrThrow(), OpenOption.Open(true, true))) {
-            var outputStream = SplitOutputStream(temporaryFile)
-
+        let inputStream = RandomAccessFile(zipModel.getZipFile().getOrThrow(), OpenOption.Open(true, true))
+        let outputStream = SplitOutputStream(temporaryFile)
+        try {
             var currentFileCopyPointer = 0
             var charset = taskParameters.zip4cjConfig.getCharset()
 
@@ -70,6 +70,8 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
             successFlag = true
         } finally {
             cleanupFile(successFlag, zipModel.getZipFile().getOrThrow(), temporaryFile)
+            outputStream.close()
+            inputStream.close()
         }
     }
 
