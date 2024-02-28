@@ -1,5 +1,10 @@
 // RESOURCES: MobaXtermbackup.zip
+// RESOURCES: 1COMM_v24tagswithalbumimage1.mp3
+// RESOURCES: output123.zip
+// RESOURCES: missing_exended_local_file_header.zip
 // RESOURCES: unexpected-eof-when-reading-stream
+// RESOURCES: 123.txt
+// RESOURCES: a.txt
 // RESOURCES: archive_with_invalid_zip64_headers.zip
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
@@ -184,9 +189,161 @@ public class IssuesFix {
             var zipoutputstream=ZipOutputStream(input)//,password: buf,zip4cjConfig: config, zipModel: ZipModel())
             zipoutputstream.write(buf1)
         } catch (e: NoneValueException) {
-            @Assert(e.message, "please add an entry first, call the putNextEntry function, and then write the operation.")
+            @Assert(e.message, "please add an entry first, which requires calling the putNextEntry function before calling the other function operation.")
         }
     }
 
+
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I93TWM?from=project-issue
+    func I93TWM () : Unit {
+        let zipParameters = ZipParameters();
+        zipParameters.setCompressionMethod(CompressionMethod.STORE)
+        // zipParameters.setFileNameInZip("123")
+        // let zipFile = ZipFile("MP4mp4.zip")
+        // let files = Path("/home/liyanqing/test/test")
+        // zipFile.createSplitZipFileFromFolder(files, zipParameters, true, 65536)
+    }
+    
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I93PKN?from=project-issue
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I93PLH?from=project-issue
+    func I93PLH () : Unit {
+        var msg = ""
+        try{
+            let input = File("archive_with_invalid_zip64_headers.zip", Open(true, false))
+            var zipoutputstream=ZipOutputStream(input)
+            zipoutputstream.write(0)
+        } catch(e: NoneValueException) {
+            msg = e.message
+        }
+        @Assert(msg, "please add an entry first, which requires calling the putNextEntry function before calling the other function operation.")
+    }
+    
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I93PP3?from=project-issue
+    func I93PP3 () : Unit {
+        var msg = ""
+        try{
+            let input = File("123.txt", Open(true, true))
+            let headerwriter = HeaderWriter()
+            headerwriter.writeLocalFileHeader(ZipModel(),LocalFileHeader(),input,Charsets.UTF8)
+        } catch(e: NoneValueException) {
+            msg = e.message
+        }
+        @Assert(msg, "cannot read the array length because array is None")
+    }
+
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I93YL1?from=project-issue
+    func I93YL1 () : Unit {
+        var msg = ""
+        try{
+            UnzipUtil.createZipInputStream(ZipModel(),FileHeader(),None)
+        } catch(e: NoneValueException) {
+            msg = e.message
+        }
+        @Assert(msg, "zipFile is null")
+    }
+
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I93ZBG?from=project-issue
+    func I93ZBG () : Unit {
+        var zipModel = ZipModel()
+        zipModel.setZipFile(Path("a.txt"))
+        var src = UnzipUtil.createSplitInputStream(zipModel)
+        @Assert(src.read(), 0)
+    }
+
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I93ZK4?from=project-issue
+    func I93ZK4 () : Unit {
+        var msg = ""
+        try{
+            let zipParameters = ZipParameters()
+            let files = Array<String>(["mimetype","container.xml"])
+            zipParameters.setCompressionMethod(CompressionMethod.STORE)
+            let zipFile = ZipFile("end_of_cen_dir_not_at_expected_position.zip")
+            zipFile.renameFile(FileHeader(),"123")
+        } catch (e: NoneValueException) {
+             msg = e.message
+        }
+        @Assert(msg, "The fileName of the FileHeader class is None.")
+    }
+
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I9409B?from=project-issue
+    func I9409B () : Unit {
+        var msg = ""
+        try{
+            let zipParameters = ZipParameters()
+            zipParameters.setCompressionMethod(CompressionMethod.STORE)
+            let zipFile = ZipFile("video.zip")
+            var fileheader=FileHeader()
+            fileheader.setFileName("MP41.mp4")
+            zipFile.renameFile(fileheader," ")
+        } catch (e: ZipException) {
+             msg = e.message
+        }
+        @Assert(msg, "newFileName is None or empty")
+    }
+
+
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I940SJ?from=project-issue
+    func I940SJ () : Unit {
+        let zipFile = ZipFile("archive_with_invalid_zip64_headers.zip")
+        @Assert(zipFile.getComment(),"")
+        zipFile.setComment("123")
+        @Assert(zipFile.getComment(),"123")
+    }
+    
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I943D8?from=project-issue
+    func I943D8 () : Unit {
+        let zipFile = ZipFile("output123.zip")
+        var fileheader=FileHeader()
+        fileheader.setFileName("MP4.mp4")
+        @Assert(zipFile.getInputStream(fileheader).read(),-1)
+    }
+
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I93UFV?from=project-issue
+    func I93UFV () : Unit {
+        Directory.create("contrast/29",recursive: true) 
+        var zipFile = ZipFile(Path("contrast/29/addfiles.zip"))
+        zipFile.addFile("a.txt")
+        zipFile.addFile(Path("1COMM_v24tagswithalbumimage1.mp3"), parameters: ZipParameters())
+        var paths=[Path("missing_exended_local_file_header.zip")]
+        zipFile.addFiles(paths,parameters: ZipParameters())           //添加文件压缩
+
+        let zipFile1 = ZipFile("contrast/29/addfiles.zip")
+        Directory.create("contrast/291")  
+        zipFile1.extractAll("./contrast/291")          //解压
+        let input: File = File("contrast/291/1COMM_v24tagswithalbumimage1.mp3", Open(true, true))
+        let input1: File = File("1COMM_v24tagswithalbumimage1.mp3", Open(true, true))
+        @Assert(input.readToEnd(),input1.readToEnd())
+        let input2: File = File("contrast/291/a.txt", Open(true, true))
+        let input3: File = File("a.txt", Open(true, true))
+        @Assert(input2.readToEnd(),input3.readToEnd())
+        let input4: File = File("contrast/291/missing_exended_local_file_header.zip", Open(true, true))
+        let input5: File = File("missing_exended_local_file_header.zip", Open(true, true))
+        @Assert(input4.readToEnd(),input5.readToEnd())
+    }
+
+    @TestCase
+    // https://gitee.com/HW-PLLab/zip4cj/issues/I946RI?from=project-issue
+    func I946RI(): Unit {
+        var str = ""
+        try {
+            var headerReader = HeaderReader()
+            var src = headerReader.isDirectory(Array<Byte>(),None)
+            @Assert(src , true)
+        } catch (e: IndexOutOfBoundsException) {
+            str = e.message
+        }
+        @Assert(str, "Index 0 out of bounds for length 0")
+        
+    }
 }
 

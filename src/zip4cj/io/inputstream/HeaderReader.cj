@@ -622,17 +622,14 @@ public class HeaderReader {
         } else {
             InternalZipConstants.MAX_COMMENT_SIZE
         }
-
         while (numberOfBytesToRead > 0 && currentFilePointer > 0) {
             currentFilePointer--
             seekInCurrentPart(randomAccessFile, currentFilePointer)
-            if (Int64(rawIO.readIntLittleEndian(randomAccessFile)) == HeaderSignature.END_OF_CENTRAL_DIRECTORY.getValue(
-            )) {
+            if (Int64(rawIO.readIntLittleEndian(randomAccessFile)) == HeaderSignature.END_OF_CENTRAL_DIRECTORY.getValue()) {
                 return currentFilePointer
             }
             numberOfBytesToRead--
         }
-
         throw ZipException("Zip headers not found. Probably not a zip file")
     }
 
@@ -664,6 +661,9 @@ public class HeaderReader {
         // first check if DOS attributes are set (lower order bytes from external attributes). If yes, check if the 4th bit
         // which represents a directory is set. If UNIX attributes are set (higher order two bytes), check for the 6th bit
         // in 4th byte which  represents a directory flag.
+        if (externalFileAttributes.size <= 0 ) {
+            throw IndexOutOfBoundsException("Index 0 out of bounds for length 0")
+        }
         if (externalFileAttributes[0] != 0 && BitUtils.isBitSet(externalFileAttributes[0], 4)) {
             return true
         } else if (externalFileAttributes[3] != 0 && BitUtils.isBitSet(externalFileAttributes[3], 6)) {

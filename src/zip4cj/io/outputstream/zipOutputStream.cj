@@ -54,10 +54,14 @@ public class ZipOutputStream <: OutputStream & Resource {
         this.entryClosed = false
     }
 
-    public func write(b: Array<UInt8>): Unit {
+    func checkCompressedOutputStream() {
         if (!this.compressedOutputStreamInit) {
-            throw NoneValueException("please add an entry first, call the putNextEntry function, and then write the operation.")
+            throw NoneValueException("please add an entry first, which requires calling the putNextEntry function before calling the other function operation.")
         }
+    }
+
+    public func write(b: Array<UInt8>): Unit {
+        this.checkCompressedOutputStream()
         ensureStreamOpen()
         crc32.update(b)
         compressedOutputStream.write(b)
@@ -65,6 +69,7 @@ public class ZipOutputStream <: OutputStream & Resource {
     }
 
     public func closeEntry(): FileHeader {
+        this.checkCompressedOutputStream()
         compressedOutputStream.closeEntry()
 
         var compressedSize: Int64 = compressedOutputStream.getCompressedSize()
@@ -89,6 +94,7 @@ public class ZipOutputStream <: OutputStream & Resource {
     }
 
     public func close(): Unit {
+        this.checkCompressedOutputStream()
         if (!this.entryClosed) {
             closeEntry()
         }
@@ -117,6 +123,7 @@ public class ZipOutputStream <: OutputStream & Resource {
     }
 
     public func reset(): Unit {
+        this.checkCompressedOutputStream()
         uncompressedSizeForThisEntry = 0
         crc32.reset()
         compressedOutputStream.close()

@@ -1249,23 +1249,7 @@ public class ZipOutputStream<: OutputStream {
      * 参数 b - 要写的数据
      */
     public func write (b: Array<UInt8>): Unit
-    
-    /*
-     * 写数据
-     * 
-     * 参数 bval - 要写的数据
-     */
-    public func write (bval: Int32): Unit
-    
-    /*
-     * 写数据
-     * 
-     * 参数 b - 要写的数据
-     * 参数 off - 数据开头
-     * 参数 len - 数据长度
-     */
-    public func write (b: Array<UInt8>, off: Int64, len: Int64): Unit
-    
+
     /*
      * 关闭Entry
      * 
