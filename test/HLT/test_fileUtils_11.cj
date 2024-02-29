@@ -21,8 +21,6 @@ public class FileUtilsTest {
         @Assert(sc, "")
     }
 
-    //https://gitee.com/HW-PLLab/zip4cj/issues/I92XWL?from=project-issue
-    @Skip
     @TestCase
     func FileUtils02(): Unit {
         let sc = FileUtils.readSymbolicLink(Path(""))
@@ -41,21 +39,18 @@ public class FileUtilsTest {
         @Assert(sc, "")
     }
 
-    @Skip
     @TestCase
     func FileUtils05(): Unit {
         let sc = FileUtils.readSymbolicLink(Path("12125.98"))
         @Assert(sc, "")
     }
 
-    @Skip
     @TestCase
     func FileUtils06(): Unit {
         let sc = FileUtils.readSymbolicLink(Path("#%^$^#$^%"))
         @Assert(sc, "")
     }
 
-    @Skip
     @TestCase
     func FileUtils07(): Unit {
         let sc = FileUtils.readSymbolicLink(Path("zhon中国78893413#%^$^#$^%"))
