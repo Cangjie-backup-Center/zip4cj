@@ -1,6 +1,6 @@
 package zip4cj.io.outputstream
 
-public abstract class CipherOutputStream <: OutputStream & Resource {
+abstract class CipherOutputStream <: OutputStream & Resource {
     protected var outputStream: ZipEntryOutputStream
     protected var zipParameters: ZipParameters
     protected var password: ?Array<Char>

@@ -2,7 +2,7 @@ package zip4cj.tasks
 
 public class ExtractFileTask <: AbstractExtractFileTask<ExtractFileTaskParameters> {
     private var password: ?Array<Char>
-    private var splitInputStream: SplitFileInputStream = unsafe { zeroValue<SplitFileInputStream>() }
+    private var splitInputStream: ?SplitFileInputStream = None
 
     public ExtractFileTask(
         zipModel: ZipModel,
@@ -15,19 +15,20 @@ public class ExtractFileTask <: AbstractExtractFileTask<ExtractFileTaskParameter
     }
 
     protected func executeTask(taskParameters: ExtractFileTaskParameters, progressMonitor: ProgressMonitor) {
-        var fileHeadersUnderDirectory = getFileHeadersToExtract(taskParameters.fileToExtract)
-        var zipInputStream = createZipInputStream(taskParameters.zip4cjConfig)
-        try {
+        let fileHeadersUnderDirectory = getFileHeadersToExtract(taskParameters.fileToExtract)
+        try (zipInputStream = createZipInputStream(taskParameters.zip4cjConfig)) {
             var readBuff = Array<Byte>(taskParameters.zip4cjConfig.getBufferSize(), item: 0)
             for (fileHeader in fileHeadersUnderDirectory) {
-                splitInputStream.prepareExtractionForFileHeader(fileHeader)
+                splitInputStream.getOrThrow().prepareExtractionForFileHeader(fileHeader)
                 var newFileName = determineNewFileName(taskParameters.newFileName.getOrThrow(), taskParameters.fileToExtract,
                     fileHeader)
                 extractFile(zipInputStream, fileHeader, taskParameters.outputPath, newFileName, progressMonitor,
                     readBuff)
             }
         } finally {
-            // TODO  Resource close
+            if (let Some(v) <- splitInputStream) {
+                v.close()
+            }
         }
     }
 
@@ -53,7 +54,7 @@ public class ExtractFileTask <: AbstractExtractFileTask<ExtractFileTaskParameter
 
     private func createZipInputStream(zip4cjConfig: Zip4cjConfig): ZipInputStream {
         splitInputStream = UnzipUtil.createSplitInputStream(getZipModel())
-        return ZipInputStream(splitInputStream, password: password, config: zip4cjConfig)
+        return ZipInputStream(splitInputStream.getOrThrow(), password: password, config: zip4cjConfig)
     }
 
     private func determineNewFileName(
