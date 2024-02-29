@@ -94,7 +94,6 @@ public class ZipOutputStream <: OutputStream & Resource {
     }
 
     public func close(): Unit {
-        this.checkCompressedOutputStream()
         if (!this.entryClosed) {
             closeEntry()
         }
@@ -122,7 +121,7 @@ public class ZipOutputStream <: OutputStream & Resource {
             zip4cjConfig.getCharset())
     }
 
-    public func reset(): Unit {
+    func reset(): Unit {
         this.checkCompressedOutputStream()
         uncompressedSizeForThisEntry = 0
         crc32.reset()

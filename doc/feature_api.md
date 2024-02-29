@@ -87,7 +87,7 @@ public class ZipFile {
     /*
      * 创建分卷压缩文件，并将指定的文件添加到压缩文件中
      * 
-     * 参数 filesToAdd - 压缩文件列表
+     * 参数 filesToAdd - 压缩文件列表, 如果路径不存在, 则抛 zipException
      * 参数 parameters - 压缩参数
      * 参数 splitArchive - 是否分卷
      * 参数 splitLength - 分卷大小, 若选择需要分卷, 分卷大小需要大于等于65536
@@ -95,7 +95,7 @@ public class ZipFile {
     public func createSplitZipFile (filesToAdd: Array<Path>, parameters: ZipParameters, splitArchive: Bool, splitLength: Int64)
     
     /*
-     * 创建压缩文件，并将指定输入流中的文件添加到压缩文件中
+     * 创建压缩文件，并将指定输入流中的文件添加到压缩文件中, 使用此接口时需要先通过parameters设置fileName, 否则会抛ZipException
      * 
      * 参数 inputStream - 压缩流
      * 参数 parameters - 压缩参数
@@ -117,7 +117,7 @@ public class ZipFile {
     /*
      * 解压
      * 
-     * 参数 destinationPath - 解压路径
+     * 参数 destinationPath - 解压路径, 如果需要解压的zip文件无效的, 则抛 zipException
      */
     public func extractAll (destinationPath: String)
     
@@ -125,7 +125,7 @@ public class ZipFile {
      * 解压
      * 
      * 参数 destinationPath - 解压路径
-     * 参数 unzipParameters - 解压参数
+     * 参数 unzipParameters - 解压参数, 如果需要解压的zip文件无效的, 则抛 zipException
      */
     public func extractAll(destinationPath: String, unzipParameters: UnzipParameters)
 
@@ -151,7 +151,173 @@ public class ZipFile {
      * 参数 fileNameToRename - 旧文件名
      * 参数 newFileName - 新文件名
      */
-    public func renameFile (fileNameToRename: String, newFileName: String)
+    public func renameFile (fileNameToRename: String, newFileName: String): Unit
+
+    /*
+     * 添加 输入流
+     * 
+     * 参数 inputStream - 输入流
+     * 参数 parameters - 参数
+     */
+    public func addStream (inputStream: InputStream, parameters: ZipParameters): Unit
+
+    /*
+     * 删除文件
+     * 
+     * 参数 fileHeader - 文件头
+     */
+    public func removeFile (fileHeader: FileHeader): Unit
+
+    /*
+     * 删除多个文件
+     * 
+     * 参数 fileNames - 文件名集合
+     */
+    public func removeFiles (fileNames: Collection<String>): Unit
+
+    /*
+     * 重命名文件
+     * 
+     * 参数 fileHeader - 文件头
+     * 参数 newFileName - 新文件名
+     */
+    public func renameFile (fileHeader: FileHeader, newFileName: String): Unit
+    
+    /*
+     * 重命名多个映射的文件
+     * 
+     * 参数 fileNamesMap - 映射文件名<旧文件名, 新文件名>
+     */
+    public func renameFiles (fileNamesMap: Map<String,String>): Unit
+
+    /*
+     * 合并分包的文件
+     * 
+     * 参数 outputZipFile - 输出zipfile
+     */
+    public func mergeSplitFiles (outputZipFile: Path): Unit
+    
+    /*
+     * 设置 Comment 注释
+     * 
+     * 参数 comment - 注释
+     * 返回值 Unit - Unit
+     */
+    public func setComment (comment: String): Unit
+    
+    /*
+     * 获取 注释
+     * 
+     * 返回值 String - 注释
+     */
+    public func getComment (): String
+    
+    /*
+     * 获取 输入流
+     * 
+     * 参数 fileHeader - 文件头
+     * 返回值 ZipInputStream - 输入流
+     */
+    public func getInputStream (fileHeader: FileHeader): ZipInputStream
+    
+    /*
+     * 判断 是否有效的zip文件
+     * 
+     * 返回值 Bool - 判断 是否有效的zip文件
+     */
+    public func isValidZipFile (): Bool
+    
+    /*
+     * 获取 SplitZipFiles 拆分的zip文件集合
+     * 
+     * 返回值 ArrayList<Path> - zip文件集合
+     */
+    public func getSplitZipFiles (): ArrayList<Path>
+    
+    /*
+     * 关闭zipfile类
+     * 
+     * 返回值 Unit - Unit
+     */
+    public func close (): Unit
+    
+    /*
+     * 设置 密码 暂时不支持
+     * 
+     * 参数 password - 密码
+     * 返回值 Unit - Unit
+     */
+    public func setPassword (password: ?Array<Char>)
+    
+    /*
+     * 获取 缓存大小
+     * 
+     * 返回值 Int64 - 大小
+     */
+    public func getBufferSize (): Int64
+    
+    /*
+     * 设置 缓存大小
+     * 
+     * 参数 bufferSize - 大小, 如果 buffersize小于512, 则抛 无效参数异常
+     */
+    public func setBufferSize (bufferSize: Int64): Unit
+    
+    /*
+     * 获取 进度监控器
+     * 
+     * 返回值 ProgressMonitor - 进度监控器
+     */
+    public func getProgressMonitor (): ProgressMonitor
+    
+    /*
+     * 获取 文件
+     * 
+     * 返回值 Path - 文件路径
+     */
+    public func getFile (): Path
+    
+    /*
+     * 获取 编码集合
+     * 
+     * 返回值 Charset - 编码集合
+     */
+    public func getCharset (): Charset
+    
+    /*
+     * 设置 编码集合
+     * 
+     * 参数 charset - 编码集合
+     */
+    public func setCharset (charset: Charset): Unit
+    
+    /*
+     * 获取 ExecutorService 线程池
+     * 
+     * 返回值 ExecutorService - 线程池
+     */
+    public func getExecutorService (): ExecutorService
+    
+    /*
+     * 返回子类的字符串表示. 
+     * 
+     * 返回值 String - 字符串
+     */
+    public func toString (): String
+    
+    /*
+     * 判断 是否使用Utf8字符集进行密码
+     * 
+     * 返回值 Bool - 是否使用Utf8字符集进行密码
+     */
+    public func isUseUtf8CharsetForPasswords (): Bool
+    
+    /*
+     * 设置 是否使用Utf8字符集进行密码
+     * 
+     * 参数 useUtf8CharsetForPasswords - 是否使用Utf8字符集进行密码
+     */
+    public func setUseUtf8CharsetForPasswords (useUtf8CharsetForPasswords: Bool): Unit
 }
 ```
 
@@ -1090,22 +1256,6 @@ public class SplitOutputStream<: OutputStream&OutputStreamWithSplitZipSupport&Re
     public func write (b: Array<UInt8>): Unit
     
     /*
-     * 写数据
-     * 
-     * 参数 bval - 要写的数据
-     */
-    public func write (bval: Int32): Unit
-    
-    /*
-     * 写数据
-     * 
-     * 参数 b - 要写的数据
-     * 参数 off - 数据开头
-     * 参数 len - 数据长度
-     */
-    public func write (b: Array<UInt8>, off: Int64, len: Int64): Unit
-    
-    /*
      * 检查文件大小
      * 
      * 参数 bufferSize - 缓冲区大小
@@ -1232,19 +1382,19 @@ public class ZipOutputStream<: OutputStream {
      * 参数 outputStream - 输出流
      * 参数 password - 密码
      * 参数 zip4cjConfig - 配置对象
-     * 参数 zipModel - zip模型
+     * 参数 zipModel - zip模型 , 如果 zip4cjConfig.getBufferSize()小于512, 则抛 IllegalArgumentException
      */
     public init (outputStream: OutputStream, password!: ?Array<Char>, zip4cjConfig!: Zip4cjConfig, zipModel!: ZipModel)
     
     /*
      * 存入压缩参数
      * 
-     * 参数 zipParameters - 参数
+     * 参数 zipParameters - 参数, 如果 zipParameters的fileName为空, 则抛 IllegalArgumentException
      */
     public func putNextEntry (zipParameters: ZipParameters): Unit
     
     /*
-     * 写数据
+     * 写数据, 使用前请先调用putNextEntry函数, 否则会抛 NoneValueException
      * 
      * 参数 b - 要写的数据
      */
@@ -1273,39 +1423,6 @@ public class ZipOutputStream<: OutputStream {
      * 参数 zipParameters - 压缩参数
      */
     public func initializeAndWriteFileHeader (zipParameters: ZipParameters): Unit
-    
-    /*
-     * 重置流
-     * 
-     * 返回值 Unit - 
-     */
-    public func reset (): Unit
-    
-    /*
-     * 初始化流
-     * 
-     * 参数 zipParameters - 压缩参数
-     * 返回值 CompressedOutputStream - 压缩流
-     */
-    public func initializeCompressedOutputStream (zipParameters: ZipParameters): CompressedOutputStream
-    
-    /*
-     * 初始化流
-     * 
-     * 参数 zipEntryOutputStream - zipEntryOutputStream流
-     * 参数 zipParameters - 压缩参数
-     * 返回值 CipherOutputStream - CipherOutputStream流
-     */
-    public func initializeCipherOutputStream (zipEntryOutputStream: ZipEntryOutputStream, zipParameters: ZipParameters): CipherOutputStream
-    
-    /*
-     * 初始化流
-     * 
-     * 参数 cipherOutputStream - cipherOutputStream流
-     * 参数 zipParameters - 压缩参数
-     * 返回值 CompressedOutputStream - 压缩流
-     */
-    public func initializeCompressedOutputStream (cipherOutputStream: CipherOutputStream, zipParameters: ZipParameters): CompressedOutputStream
     
     /*
      * 验证压缩参数
@@ -1345,6 +1462,7 @@ public class HeaderWriter {
      * 参数 localFileHeader - 文件头
      * 参数 outputStream - 输出流
      * 参数 charset - charset对象
+     * 返回值 Unit - Unit, 如果localFileHeader的GeneralPurposeFlag为空, 则抛NoneValueException.
      */
     public func writeLocalFileHeader (zipModel: ZipModel, localFileHeader: LocalFileHeader, outputStream: OutputStream, charset: ?Charset)
     
@@ -1519,7 +1637,7 @@ public class HeaderUtil {
      * 
      * 参数 allFileHeaders - 文件头
      * 参数 fileName - 字符串
-     * 返回值 ArrayList<FileHeader> - 文件头
+     * 返回值 ArrayList<FileHeader> - 文件头, 如果FileHeader的FileName为空, 则抛NoneValueException.
      */
     public static func getFileHeadersUnderDirectory (allFileHeaders: ArrayList<FileHeader>, fileName: String): ArrayList<FileHeader>
     
@@ -1547,7 +1665,7 @@ public class FileHeaderFactory {
      * 参数 currentDiskNumberStart - 开始位置
      * 参数 charset - charset对象
      * 参数 rawIO - rawIO对象
-     * 返回值 FileHeader - 文件头
+     * 返回值 FileHeader - 文件头, 如果传入zipParameters参数没有设置FileName, 则抛zipException.
      */
     public func generateFileHeader (zipParameters: ZipParameters, isSplitZip: Bool, currentDiskNumberStart: Int64, charset: ?Charset, rawIO: RawIO): FileHeader
     
@@ -1555,7 +1673,7 @@ public class FileHeaderFactory {
      * 生成文件头
      * 
      * 参数 fileHeader - 文件头
-     * 返回值 LocalFileHeader - 文件头
+     * 返回值 LocalFileHeader - 文件头, 如果FileHeader的GeneralPurposeFlag为空, 则抛NoneValueException.
      */
     public func generateLocalFileHeader (fileHeader: FileHeader): LocalFileHeader
 }
@@ -1830,17 +1948,9 @@ public class FileUtils {
      * 获取 ZipFileNameWithoutExtens
      * 
      * 参数 zipFile - 文件名
-     * 返回值 String - 扩展名
+     * 返回值 String - 扩展名, 如果 zipFile为空串, 则抛 ZipException
      */
     public static func getZipFileNameWithoutExtension (zipFile: String): String
-    
-    /*
-     * 获取 SplitZipFi
-     * 
-     * 参数 zipModel - 压缩模型
-     * 返回值 ArrayList<Path> - 路径数组
-     */
-    public static func getSplitZipFiles (zipModel: ZipModel): ArrayList<Path>
     
     /*
      * 获取 RelativeFileN
@@ -1860,7 +1970,7 @@ public class FileUtils {
     public static func isZipEntryDirectory (fileNameInZip: String): Bool
     
     /*
-     * 复制文件
+     * 复制文件, 如果 参数不正确, 则抛 ZipException
      * 
      * 参数 randomAccessFile - 文件
      * 参数 outputStream - 输出流
@@ -1872,7 +1982,7 @@ public class FileUtils {
     public static func copyFile (randomAccessFile: RandomAccessFile, outputStream: OutputStream, start: Int64, end: Int64, progressMonitor: ProgressMonitor, bufferSize: Int64)
     
     /*
-     * 文件是否存在
+     * 文件是否存在, 如果 断言失败, 则抛 ZipException
      * 
      * 参数 files - 文件
      * 参数 symLinkAction - 文件链接
@@ -1880,7 +1990,7 @@ public class FileUtils {
     public static func assertFilesExist (files: ArrayList<Path>, symLinkAction: SymbolicLinkAction): Unit
     
     /*
-     * 判断是否分卷
+     * 判断是否分卷, 如果 file路径为空字符串, 则抛 IllegalArgumentException
      * 
      * 参数 file - 文件路径
      * 返回值 Bool - 布尔值
@@ -1888,7 +1998,7 @@ public class FileUtils {
     public static func isNumberedSplitFile (file: Path): Bool
     
     /*
-     * 获取 FileExtens
+     * 获取 FileExtens, 如果 file路径为空字符串, 则抛 IllegalArgumentException
      * 
      * 参数 path - 文件路径
      * 返回值 String - 扩展名
@@ -1896,7 +2006,7 @@ public class FileUtils {
     public static func getFileExtension (path: Path): String
     
     /*
-     * 获取 AllSortedNumberedSplitFi
+     * 获取 AllSortedNumberedSplitFiles , 如果 路径参数不是一个分包的zip文件 , 则抛 NoneValueException
      * 
      * 参数 firstNumberedFile - 文件路径
      * 返回值 Array<Path> - 路径数组
@@ -1904,7 +2014,7 @@ public class FileUtils {
     public static func getAllSortedNumberedSplitFiles (firstNumberedFile: Path): Array<Path>
     
     /*
-     * 判断是否符号链接
+     * 判断是否符号链接, 如果 file路径为空字符串, 则抛 IllegalArgumentException
      * 
      * 参数 file - 文件路径
      * 返回值 Bool - 布尔值
@@ -1912,7 +2022,7 @@ public class FileUtils {
     public static func isSymbolicLink (file: Path): Bool
     
     /*
-     * 读取符号链接文件
+     * 读取符号链接文件, 如果 file路径为空字符串, 则抛 IllegalArgumentException
      * 
      * 参数 file - 文件路径
      * 返回值 String - 原始文件
@@ -1920,7 +2030,7 @@ public class FileUtils {
     public static func readSymbolicLink (file: Path): String
     
     /*
-     * 获取 DefaultFileAttribu
+     * 获取 DefaultFileAttributes
      * 
      * 参数 isDirectory - 是否文件夹
      * 返回值 Array<Byte> - Byte数组
@@ -2124,7 +2234,7 @@ public class RawIO {
      * 读取长端文件
      * 
      * 参数 randomAccessFile - RandomAccessFile文件
-     * 参数 readLen - 读取长度
+     * 参数 readLen - 读取长度, 读取长度如果为负, 抛 IndexOutOfBoundsException
      * 返回值 Int64 - 读取长度
      */
     public func readLongLittleEndian (randomAccessFile: RandomAccessFile, readLen: Int64): Int64
@@ -2141,7 +2251,7 @@ public class RawIO {
      * 读取长端文件
      * 
      * 参数 inputStream - 输入流
-     * 参数 readLen - 读取长度
+     * 参数 readLen - 读取长度, 如果为负, 抛 IndexOutOfBoundsException
      * 返回值 Int64 - 读取长度
      */
     public func readLongLittleEndian (inputStream: InputStream, readLen: Int64): Int64
@@ -2182,7 +2292,7 @@ public class RawIO {
      * 读取长端数据
      * 
      * 参数 b - 数组
-     * 参数 pos - 光标位置
+     * 参数 pos - 光标位置, 如果为负, 抛 IndexOutOfBoundsException
      * 返回值 Int32 - 读取长度
      */
     public func readIntLittleEndian (b: Array<Byte>, pos: Int64): Int32
@@ -2207,7 +2317,7 @@ public class RawIO {
      * 读取小端数据
      * 
      * 参数 buff - 数组值
-     * 参数 position - 位置
+     * 参数 position - 位置, 如果为负, 抛 IndexOutOfBoundsException
      * 返回值 Int32 - 读取大小
      */
     public func readShortLittleEndian (buff: Array<Byte>, position: Int64): Int32
@@ -2224,7 +2334,7 @@ public class RawIO {
      * 读取短端数据
      * 
      * 参数 array - 数组
-     * 参数 pos - 光标位置
+     * 参数 pos - 光标位置, 如果为负, 抛 IndexOutOfBoundsException
      * 参数 value - 值
      */
     public func writeShortLittleEndian (array: Array<Byte>, pos: Int64, value: Int32): Unit
@@ -2241,7 +2351,7 @@ public class RawIO {
      * 读取小端数据
      * 
      * 参数 array - 数组
-     * 参数 pos - 光标位置
+     * 参数 pos - 光标位置, 如果为负, 抛 IndexOutOfBoundsException
      * 参数 value - 值
      */
     public func writeIntLittleEndian (array: Array<Byte>, pos: Int64, value: Int32): Unit
@@ -2258,7 +2368,7 @@ public class RawIO {
      * 读取长端数据
      * 
      * 参数 array - 数组
-     * 参数 pos - 光标
+     * 参数 pos - 光标, 如果为负, 抛 IndexOutOfBoundsException
      * 参数 value - 值
      */
     public func writeLongLittleEndian (array: Array<Byte>, pos: Int64, value: Int64): Unit
@@ -2286,7 +2396,7 @@ public class Zip4cjUtil {
      * 创建文件
      * 
      * 参数 file - 路径
-     * 返回值 Bool - 是否成功
+     * 返回值 Bool - 是否成功, 如果file路径不存在, 则抛ZipException
      */
     public static func createDirectoryIfNotExists (file: Path): Bool
     
@@ -2338,8 +2448,8 @@ public class Zip4cjUtil {
      * 参数 inputStream - 输入流
      * 参数 b - 数组
      * 参数 offset - 开始位置 
-     * 参数 length - 长度
-     * 返回值 Int64 - 读取大小
+     * 参数 length - 长度, 如果为负, 抛 Exception
+     * 返回值 Int64 - 读取大小, 如果 offset + length > b.size, 则抛 IllegalArgumentException.
      */
     public static func readFully (inputStream: InputStream, b: Array<Byte>, offset: Int64, length: Int64): Int64
 }
@@ -3063,9 +3173,9 @@ public class ZipModel {
     /*
      * 获取中心目录
      * 
-     * 返回值 CentralDirectory - CentralDirectory对象
+     * 返回值 CentralDirectory - CentralDirectory对象, 如果没有返回None
      */
-    public func getCentralDirectory (): CentralDirectory
+    public func getCentralDirectory (): Option<CentralDirectory>
     
     /*
      * 设置中心目录
@@ -4024,7 +4134,7 @@ public class ZipParameters {
     /*
      * 获取文件过滤器
      * 
-     * 返回值 ?ExcludeFileFilter - 文件过滤器
+     * 返回值 ?ExcludeFileFilter - 文件过滤器, 如果获取不到返回None
      */
     public func getExcludeFileFilter (): ?ExcludeFileFilter
     
@@ -4273,7 +4383,7 @@ public enum CompressionMethod<: Equal<CompressionMethod> {
     /*
      * 设置从代码获取压缩方法
      * 
-     * 参数 code - CompressionMethod 压缩方法
+     * 参数 code - CompressionMethod 压缩方法, 如果 code大于枚举的范围, 则抛 ZipException
      * 
      */
     public static func getCompressionMethodFromCode(code: Int32): CompressionMethod
