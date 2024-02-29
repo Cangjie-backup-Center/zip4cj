@@ -69,8 +69,6 @@ public class FileUtilsTest {
         @Assert(sc, "archive_with_invalid_zip64_headers.zip")
     }
 
-    //https://gitee.com/HW-PLLab/zip4cj/issues/I92XM8
-    @Skip 
     @TestCase
     func FileUtils09(): Unit {
         let sc = FileUtils.getRelativeFileName(Path(""),ZipParameters())
