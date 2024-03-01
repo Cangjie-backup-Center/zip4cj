@@ -32,34 +32,28 @@ public class AesKeyStrengthTest {
     
     @TestCase
     func AesKeyStrength04(): Unit {
-        var returnTag = 0
         try {
             AesKeyStrength.getAesKeyStrengthFromRawCode(0).getOrThrow()
         } catch (e: NoneValueException) {
-            returnTag = 1
+            @Assert(e.toString() , "NoneValueException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func AesKeyStrength05(): Unit {
-        var returnTag = 0
         try {
             AesKeyStrength.getAesKeyStrengthFromRawCode(Int32.Max).getOrThrow()
         } catch (e: NoneValueException) {
-            returnTag = 1
+            @Assert(e.toString() , "NoneValueException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func AesKeyStrength09(): Unit {
-        var returnTag = 0
         try {
             AesKeyStrength.getAesKeyStrengthFromRawCode(Int32.Min).getOrThrow()
         } catch (e: NoneValueException) {
-            returnTag = 1
+            @Assert(e.toString() , "NoneValueException")
         }
-        @Assert(returnTag , 1)
     }
 }

@@ -43,26 +43,22 @@ public class RawIOTest {
     func RawIO04(): Unit {
         var src = RawIO()
         var file = RandomAccessFile(File("a.txt", OpenOption.Open(true, false)))
-        var returnTag = 0
         try {
             src.readLongLittleEndian(file,Int64.Min)
         } catch (e: IndexOutOfBoundsException) {
-            returnTag = 1
+            @Assert(e.toString() , "IndexOutOfBoundsException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO05(): Unit {
         var src = RawIO()
         var file = RandomAccessFile(File("archive_with_invalid_zip64_headers.zip", OpenOption.Open(true, false)))
-        var returnTag = 0
         try {
             src.readLongLittleEndian(file,Int64.Max)
         } catch (e: IndexOutOfBoundsException) {
-            returnTag = 1
+            @Assert(e.toString() , "IndexOutOfBoundsException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase

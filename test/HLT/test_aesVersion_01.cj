@@ -38,35 +38,29 @@ public class AesVersionTest {
 
     @TestCase
     func AesVersion05(): Unit {
-        var returnTag = 0
         try {
             AesVersion.getFromVersionNumber(Int32.Max)
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: Unsupported Aes version")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func AesVersion06(): Unit {
-        var returnTag = 0
         try {
             AesVersion.getFromVersionNumber(Int32.Min)
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: Unsupported Aes version")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func AesVersion07(): Unit {
-        var returnTag = 0
         try {
             AesVersion.getFromVersionNumber(0)
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: Unsupported Aes version")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase

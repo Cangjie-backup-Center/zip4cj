@@ -21,97 +21,81 @@ public class RawIOTest {
         src.writeShortLittleEndian(ByteArrayStream(),0)
         src.writeShortLittleEndian(ByteArrayStream(),Int32.Max)
         src.writeShortLittleEndian(ByteArrayStream(),Int32.Min)
-        var returnTag = 0
         try {
             src.writeShortLittleEndian(File("jar-dir-lfh-and-fh-entry-size-2.jar", OpenOption.Open(true, false)),0)
         } catch (e: FSException) {
-            returnTag = 1
+            @Assert(e.toString() , "FSException: The file does not have the write permission.")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO02(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeShortLittleEndian(File("a.txt", OpenOption.Open(true, false)),Int32.Min)
         } catch (e: FSException) {
-            returnTag = 1
+            @Assert(e.toString() , "FSException: The file does not have the write permission.")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO03(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeShortLittleEndian(File("archive_with_invalid_zip64_headers.zip", OpenOption.Open(true, false)),0)
         } catch (e: FSException) {
-            returnTag = 1
+            @Assert(e.toString() , "FSException: The file does not have the write permission.")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO04(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeShortLittleEndian(File("a.txt", OpenOption.Open(true, false)),Int32.Max)
         } catch (e: FSException) {
-            returnTag = 1
+            @Assert(e.toString() , "FSException: The file does not have the write permission.")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO05(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeShortLittleEndian(Array<Byte>(),0,0)
         } catch (e: IndexOutOfBoundsException) {
-            returnTag = 1
+            @Assert(e.toString() , "IndexOutOfBoundsException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO06(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeShortLittleEndian(Array<Byte>(100,item: 0),Int64.Max,0)
         } catch (e: IndexOutOfBoundsException) {
-            returnTag = 1
+            @Assert(e.toString() , "IndexOutOfBoundsException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO07(): Unit {
         var src = RawIO()
         src.writeShortLittleEndian(Array<Byte>(100,item: 0),0,Int32.Min)
-        var returnTag = 0
         try {
             src.writeShortLittleEndian(Array<Byte>(100,item: 0),Int64.Max,Int32.Min)
         } catch (e: IndexOutOfBoundsException) {
-            returnTag = 1
+            @Assert(e.toString() , "IndexOutOfBoundsException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO08(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeShortLittleEndian(Array<Byte>(100,item: 0),Int64.Max,15)
         } catch (e: IndexOutOfBoundsException) {
-            returnTag = 1
+            @Assert(e.toString() , "IndexOutOfBoundsException")
         }
-        @Assert(returnTag , 1)
     }
 }

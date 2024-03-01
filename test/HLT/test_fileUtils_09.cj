@@ -35,13 +35,11 @@ public class FileUtilsTest {
 
     @TestCase
     func FileUtils04(): Unit {
-        var returnTag = 0
         try {
             FileUtils.getFileExtension(Path(""))
         } catch (e: IllegalArgumentException) {
-            returnTag = 1
+            @Assert(e.toString() , "IllegalArgumentException: The `rawPath` cannot be an empty string!")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
@@ -58,67 +56,55 @@ public class FileUtilsTest {
 
     @TestCase
     func FileUtils07(): Unit {
-        var returnTag = 0
         try {
             FileUtils.getAllSortedNumberedSplitFiles(Path("jar-dir-lfh-and-fh-entry-size-2.jar"))
         } catch (e: NoneValueException) {
-            returnTag = 1
+            @Assert(e.toString() , "NoneValueException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func FileUtils08(): Unit {
-        var returnTag = 0
         try {
             FileUtils.getAllSortedNumberedSplitFiles(Path("archive_with_invalid_zip64_headers.zip"))
         } catch (e: NoneValueException) {
-            returnTag = 1
+            @Assert(e.toString() , "NoneValueException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func FileUtils09(): Unit {
-        var returnTag = 0
         try {
             FileUtils.getAllSortedNumberedSplitFiles(Path("a.txt"))
         } catch (e: NoneValueException) {
-            returnTag = 1
+            @Assert(e.toString() , "NoneValueException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func FileUtils10(): Unit {
-        var returnTag = 0
         try {
             FileUtils.getAllSortedNumberedSplitFiles(Path(""))
         } catch (e: IllegalArgumentException) {
-            returnTag = 1
+            @Assert(e.toString() , "IllegalArgumentException: The `rawPath` cannot be an empty string!")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func FileUtils11(): Unit {
-        var returnTag = 0
         try {
             FileUtils.getAllSortedNumberedSplitFiles(Path("#$%#$%$"))
         } catch (e: NoneValueException) {
-            returnTag = 1
+            @Assert(e.toString() , "NoneValueException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func FileUtils12(): Unit {
-        var returnTag = 0
         try {
             FileUtils.getAllSortedNumberedSplitFiles(Path("146521..12"))
         } catch (e: NoneValueException) {
-            returnTag = 1
+            @Assert(e.toString() , "NoneValueException")
         }
-        @Assert(returnTag , 1)
     }   
 }

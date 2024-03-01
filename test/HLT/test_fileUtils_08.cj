@@ -19,68 +19,54 @@ public class FileUtilsTest {
     @TestCase
     func FileUtils01(): Unit {
         FileUtils.assertFilesExist(ArrayList<Path>(),SymbolicLinkAction.INCLUDE_LINK_ONLY)
-        var returnTag = 0
         try {
             FileUtils.isNumberedSplitFile(Path(""))
         } catch (e: IllegalArgumentException) {
-            returnTag = 1
+            @Assert(e.toString() , "IllegalArgumentException: The `rawPath` cannot be an empty string!")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func FileUtils02(): Unit {
-        var returnTag = 1
-        try {
-            FileUtils.assertFilesExist(ArrayList<Path>([Path("jar-dir-lfh-and-fh-entry-size-2.jar")]),SymbolicLinkAction.INCLUDE_LINK_ONLY)
-        } catch (e: ZipException) {
-            returnTag = 0
-        }
-        @Assert(returnTag , 1)
+        FileUtils.assertFilesExist(ArrayList<Path>([Path("jar-dir-lfh-and-fh-entry-size-2.jar")]),SymbolicLinkAction.INCLUDE_LINK_ONLY)
+        let sc = FileUtils.getFileExtension(Path("a.txt"))
+        @Assert(sc, "txt")
     }
 
     @TestCase
     func FileUtils03(): Unit {
-        var returnTag = 0
         try {
             FileUtils.assertFilesExist(ArrayList<Path>([Path("dsad")]),SymbolicLinkAction.INCLUDE_LINK_ONLY)
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: File does not exist dsad")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func FileUtils04(): Unit {
-        var returnTag = 0
         try {
             FileUtils.assertFilesExist(ArrayList<Path>([Path("dsad你好456")]),SymbolicLinkAction.INCLUDE_LINK_ONLY)
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: File does not exist dsad你好456")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func FileUtils05(): Unit {
-        var returnTag = 1
         try {
             FileUtils.assertFilesExist(ArrayList<Path>([Path("archive_with_invalid_zip64_headers.zip")]),SymbolicLinkAction.INCLUDE_LINK_ONLY)
         } catch (e: ZipException) {
-            returnTag = 0
+            @Assert(e.toString() , "ZipException")
         }
-        @Assert(returnTag , 1)
     }
     
     @TestCase
     func FileUtils06(): Unit {
-        var returnTag = 0
         try {
             FileUtils.isNumberedSplitFile(Path(""))
         } catch (e: IllegalArgumentException) {
-            returnTag = 1
+            @Assert(e.toString() , "IllegalArgumentException: The `rawPath` cannot be an empty string!")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase

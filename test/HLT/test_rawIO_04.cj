@@ -18,13 +18,11 @@ public class RawIOTest {
     @TestCase
     func RawIO01(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.readIntLittleEndian(ByteArrayStream())
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: Could not fill buffer")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
@@ -39,37 +37,31 @@ public class RawIOTest {
     func RawIO03(): Unit {
         var src = RawIO()
         var file = File("a.txt", OpenOption.Open(true, false))
-        var returnTag = 0
         try {
             src.readIntLittleEndian(file)
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: Could not fill buffer")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO04(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.readIntLittleEndian(Array<Byte>())
         } catch (e: IndexOutOfBoundsException) {
-            returnTag = 1
+            @Assert(e.toString() , "IndexOutOfBoundsException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO05(): Unit {
         var src = RawIO()
         var scc = File("a.txt", OpenOption.Open(true, false)).readToEnd()
-        var returnTag = 0
         try {
             src.readIntLittleEndian(scc)
         } catch (e: IndexOutOfBoundsException) {
-            returnTag = 1
+            @Assert(e.toString() , "IndexOutOfBoundsException")
         }
-        @Assert(returnTag , 1)
     }
 }

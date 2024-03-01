@@ -35,13 +35,11 @@ public class ZipParametersTest {
     @TestCase
     func ZipParameters04(): Unit {
         var zipParameters=ZipParameters()
-        var returnTag = 0
         try {
             zipParameters.getExcludeFileFilter().getOrThrow()
         } catch (e: NoneValueException) {
-            returnTag = 1
+            @Assert(e.toString() , "NoneValueException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase

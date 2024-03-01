@@ -23,13 +23,11 @@ public class FileUtilsTest {
 
     @TestCase
     func FileUtils02(): Unit {
-        var returnTag = 0
         try {
             FileUtils.getZipFileNameWithoutExtension("")
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: zip file name is empty or null, cannot determine zip file name")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase

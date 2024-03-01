@@ -65,12 +65,10 @@ public class FileUtilsTest {
 
     @TestCase
     func FileUtils09(): Unit {
-        var returnTag = 0
         try {
             FileUtils.setFileAttributes(Path("中国"),Array<Byte>(Int64.Max, item: 1))
         } catch (e: OutOfMemoryError) {
-            returnTag = 1
+            @Assert(e.toString() , "OutOfMemoryError")
         }
-        @Assert(returnTag , 1)
     }
 }

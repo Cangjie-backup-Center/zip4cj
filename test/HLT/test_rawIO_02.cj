@@ -19,13 +19,11 @@ public class RawIOTest {
     func RawIO01(): Unit {
         var src = RawIO()
         var file = File("a.txt", OpenOption.Open(true, false))
-        var returnTag = 0
         try {
             src.readLongLittleEndian(file)
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: Could not fill buffer")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
@@ -47,13 +45,11 @@ public class RawIOTest {
     @TestCase
     func RawIO04(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.readLongLittleEndian(ByteArrayStream())
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: Could not fill buffer")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
@@ -68,37 +64,31 @@ public class RawIOTest {
     func RawIO06(): Unit {
         var src = RawIO()
         var file = File("archive_with_invalid_zip64_headers.zip", OpenOption.Open(true, false))
-        var returnTag = 0
         try {
             src.readLongLittleEndian(file,15)
         } catch (e: IllegalArgumentException) {
-            returnTag = 1
+            @Assert(e.toString() , "IllegalArgumentException: Length greater than buffer size")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO07(): Unit {
         var src = RawIO()
         var file = File("jar-dir-lfh-and-fh-entry-size-2.jar", OpenOption.Open(true, false))
-        var returnTag = 0
         try {
             src.readLongLittleEndian(file,Int64.Min)
         } catch (e: IllegalArgumentException) {
-            returnTag = 1
+            @Assert(e.toString() , "IllegalArgumentException: Negative length")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO08(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.readLongLittleEndian(ByteArrayStream(),Int64.Max)
         } catch (e: IllegalArgumentException) {
-            returnTag = 1
+            @Assert(e.toString() , "IllegalArgumentException: Length greater than buffer size")
         }
-        @Assert(returnTag , 1)
     }
 }
