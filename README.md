@@ -22,11 +22,9 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 
 ### 未来规划
 
-- 丰富接口
-
 - 实现压缩解密和加密
 
-- 其他有啥想法了再添加^_^
+- 支持压缩和解压进度监控
 
 ##    <img alt="" src="./doc/assets/readme-icon-framework.png" style="display: inline-block;" width=3%/> 架构
 
@@ -40,21 +38,22 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 │   ├── assets
 │   └── cjcov
 ├── module.json
-├── src
-│   └── zip4cj
-│       ├── utils
-│       │   └── FileUtils.cj
-│       └── zip
-│           ├── CentralDirectoryRecord.cj
-│           ├── CompressionMethod.cj
-│           ├── EndCDR.cj
-│           ├── HeaderParser.cj
-│           ├── LocalFileHeader.cj
-│           ├── MsDosUtils.cj
-│           ├── ZipConstants.cj
-│           ├── ZipException.cj
-│           ├── ZipFile.cj
-│           └── ZipSignatures.cj
+├── src                             // 源码
+│   └── zip4cj                      
+│       ├── crypto                  // 加解密功能包
+│       │   ├── engine              
+│       │   └── PBKDF2
+│       ├── exception               // 异常类包
+│       ├── headers                 // zip文件头包
+│       ├── io                      // zip IO流包
+│       │   ├── inputstream
+│       │   └── outputstream
+│       ├── model                   // zip 配置和参数模式包
+│       │   └── enums
+│       ├── progress                // 进度监控包
+│       ├── tasks                   // 支持多种压缩和解压缩方式包
+│       ├── util                    // 工具包
+│       └── zip_file.cj             // 主程序入口类
 └── test
     ├── HLT
     ├── LLT
@@ -63,7 +62,6 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 
 - `doc` 存放库的设计文档、提案、库的使用文档、LLT 覆盖率报告
 - `src` 是库源码目录
-- `src/zip` 存放zip解压缩核心代码
 - `test` 存放测试用例，包括 HLT 用例、LLT 用例和 UT 用例
 
 ### 类和接口说明：
@@ -78,125 +76,86 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 
 ### 编译
 
-#### 引入charset包
-
-~~~powershell
-git clone https://gitee.com/HW-PLLab/charset.git
-~~~
-
-   将charset包放在zip4cj目录下
-
-#### 配置
-
-在zip4cj目录下module.json中的requires属性中配置charset
-
-~~~json
-{
-  "cjc_version": "0.39.4",
-  "organization": "zip4cj",
-  "name": "zip4cj",
-  "description": "nothing here",
-  "version": "0.0.2",
-  "requires": {
-    "charset":{
-      "organization": "pllab",
-      "version": "1.0.0",
-      "path":"charset"
-    }
-  },
-  "package_requires": {
-    "path_option": [],
-    "package_option": {}
-  },
-  "foreign_requires": {},
-  "output_type": "dynamic",
-  "command_option": "-O2",
-  "condition_option": {},
-  "link_option": "",
-  "cross_compile_configuration": {},
-  "package_configuration": {}
-}
-~~~
-
-#### cpm编译
-
-~~~powershell
-cpm build
-~~~
+```sh
+cjpm update
+cjpm build
+```
 
 ### 功能示例
 
-zip 解压
+#### zip 解压
 
 ```cangjie
-from zip4cj import zip4cj.zip.*
+from zip4cj import zip4cj.*                       // 引入zip4cj包 
 from std import os.posix.*
+from std import fs.*
+from std import sync.*
+from std import time.*
 main() { 
-    var path2: String = getcwd()
-    var zipFile: ZipFile = ZipFile("${path2}/testZipFile02.zip")
-    zipFile.setOutPath("${path2}/testZipFile02/")
-    zipFile.extractAll()
-    var nameList = zipFile.nameList()
-    for(name in nameList) {
-        println(name.toString())
-    }
+    let zipFile = ZipFile("MobaXtermbackup.zip")  // 创建ZipFile类
+    zipFile.setRunInThread(false)                 // 设置是否用子线程运行任务
+    zipFile.extractAll("./output")                // 解压到 output 文件夹, 文件夹不存在则创建
+    0
 }
 ```
 
-zip 添加压缩
+#### zip 创建zip文件
 
 ```cangjie
-from zip4cj import zip4cj.zip.*
-from zip4cj import zip4cj.utils.*
+from zip4cj import zip4cj.*                      // 引入zip4cj包 
 from std import os.posix.*
-
+from std import fs.*
+from std import sync.*
+from std import time.*
 main() { 
-    var path2: String = getcwd()
-    var zipFile = ZipFile()
-    zipFile.setOutPath(path2 + "/testZipFile01.zip")
-    zipFile.addFile("${path2}/test.txt")
-    zipFile.addFile("${path2}/test.doc")
-    zipFile.writeZip()
+    let zipParameters = ZipParameters()         // 创建 zip 参数配置 类
+    zipParameters.setCompressionMethod(CompressionMethod.STORE)  // 设置压缩方式为存储
+    let zipFile = ZipFile("output.zip")         // 创建ZipFile类, 并指定文件为 output.zip
+    let files = [                               // 创建 文件集合
+        Path("123.txt")
+    ]
+    zipFile.createSplitZipFile(files, zipParameters, false, InternalZipConstants.MIN_SPLIT_LENGTH)                           // 创建文件
+    return 0
 }
 ```
-### 压缩整个文件夹，并且保持目录层级
+#### 压缩文件夹
 ```cangjie
- var zf: ZipFile = ZipFile()
-    zf.setFilePath("/home/lzj/test/apache-maven-3.9.0")
-    zf.setOutPath("/home/lzj/test/apache-maven-3.9.0-bin-2.zip")
-    zf.zipDIr()
-```
-### 项目中使用zip4cj
-
-##### 引入
-在项目的module.json中配置
-```json
-  ....
-  "package_requires": {
-    "path_option": [
-			"./lib/zip4cj"
-		],
-		"package_option": {}
-  },
-  ...
-```
-##### 编译
-
-cpm build
-
-##### 使用
-```cangjie
-from zip4cj import zip4cj.zip.*
-from zip4cj import zip4cj.utils.*
+from zip4cj import zip4cj.*                      // 引入zip4cj包 
 from std import os.posix.*
-
+from std import fs.*
+from std import sync.*
+from std import time.*
 main() { 
-    var path2: String = getcwd()
-    var zipFile = ZipFile()
-    zipFile.setOutPath(path2 + "/testZipFile01.zip")
-    zipFile.addFile("${path2}/test.txt")
-    zipFile.addFile("${path2}/test.doc")
-    zipFile.writeZip()
+    let zipParameters = ZipParameters()         // 创建 zip 参数配置 类
+    zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)  // 设置压缩方式为DEFLATE压缩
+    let zipFile = ZipFile("output.zip")         // 创建ZipFile类, 并指定文件为 output.zip
+    zipFile.addFolder("test")                   // 添加文件夹压缩
+    return 0
+}
+```
+
+#### 在zip文件中重命名/删除/添加文件
+```cangjie
+from zip4cj import zip4cj.*                      // 引入zip4cj包 
+from std import os.posix.*
+from std import fs.*
+from std import sync.*
+from std import time.*
+main() { 
+    let zipParameters = ZipParameters()         // 创建 zip 参数配置 类
+    zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)  // 设置压缩方式为DEFLATE压缩
+    let zipFile = ZipFile("output.zip")         // 创建ZipFile类, 并指定文件为 output.zip
+    zipFile.removeFile("a.txt")                               // 删除文件
+    zipFile.renameFile("old_file", "new_file")                // 重命名文件
+    zipFile.addFile(Path("a.txt"), parameters: zipParameters) // 添加文件
+    var paths=[
+        Path("1.mp3")
+        Path("12.mp3")
+        Path("123.mp3")
+        Path("1234.mp3")
+    ]
+    zipFile.addFiles(paths, parameters: zipParameters)        // 添加文件集合
+    return 0
 }
 ```
 
