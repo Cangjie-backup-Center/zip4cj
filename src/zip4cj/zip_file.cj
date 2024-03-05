@@ -20,7 +20,17 @@ public import zip4cj.util.internals.*
 
 public class ZipFile {
     private let zipFile: Path
-    private var zipModel: ZipModel = unsafe { zeroValue<ZipModel>() }
+
+    private var zipModelOpt: ZipModel = unsafe { zeroValue<ZipModel>() }
+
+    private prop zipModel: ZipModel {
+        get() {
+            if (isNullzipModel) {
+                throw NoneValueException("ZipModel not initialized.")
+            }
+            this.zipModelOpt
+        }
+    }
     private var isNullzipModel: Bool = true
     private var isEncrypte: Bool = false
     private var progressMonitor: ProgressMonitor
@@ -383,7 +393,7 @@ public class ZipFile {
         }
         try (randomAccessFile = initializeRandomAccessFileForHeaderReading(zipFile)) {
             var headerReader = HeaderReader()
-            zipModel = headerReader.readAllHeaders(randomAccessFile, buildConfig())
+            this.zipModelOpt = headerReader.readAllHeaders(randomAccessFile, buildConfig())
             isNullzipModel = false
             zipModel.setZipFile(zipFile)
         } catch (e: ZipException) {
@@ -394,7 +404,7 @@ public class ZipFile {
     }
 
     private func createNewZipModel() {
-        this.zipModel = ZipModel()
+        this.zipModelOpt = ZipModel()
         isNullzipModel = false
         zipModel.setZipFile(zipFile)
     }
