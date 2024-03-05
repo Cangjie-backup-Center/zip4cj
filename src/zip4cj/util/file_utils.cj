@@ -8,9 +8,9 @@ func isLinuxOS(): Bool {false}
 func isWindowsOS(): Bool {true}
 @When[os != "windows"]
 func isWindowsOS(): Bool {false}
-@When[os == "macOSX"]
+@When[os == "macOS"]
 func isMacOS(): Bool {true}
-@When[os != "macOSX"]
+@When[os != "macOS"]
 func isMacOS(): Bool {false}
 func getCurrentOS(): (Bool, Bool, Bool) {
     let islin = isLinuxOS()
