@@ -95,7 +95,7 @@ public class HeaderUtilTest {
         fileHeader])
         try {
             HeaderUtil.getFileHeadersUnderDirectory(fileheaderlist, "cangjie")
-        } catch (e: Exception) {
+        } catch (e: NoneValueException) {
             @Assert(e.toString(),"NoneValueException: FileHeader.getFileName() is null.")
         }
     }

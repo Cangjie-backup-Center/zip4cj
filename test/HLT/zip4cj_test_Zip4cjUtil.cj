@@ -50,7 +50,7 @@ public class Zip4cjUtilTest {
         @Assert(Zip4cjUtil.createDirectoryIfNotExists(Path("sample.pdf\\1")),true)
         try {
             @Assert(Zip4cjUtil.createDirectoryIfNotExists(Path("after_deflate_remaining_bytes.bin")),true)
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: output directory is not valid")
         }
     }
@@ -59,7 +59,7 @@ public class Zip4cjUtilTest {
     func Zip4cjUtil09(): Unit {
         try {
             Zip4cjUtil.getCompressionMethod(FileHeader()).getCode()
-        } catch (e: Exception) {
+        } catch (e: NoneValueException) {
             @Assert(e.toString(),"NoneValueException")
         }
     }
@@ -86,7 +86,7 @@ public class Zip4cjUtilTest {
         @Assert(Zip4cjUtil.readFully(input,byte),6)
         try {
             Zip4cjUtil.readFully(input, byte, 2, 888)
-        } catch (e: Exception) {
+        } catch (e: IllegalArgumentException) {
             @Assert(e.toString(),"IllegalArgumentException: Length greater than buffer size")
         }
     }

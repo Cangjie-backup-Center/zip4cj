@@ -40,7 +40,7 @@ public class ZipFileTest {
         let files = [Path("file_name_size_is_0_in_local_file_header")]
         try {
             zipFile.createSplitZipFile(files, zipParameters, true, 20)
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: split length less than minimum allowed split length of 65536 Bytes")
         }
     }
@@ -68,7 +68,7 @@ public class ZipFileTest {
         let files = [Path("cangjie1111")]
         try {
             zipFile.createSplitZipFile(files, zipParameters, false, 20)
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: The path `cangjie1111` does not exist")
         }
     }
@@ -81,7 +81,7 @@ public class ZipFileTest {
         let files = [Path(" ")]
         try {
             zipFile.createSplitZipFile(files, zipParameters, false, 20)
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: The path ` ` does not exist")
         }
     }
@@ -139,7 +139,7 @@ public class ZipFileTest {
         let files = File("unexpected-eof-when-reading-stream", Open(true, false))
         try {
             zipFile.createSplitZipFile(files, zipParameters, false, 20)
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: fileNameInZip has to be set in zipParameters when adding stream")
         }
     }

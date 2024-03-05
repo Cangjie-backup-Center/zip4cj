@@ -54,7 +54,7 @@ public class ZipFileTest {
         @Assert(zipFile.getBufferSize(),9223372036854775807)
         try {
             zipFile.setBufferSize(-9223372036854775808)
-        } catch (e: Exception) {
+        } catch (e: IllegalArgumentException) {
             @Assert(e.toString(),"IllegalArgumentException: Buffer size cannot be less than 512 bytes")
         }
     }
