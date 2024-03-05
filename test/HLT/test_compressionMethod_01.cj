@@ -50,24 +50,20 @@ public class CompressionMethodTest {
 
     @TestCase
     func CompressionMethod07(): Unit {
-        var returnTag = 0
         try {
             CompressionMethod.getCompressionMethodFromCode(Int32.Max)
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: Unknown compression method")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func CompressionMethod08(): Unit {
-        var returnTag = 0
         try {
             CompressionMethod.getCompressionMethodFromCode(Int32.Min)
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: Unknown compression method")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase

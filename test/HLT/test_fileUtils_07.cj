@@ -31,13 +31,11 @@ public class FileUtilsTest {
         var file = RandomAccessFile(File("jar-dir-lfh-and-fh-entry-size-2.jar", OpenOption.Open(true, false)))
         var pro = ProgressMonitor()
         pro.setCancelAllTasks(true)
-        var returnTag = 0
         try {
             FileUtils.copyFile(file,File("archive_with_invalid_zip64_headers.zip", OpenOption.Open(true, false)),0,2,pro,2)
         } catch (e: FSException) {
-            returnTag = 1
+            @Assert(e.toString() , "FSException: The file does not have the write permission.")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
@@ -55,13 +53,11 @@ public class FileUtilsTest {
         var file = RandomAccessFile(File("a.txt", OpenOption.Open(true, false)))
         var pro = ProgressMonitor()
         pro.setCancelAllTasks(true)
-        var returnTag = 0
         try {
             FileUtils.copyFile(file,ByteArrayStream(),Int64.Max,2,pro,2)
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: invalid offsets")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
@@ -69,13 +65,11 @@ public class FileUtilsTest {
         var file = RandomAccessFile(File("a.txt", OpenOption.Open(true, false)))
         var pro = ProgressMonitor()
         pro.setCancelAllTasks(true)
-        var returnTag = 0
         try {
             FileUtils.copyFile(file,ByteArrayStream(),Int64.Max,Int64.Min,pro,2)
         } catch (e: ZipException) {
-            returnTag = 1
+            @Assert(e.toString() , "ZipException: invalid offsets")
         }
-        @Assert(returnTag , 1)
     }
     
     @TestCase
@@ -103,12 +97,10 @@ public class FileUtilsTest {
         var file = RandomAccessFile(File("a.txt", OpenOption.Open(true, false)))
         var pro = ProgressMonitor()
         pro.setCancelAllTasks(true)
-        var returnTag = 0
         try {
             FileUtils.copyFile(file,ByteArrayStream(),0,Int64.Max,pro,Int64.Max)
         } catch (e: OutOfMemoryError) {
-            returnTag = 1
+            @Assert(e.toString() , "OutOfMemoryError")
         }
-        @Assert(returnTag , 1)
     }
 }

@@ -24,13 +24,11 @@ public class FileUtilsTest {
 
     @TestCase
     func FileUtils02(): Unit {
-        var returnTag = 0
         try {
             FileUtils.getSplitZipFiles(ZipModel())
         } catch (e: NoneValueException) {
-            returnTag = 1
+            @Assert(e.toString() , "NoneValueException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase

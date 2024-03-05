@@ -25,25 +25,21 @@ public class RawIOTest {
     @TestCase
     func RawIO02(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.readLongLittleEndian(Array<Byte>(Int64.Max, item: 0),0)
         } catch (e: OutOfMemoryError) {
-            returnTag = 1
+            @Assert(e.toString() , "OutOfMemoryError")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO03(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.readLongLittleEndian(Array<Byte>(Int64.Min, item: 0),0)
         } catch (e: NegativeArraySizeException) {
-            returnTag = 1
+            @Assert(e.toString() , "NegativeArraySizeException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase

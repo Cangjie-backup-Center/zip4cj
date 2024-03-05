@@ -18,86 +18,72 @@ public class RawIOTest {
     @TestCase
     func RawIO01(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeIntLittleEndian(Array<Byte>(),0,0)
         } catch (e: IndexOutOfBoundsException) {
-            returnTag = 1
+            @Assert(e.toString() , "IndexOutOfBoundsException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO02(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeIntLittleEndian(Array<Byte>(),Int64.Max,Int32.Max)
         } catch (e: IndexOutOfBoundsException) {
-            returnTag = 1
+            @Assert(e.toString() , "IndexOutOfBoundsException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO03(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeIntLittleEndian(Array<Byte>(),0,Int32.Min)
         } catch (e: IndexOutOfBoundsException) {
-            returnTag = 1
+            @Assert(e.toString() , "IndexOutOfBoundsException")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO04(): Unit {
         var src = RawIO()
-        var returnTag = 0
         src.writeLongLittleEndian(ByteArrayStream(),Int64.Max)
         src.writeLongLittleEndian(ByteArrayStream(),0)
         try {
             src.writeLongLittleEndian(File("a.txt", OpenOption.Open(true, false)),Int64.Min)
         } catch (e: FSException) {
-            returnTag = 1
+            @Assert(e.toString() , "FSException: The file does not have the write permission.")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO05(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeLongLittleEndian(File("a.txt", OpenOption.Open(true, false)),Int64.Max)
         } catch (e: FSException) {
-            returnTag = 1
+            @Assert(e.toString() , "FSException: The file does not have the write permission.")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO06(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeLongLittleEndian(File("jar-dir-lfh-and-fh-entry-size-2.jar", OpenOption.Open(true, false)),Int64.Min)
         } catch (e: FSException) {
-            returnTag = 1
+            @Assert(e.toString() , "FSException: The file does not have the write permission.")
         }
-        @Assert(returnTag , 1)
     }
 
     @TestCase
     func RawIO07(): Unit {
         var src = RawIO()
-        var returnTag = 0
         try {
             src.writeLongLittleEndian(File("archive_with_invalid_zip64_headers.zip", OpenOption.Open(true, false)),0)
         } catch (e: FSException) {
-            returnTag = 1
+            @Assert(e.toString() , "FSException: The file does not have the write permission.")
         }
-        @Assert(returnTag , 1)
     }
 }
