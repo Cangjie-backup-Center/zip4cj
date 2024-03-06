@@ -15,11 +15,8 @@ from std import unittest.testmacro.*
 main() { 
 
     let test = utilTest()
-    test.utilTest01()
-    test.utilTest02()
-    test.utilTest03()
-    test.utilTest04()
-    test.utilTest05()
+    test.execute()
+    test.printResult()
     return 0
 }
 @Test
@@ -27,11 +24,11 @@ public class utilTest {
 
     @TestCase
     public func utilTest01(): Unit {
-        var returnTag = 0
+        var returnTag = 1
         try {
             FileUtils.getAllSortedNumberedSplitFiles(Path("123.txt"))
         }catch (e: NoneValueException) {
-            returnTag = 1
+            returnTag = 0
         }
         @Assert(returnTag, 1)
     }

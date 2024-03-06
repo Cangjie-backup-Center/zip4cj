@@ -25,7 +25,6 @@ public class HeaderReader {
         } catch (e: ZipException) {
             throw e
         } catch (e: Exception) {
-            e.printStackTrace()
             throw ZipException("Zip headers not found. Probably not a zip file or a corrupted zip file")
         }
         if (myzipModel.getEndOfCentralDirectoryRecord().getTotalNumberOfEntriesInCentralDirectory() == 0) {

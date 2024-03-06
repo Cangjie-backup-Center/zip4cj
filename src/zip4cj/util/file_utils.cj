@@ -380,9 +380,15 @@ public class FileUtils {
     public static func getAllSortedNumberedSplitFiles(firstNumberedFile: Path): Array<Path> {
         var zipFileNameWithoutExtension = FileUtils.getFileNameWithoutExtension(firstNumberedFile.fileName.getOrThrow())
         let listFiles = ArrayList<Path>()
-        for (file in Directory(firstNumberedFile.directoryName.getOrThrow()) where file.isFile()) {
-            if (file.path.fileName.getOrThrow().startsWith(zipFileNameWithoutExtension + ".")) {
-                listFiles.append(file.path)
+        if (let Some(v) <- try{
+            firstNumberedFile.toCanonical().directoryName
+        } catch (e: FSException) {
+            firstNumberedFile.directoryName
+        }) {
+            for (file in Directory(v) where file.isFile()) {
+                if (file.path.fileName.getOrThrow().startsWith(zipFileNameWithoutExtension + ".")) {
+                    listFiles.append(file.path)
+                }
             }
         }
         return unsafe { listFiles.getRawArray()[0..listFiles.size] }

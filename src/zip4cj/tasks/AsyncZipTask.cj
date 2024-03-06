@@ -116,7 +116,6 @@ public abstract class AsyncZipTask<T> {
             throw e
         } catch (e: Exception) {
             progressMonitor.endProgressMonitor(e)
-            e.printStackTrace()
             throw ZipException(e.message)
         }
     }
