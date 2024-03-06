@@ -19,7 +19,7 @@ public class FileHeaderFactoryTest {
         var fileheaderfactory = FileHeaderFactory()
         try {
             fileheaderfactory.generateFileHeader(zipparameters, true, 0, Charsets.UTF8, rawio)
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: fileNameInZip is null or empty")
         }
     }
@@ -31,7 +31,7 @@ public class FileHeaderFactoryTest {
         var fileheaderfactory = FileHeaderFactory()
         try {
             fileheaderfactory.generateFileHeader(zipparameters, false, 9223372036854775807, Charsets.UTF8, rawio)
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: fileNameInZip is null or empty")
         }
     }
@@ -43,7 +43,7 @@ public class FileHeaderFactoryTest {
         var fileheaderfactory = FileHeaderFactory()
         try {
             fileheaderfactory.generateFileHeader(zipparameters, false, -9223372036854775808, Charsets.UTF8, rawio)
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: fileNameInZip is null or empty")
         }
     }
@@ -54,7 +54,7 @@ public class FileHeaderFactoryTest {
         var fileheaderfactory = FileHeaderFactory()
         try {
             fileheaderfactory.generateLocalFileHeader(fileheader)
-        } catch (e: Exception) {
+        } catch (e: NoneValueException) {
             @Assert(e.toString(),"NoneValueException: FileHeader.getGeneralPurposeFlag() is null")
         }
     }

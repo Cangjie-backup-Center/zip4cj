@@ -25,7 +25,7 @@ public class ZipFileTest {
         let files = [Path("1234.txt")]
         try {
             zipFile.createSplitZipFile(files, zipParameters, true, 2)
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: split length less than minimum allowed split length of 65536 Bytes")
         }
     }
@@ -38,7 +38,7 @@ public class ZipFileTest {
         let files = [Path("123.txt")]
         try {
             zipFile.createSplitZipFile(files, zipParameters, true, 1)
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: split length less than minimum allowed split length of 65536 Bytes")
         }
     }
@@ -51,7 +51,7 @@ public class ZipFileTest {
         let files = [Path("123.txt")]
         try {
             zipFile.createSplitZipFile(files, zipParameters, true, 0)
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: split length less than minimum allowed split length of 65536 Bytes")
         }
     }
@@ -178,7 +178,7 @@ public class ZipFileTest {
         let zipFile = ZipFile("end_of_cen_dir_not_at_expected_position.zip")
         try {
             zipFile.renameFile(FileHeader(), "123")
-        } catch (e: Exception) {
+        } catch (e: NoneValueException) {
             @Assert(e.toString(),"NoneValueException: The fileName of the FileHeader class is None.")
         }
     }
@@ -205,7 +205,7 @@ public class ZipFileTest {
         fileheader.setFileName("MP41.mp4")
         try {
             zipFile.renameFile(fileheader, " ")
-        } catch (e: Exception) {
+        } catch (e: ZipException) {
             @Assert(e.toString(),"ZipException: newFileName is None or empty")
         }
     }

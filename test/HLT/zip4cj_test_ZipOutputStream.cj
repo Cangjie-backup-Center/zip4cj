@@ -22,7 +22,7 @@ public class ZipOutputStreamTest {
         var config = Zip4cjConfig(Charsets.UTF8, 0, true)
         try {
             ZipOutputStream(input, password: buf, zip4cjConfig: config, zipModel: ZipModel())
-        } catch (e: Exception) {
+        } catch (e: IllegalArgumentException) {
             @Assert(e.toString(),"IllegalArgumentException: Buffer size cannot be less than 512 bytes")
         }
     }
@@ -35,7 +35,7 @@ public class ZipOutputStreamTest {
         var zipoutputstream = ZipOutputStream(input, password: buf, zip4cjConfig: config, zipModel: ZipModel())
         try {
             zipoutputstream.putNextEntry(ZipParameters())
-        } catch (e: Exception) {
+        } catch (e: IllegalArgumentException) {
             @Assert(e.toString(),"IllegalArgumentException: fileNameInZip is null or empty")
         }
     }
@@ -49,7 +49,7 @@ public class ZipOutputStreamTest {
         var zipoutputstream = ZipOutputStream(input, password: buf, zip4cjConfig: config, zipModel: ZipModel())
         try {
             zipoutputstream.write(buf1)
-        } catch (e: Exception) {
+        } catch (e: NoneValueException) {
             @Assert(e.toString(),"NoneValueException: please add an entry first, which requires calling the putNextEntry function before calling the other function operation.")
         }
     }
@@ -63,7 +63,7 @@ public class ZipOutputStreamTest {
         var zipoutputstream = ZipOutputStream(input)
         try {
             zipoutputstream.write(0)
-        } catch (e: Exception) {
+        } catch (e: NoneValueException) {
             @Assert(e.toString(),"NoneValueException: please add an entry first, which requires calling the putNextEntry function before calling the other function operation.")
         }
     }

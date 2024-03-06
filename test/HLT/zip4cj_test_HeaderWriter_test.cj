@@ -21,7 +21,7 @@ public class HeaderWriterTest {
         let headerwriter = HeaderWriter()
         try {
             headerwriter.writeLocalFileHeader(ZipModel(), LocalFileHeader(), output, Charsets.UTF8)
-        } catch (e: Exception) {
+        } catch (e: NoneValueException) {
             @Assert(e.toString(),"NoneValueException: cannot read the array length because array is None")
         }
     }
