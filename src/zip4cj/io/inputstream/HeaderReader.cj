@@ -446,13 +446,13 @@ public class HeaderReader {
         zip4cjRaf: RandomAccessFile,
         offsetEndOfCentralDirectoryRecord: Int64
     ): Unit {
-        // Now the file pointer is at the end of signature of Central Dir Rec
-        // Seek back with the following values
-        // 4 -> total number of disks
-        // 8 -> relative offset of the zip64 end of central directory record
-        // 4 -> number of the disk with the start of the zip64 end of central directory
-        // 4 -> zip64 end of central dir locator signature
-        // Refer to Appnote for more information
+        /* Now the file pointer is at the end of signature of Central Dir Rec
+        Seek back with the following values
+        4 -> total number of disks
+        8 -> relative offset of the zip64 end of central directory record
+        4 -> number of the disk with the start of the zip64 end of central directory
+        4 -> zip64 end of central dir locator signature
+        Refer to Appnote for more information */
         seekInCurrentPart(zip4cjRaf, offsetEndOfCentralDirectoryRecord - 4 - 8 - 4 - 4)
     }
 
@@ -526,7 +526,7 @@ public class HeaderReader {
 
     public func readDataDescriptor(inputStream: InputStream, isZip64Format: Bool): DataDescriptor {
 
-        let dataDescriptor = DataDescriptor()
+        let dataDescriptors = DataDescriptor()
         let intBuff = Array<Byte>(4, item:0)
         Zip4cjUtil.readFully(inputStream, intBuff)
         var sigOrCrc = rawIO.readLongLittleEndian(intBuff, 0)
@@ -534,20 +534,20 @@ public class HeaderReader {
         //If this signature is present, read it and read the next 4 bytes for crc
         //If signature not present, assign the read 4 bytes for crc
         if (sigOrCrc == HeaderSignature.EXTRA_DATA_RECORD.getValue()) {
-            dataDescriptor.setSignature(HeaderSignature.EXTRA_DATA_RECORD)
+            dataDescriptors.setSignature(HeaderSignature.EXTRA_DATA_RECORD)
             Zip4cjUtil.readFully(inputStream, intBuff)
-            dataDescriptor.setCrc(rawIO.readLongLittleEndian(intBuff, 0))
+            dataDescriptors.setCrc(rawIO.readLongLittleEndian(intBuff, 0))
         } else {
-            dataDescriptor.setCrc(sigOrCrc)
+            dataDescriptors.setCrc(sigOrCrc)
         }
         if (isZip64Format) {
-            dataDescriptor.setCompressedSize(rawIO.readLongLittleEndian(inputStream))
-            dataDescriptor.setUncompressedSize(rawIO.readLongLittleEndian(inputStream))
+            dataDescriptors.setCompressedSize(rawIO.readLongLittleEndian(inputStream))
+            dataDescriptors.setUncompressedSize(rawIO.readLongLittleEndian(inputStream))
         } else {
-            dataDescriptor.setCompressedSize(Int64(rawIO.readIntLittleEndian(inputStream)))
-            dataDescriptor.setUncompressedSize(Int64(rawIO.readIntLittleEndian(inputStream)))
+            dataDescriptors.setCompressedSize(Int64(rawIO.readIntLittleEndian(inputStream)))
+            dataDescriptors.setUncompressedSize(Int64(rawIO.readIntLittleEndian(inputStream)))
         }
-        return dataDescriptor
+        return dataDescriptors
     }
 
     private func readAesExtraDataRecord(fileHeader: AbstractFileHeader, rawIO: RawIO) {
