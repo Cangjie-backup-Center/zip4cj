@@ -207,6 +207,7 @@ public class ZipFile {
     }
 
     public func getFileHeaders(): ArrayList<FileHeader> {
+        readZipInfo()
         match(zipModel.getCentralDirectory()) {
             case Some(v) => v.getFileHeaders()
             case None => ArrayList<FileHeader>()
@@ -225,6 +226,12 @@ public class ZipFile {
     }
 
     public func isEncrypted(): Bool {
+        if (isNullzipModel) {
+            readZipInfo()
+            if (isNullzipModel) {
+                throw ZipException("Zip Model is null")
+            }
+        }
         match (zipModel.getCentralDirectory()) {
             case Some(v) => 
                 for (fileHeader in v.getFileHeaders() where fileHeader.isEncrypted()) {
