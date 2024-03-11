@@ -21,13 +21,12 @@ public class ZipFileTest {
     func ZipFile04(): Unit {
         let zipParameters = ZipParameters();
         zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)
-        let zipFile = ZipFile("output123.zip")
+        let zipFile = ZipFile("output123o.zip")
         let files = [Path("123.txt")]
         zipFile.createSplitZipFile(files, zipParameters, false, 20)
-        let zipFile1 = ZipFile("output123.zip")
-        Directory.create("contrast")
-        zipFile1.extractAll("./contrast")
-        let input: File = File("contrast/123.txt", Open(true, false))
+        let zipFile1 = ZipFile("output123o.zip")
+        zipFile1.extractAll("./contrast/txt")
+        let input: File = File("contrast/txt/123.txt", Open(true, false))
         let input1: File = File("123.txt", Open(true, false))
         @Assert(input.readToEnd(),input1.readToEnd())
     }
@@ -105,13 +104,12 @@ public class ZipFileTest {
     func ZipFile10(): Unit {
         let zipParameters = ZipParameters();
         zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)
-        let zipFile = ZipFile("libssl.so.3.7z")
+        let zipFile = ZipFile("llibssl.so.3.7z")
         let files = Path("libssl.so.3")
         zipFile.createSplitZipFile([files], zipParameters, false, 20)
-        let zipFile1 = ZipFile("libssl.so.3.7z")
-        Directory.create("contrast/32")
-        zipFile1.extractAll("./contrast/32")
-        let input: File = File("contrast/32/libssl.so.3", Open(true, false))
+        let zipFile1 = ZipFile("llibssl.so.3.7z")
+        zipFile1.extractAll("./contrast/po")
+        let input: File = File("contrast/po/libssl.so.3", Open(true, false))
         let input1: File = File("libssl.so.3", Open(true, false))
         @Assert(input.readToEnd(),input1.readToEnd())
     }
@@ -120,13 +118,12 @@ public class ZipFileTest {
     func ZipFile11(): Unit {
         let zipParameters = ZipParameters();
         zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)
-        let zipFile = ZipFile("libssl.so.3.mp4")
+        let zipFile = ZipFile("llibssl.so.3.mp4")
         let files = Path("libssl.so.3")
         zipFile.createSplitZipFile([files], zipParameters, false, 20)
-        let zipFile1 = ZipFile("libssl.so.3.mp4")
-        Directory.create("contrast/42")
-        zipFile1.extractAll("./contrast/42")
-        let input: File = File("contrast/42/libssl.so.3", Open(true, false))
+        let zipFile1 = ZipFile("llibssl.so.3.mp4")
+        zipFile1.extractAll("./contrast/ml")
+        let input: File = File("contrast/ml/libssl.so.3", Open(true, false))
         let input1: File = File("libssl.so.3", Open(true, false))
         @Assert(input.readToEnd(),input1.readToEnd())
     }
@@ -135,7 +132,7 @@ public class ZipFileTest {
     func ZipFile12(): Unit {
         let zipParameters = ZipParameters()
         zipParameters.setCompressionMethod(CompressionMethod.STORE)
-        let zipFile = ZipFile("unexpected-eof-when-reading-stream.zip")
+        let zipFile = ZipFile("unexpected-eof-when-reading-stream159.zip")
         let files = File("unexpected-eof-when-reading-stream", Open(true, false))
         try {
             zipFile.createSplitZipFile(files, zipParameters, false, 20)
@@ -183,7 +180,7 @@ public class ZipFileTest {
         var a = 0
         let zipParameters = ZipParameters();
         zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)
-        let zipFile = ZipFile("ppt1.zip")
+        let zipFile = ZipFile("ppt789.zip")
         let files = [Path("../../../resources/ppt")]
         try {
             zipFile.createSplitZipFile(files, zipParameters, false, 20)
