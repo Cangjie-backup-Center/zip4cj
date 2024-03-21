@@ -9,6 +9,7 @@ public class SetCommentTask <: AsyncZipTask<SetCommentTaskTaskParameters> {
     }
 
     protected func executeTask(taskParameters: SetCommentTaskTaskParameters, progressMonitor: ProgressMonitor) {
+        taskParameters
         var endOfCentralDirectoryRecord: EndOfCentralDirectoryRecord = zipModel.getEndOfCentralDirectoryRecord()
         endOfCentralDirectoryRecord.setComment(taskParameters.comment)
 
@@ -27,6 +28,7 @@ public class SetCommentTask <: AsyncZipTask<SetCommentTaskTaskParameters> {
     }
 
     protected func calculateTotalWork(taskParameters: SetCommentTaskTaskParameters): Int64 {
+        taskParameters
         return 0
     }
 

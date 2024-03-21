@@ -5,6 +5,7 @@ class NoEncrypter <: Encrypter {
         return encryptData(buff, 0, buff.size)
     }
     func encryptData(buff: Array<Byte>, start: Int64, len: Int64): Int64 {
+        (buff, start)
         return len
     }
 }

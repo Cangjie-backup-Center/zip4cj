@@ -35,6 +35,7 @@ class ZipStandardCipherOutputStream <: CipherOutputStream {
         password: ?Array<Char>,
         useUtf8ForPassword: Bool
     ): StandardEncrypter {
+        outputStream
         var key: Int64 = if (zipParameters.isWriteExtendedLocalFileHeader()) {
             let dosTime = Zip4cjUtil.epochToExtendedDosTime(zipParameters.getLastModifiedFileTime());
             (dosTime & 0x0000ffff) << 16;

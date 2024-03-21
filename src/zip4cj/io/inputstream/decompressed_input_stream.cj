@@ -30,6 +30,7 @@ abstract class DecompressedInputStream <: InputStream & Resource {
     }
 
     public open func pushBackInputStreamIfNecessary(pushbackInputStream: InputStream): Int64 {
+        pushbackInputStream
         // Do nothing by default
         return 0
     }

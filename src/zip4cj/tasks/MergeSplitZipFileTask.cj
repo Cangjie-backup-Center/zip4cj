@@ -8,7 +8,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
         super(asyncTaskParameters)
         this.zipModel = zipModel
     }
-    //protected func executeTask(taskParameters: T, progressMonitor: ProgressMonitor): Unit
+
     protected func executeTask(taskParameters: MergeSplitZipFileTaskParameters, progressMonitor: ProgressMonitor): Unit {
         if (!zipModel.isSplitArchive()) {
             var e = ZipException("archive not a split zip file")
@@ -62,6 +62,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
     }
 
     protected func calculateTotalWork(taskParameters: MergeSplitZipFileTaskParameters): Int64 {
+        taskParameters
         if (!zipModel.isSplitArchive()) {
             return 0
         }

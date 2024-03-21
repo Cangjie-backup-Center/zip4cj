@@ -61,6 +61,7 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
     }
 
     protected func calculateTotalWork(taskParameters: RemoveFilesFromZipTaskParameters): Int64 {
+        taskParameters
         let file: File = File(zipModel.getZipFile().getOrThrow(), OpenOption.Open(true, false))
         return file.length
     }

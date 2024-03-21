@@ -70,6 +70,7 @@ abstract class CipherInputStream <: InputStream & Resource {
     }
 
     protected open func endOfEntryReached(inputStream: InputStream, numberOfBytesPushedBack: Int64): Unit {
+        (inputStream,numberOfBytesPushedBack )
         // is optional but useful for AES
         return
     }

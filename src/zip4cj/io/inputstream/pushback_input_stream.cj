@@ -98,6 +98,7 @@ class PushbackInputStream <: InputStream {
     }
 
     public func mark(readlimit: Int64) {
+        readlimit
         return
     }
 
