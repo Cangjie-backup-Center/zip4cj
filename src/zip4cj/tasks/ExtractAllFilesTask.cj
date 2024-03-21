@@ -36,6 +36,7 @@ public class ExtractAllFilesTask <: AbstractExtractFileTask<ExtractAllFilesTaskP
     }
 
     protected func calculateTotalWork(taskParameters: ExtractAllFilesTaskParameters): Int64 {
+        taskParameters
         return HeaderUtil.getTotalUncompressedSizeOfAllFileHeaders(getZipModel().getCentralDirectory().getOrThrow().getFileHeaders())
     }
 

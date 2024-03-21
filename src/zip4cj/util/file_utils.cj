@@ -58,6 +58,7 @@ public class FileUtils {
 
     // TODO
     public static func setFileLastModifiedTimeWithoutNio(file: Path, lastModifiedTime: Int64) {
+        (file, lastModifiedTime)
         return
     }
 
@@ -88,7 +89,8 @@ public class FileUtils {
         if (!(File.exists(path) || Directory.exists(path))) {
             return ArrayList<Path>()
         }
-        if (!path.isDirectory() || !FileInfo(path).canRead()) {
+        let fileInfo = FileInfo(path)
+        if (!path.isDirectory() || !fileInfo.canRead()) {
             return paths
         }
         let dir = Directory(path)
@@ -103,6 +105,7 @@ public class FileUtils {
 
     // TODO getFilesInDirectoryRecursive
     public static func getFilesInDirectoryRecursive(path: File, zipParameters: ZipParameters) {
+        (path, zipParameters)
         var result = ArrayList<File>()
         return result
     }
@@ -439,6 +442,7 @@ public class FileUtils {
 
     // TODO 文件权限设置
     private static func applyWindowsFileAttributes(file: Path, fileAttributes: Array<Byte>) {
+        file
         if (fileAttributes[0] == 0) {
             // No file attributes defined in the archive
             return
@@ -447,6 +451,7 @@ public class FileUtils {
 
     // TODO 文件权限设置
     private static func applyPosixFileAttributes(file: Path, fileAttributes: Array<Byte>): Unit {
+        file
         if (fileAttributes[2] == 0 && fileAttributes[3] == 0) {
             // No file attributes defined
             return

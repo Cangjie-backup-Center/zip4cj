@@ -109,6 +109,7 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
 
     // TODO check Output Directory Structure
     private func checkOutputDirectoryStructure(outputFile: Path) {
+        outputFile
         return
     }
 

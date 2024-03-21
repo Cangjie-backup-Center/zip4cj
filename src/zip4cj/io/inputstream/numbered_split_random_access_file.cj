@@ -114,6 +114,7 @@ class NumberedSplitRandomAccessFile <: RandomAccessFile {
     }
 
     private static func assertAllSplitFilesExist(allSortedSplitFiles: Array<Path>) {
-        // TODO  FIleutil
+        allSortedSplitFiles
+        return
     }
 }

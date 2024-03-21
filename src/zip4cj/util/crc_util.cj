@@ -84,7 +84,8 @@ public class CrcUtil {
     private static let BUF_SIZE: Int64 = 1 << 14 //16384
     private init(){}
     public static func computeFileCrc(inputFile: Path, progressMonitor: ?ProgressMonitor): UInt32 {
-        if (!File.exists(inputFile) || !FileInfo(inputFile).canRead()) {
+        let fileInfo = FileInfo(inputFile)
+        if (!File.exists(inputFile) || !fileInfo.canRead()) {
             throw ZipException(
                 "input file is null or does not exist or cannot read.  Cannot calculate CRC for the file")
         }

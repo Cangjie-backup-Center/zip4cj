@@ -64,6 +64,7 @@ public class AddStreamToZipTask <: AbstractAddFileToZipTask<AddStreamToZipTaskPa
     }
 
     protected func calculateTotalWork(taskParameters: AddStreamToZipTaskParameters): Int64 {
+        taskParameters
         return 0
     }
 

@@ -76,6 +76,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
     }
 
     protected func calculateTotalWork(taskParameters: RenameFilesTaskParameters): Int64 {
+        taskParameters
         return FileInfo(zipModel.getZipFile().getOrThrow()).length
     }
 
