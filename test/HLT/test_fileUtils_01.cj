@@ -13,12 +13,22 @@ from std import unittest.testmacro.*
 from charset import charset.*
 from charset import charset.encoding.*
 from zip4cj import zip4cj.*
+
+@When[os == "windows"]
+func getFileAttributes_str(): String {
+    "[32, 0, 0, 0]"
+}
+@When[os != "windows"]
+func getFileAttributes_str(): String {
+    "[0, 0, 182, 129]"
+}
+
 @Test
 public class FileUtilsTest {
     @TestCase
     func FileUtils01(): Unit {
         FileUtils.setFileAttributes(Path("a.txt"),Array<Byte>())
-        @Assert(FileUtils.getFileAttributes(Path("a.txt")).toString(), "[0, 0, 182, 129]")
+        @Assert(FileUtils.getFileAttributes(Path("a.txt")).toString(), getFileAttributes_str())
     }
 
     @TestCase
@@ -54,13 +64,13 @@ public class FileUtilsTest {
     @TestCase
     func FileUtils07(): Unit {
         FileUtils.setFileAttributes(Path("archive_with_invalid_zip64_headers.zip"),Array<Byte>())
-        @Assert(FileUtils.getFileAttributes(Path("archive_with_invalid_zip64_headers.zip")).toString(), "[0, 0, 182, 129]")
+        @Assert(FileUtils.getFileAttributes(Path("archive_with_invalid_zip64_headers.zip")).toString(), getFileAttributes_str())
     }
 
     @TestCase
     func FileUtils08(): Unit {
         FileUtils.setFileAttributes(Path("jar-dir-lfh-and-fh-entry-size-2.jar"),Array<Byte>())
-        @Assert(FileUtils.getFileAttributes(Path("jar-dir-lfh-and-fh-entry-size-2.jar")).toString(), "[0, 0, 182, 129]")
+        @Assert(FileUtils.getFileAttributes(Path("jar-dir-lfh-and-fh-entry-size-2.jar")).toString(), getFileAttributes_str())
     }
 
     @TestCase
