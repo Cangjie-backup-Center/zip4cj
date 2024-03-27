@@ -13,6 +13,25 @@ from std import unittest.testmacro.*
 from charset import charset.*
 from charset import charset.encoding.*
 from zip4cj import zip4cj.*
+
+@When[os == "windows"]
+func FileUtils09_str(): String {
+    "[16, 0, 0, 0]"
+}
+@When[os != "windows"]
+func FileUtils09_str(): String {
+    "[0, 0, 237, 65]"
+}
+
+@When[os == "windows"]
+func FileUtils08_str(): String {
+    "[0, 0, 0, 0]"
+}
+@When[os != "windows"]
+func FileUtils08_str(): String {
+    "[0, 0, 164, 129]"
+}
+
 @Test
 public class FileUtilsTest {
     @TestCase
@@ -60,13 +79,13 @@ public class FileUtilsTest {
     @TestCase
     func FileUtils08(): Unit {
         let sc = FileUtils.getDefaultFileAttributes(false)
-        @Assert(sc.toString(), "[0, 0, 164, 129]")
+        @Assert(sc.toString(), FileUtils08_str())
     }
 
     @TestCase
     func FileUtils09(): Unit {
         let sc = FileUtils.getDefaultFileAttributes(true)
-        @Assert(sc.toString(), "[0, 0, 237, 65]")
+        @Assert(sc.toString(), FileUtils09_str())
     }
 
 }
