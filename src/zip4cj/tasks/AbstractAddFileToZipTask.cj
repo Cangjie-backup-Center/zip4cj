@@ -1,5 +1,15 @@
 package zip4cj.tasks
 
+@When[os == "windows"] 
+func getPlatformWindows(): Bool {
+    true
+}
+
+@When[os != "windows"]
+func getPlatformWindows(): Bool {
+    false
+}
+
 public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
     private var zipModel: ZipModel
     private var password: ?Array<Char>
@@ -180,7 +190,13 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         if (fileToAdd.isDirectory()) {
             clonedzp.setEntrySize(0)
         } else {
-            clonedzp.setEntrySize(fileInfo.length)
+            if (getPlatformWindows()) {
+                let file = File(fileToAdd, Open(true, false))
+                clonedzp.setEntrySize(file.length)
+                file.close()
+            } else {
+                clonedzp.setEntrySize(fileInfo.length)
+            }
         }
         if (zipParameters.getLastModifiedFileTime() <= 0) {
             clonedzp.setLastModifiedFileTime(fileInfo.lastModificationTime.toUnixTimeStamp().toNanoseconds());

@@ -47,7 +47,7 @@ public class Zip4cjUtilTest {
 
     @TestCase
     func Zip4cjUtil06(): Unit {
-        @Assert(Zip4cjUtil.createDirectoryIfNotExists(Path("sample.pdf\\1")),true)
+        @Assert(Zip4cjUtil.createDirectoryIfNotExists(Path("sample.pdf1\\1")),true)
         try {
             @Assert(Zip4cjUtil.createDirectoryIfNotExists(Path("after_deflate_remaining_bytes.bin")),true)
         } catch (e: ZipException) {

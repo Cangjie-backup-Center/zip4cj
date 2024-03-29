@@ -17,6 +17,16 @@ from std import unittest.testmacro.*
 from charset import charset.*
 from charset import charset.encoding.*
 from zip4cj import zip4cj.*
+
+@When[os != "windows"]
+func getSeek(): Int64 {
+    22
+}
+@When[os == "windows"]
+func getSeek(): Int64 {
+    131
+}
+
 @Test
 public class SplitOutputStreamTest { 
 
@@ -78,7 +88,7 @@ public class SplitOutputStreamTest {
         try {
             splitOutputStream.seek(-1)
         } catch (e: FSException) {
-            @Assert(e.toString() , "FSException: Failed to seek: errno is 22")
+            @Assert(e.toString() , "FSException: Failed to seek: errno is ${getSeek()}")
         }
     }
 
