@@ -62,10 +62,6 @@ public class ProgressMonitor {
                 percentDone = 100
             }
         }
-
-        while (pause) {
-            sleep(150 * Duration.millisecond)
-        }
     }
 
     public func endProgressMonitor(): Unit {

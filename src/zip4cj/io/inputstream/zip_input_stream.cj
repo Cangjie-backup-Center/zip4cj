@@ -42,27 +42,27 @@ public class ZipInputStream <: InputStream & Resource {
         if (localFileHeader.isNone()) {
             return None
         }
-
-        if (localFileHeader.getOrThrow().isEncrypted() && password.isNone() && passwordCallback.isSome()) {
+        let localFileHeaderV = localFileHeader.getOrThrow()
+        if (localFileHeaderV.isEncrypted() && password.isNone() && passwordCallback.isSome()) {
             setPassword(passwordCallback.getOrThrow().getPassword())
         }
 
-        verifyLocalFileHeader(localFileHeader.getOrThrow())
+        verifyLocalFileHeader(localFileHeaderV)
 
-        if (fileHeader.isSome()) {
-            localFileHeader.getOrThrow().setCrc(fileHeader.getOrThrow().getCrc())
-            localFileHeader.getOrThrow().setCompressedSize(fileHeader.getOrThrow().getCompressedSize())
-            localFileHeader.getOrThrow().setUncompressedSize(fileHeader.getOrThrow().getUncompressedSize())
+        if (let Some(fileHeaderV) <- fileHeader) {
+            localFileHeaderV.setCrc(fileHeaderV.getCrc())
+            localFileHeaderV.setCompressedSize(fileHeaderV.getCompressedSize())
+            localFileHeaderV.setUncompressedSize(fileHeaderV.getUncompressedSize())
             // file header's directory flag is more reliable than local file header's directory flag as file header has
             // additional external file attributes which has a directory flag defined. In local file header, the only way
             // to determine if an entry is directory is to check if the file name has a trailing forward slash "/"
-            localFileHeader.getOrThrow().setDirectory(fileHeader.getOrThrow().isDirectory())
+            localFileHeaderV.setDirectory(fileHeaderV.isDirectory())
             canSkipExtendedLocalFileHeader = true
         } else {
             canSkipExtendedLocalFileHeader = false
         }
 
-        this.decompressedInputStream = initializeEntryInputStream(localFileHeader.getOrThrow())
+        this.decompressedInputStream = initializeEntryInputStream(localFileHeaderV)
         this.entryEOFReached = false
         return localFileHeader
     }
@@ -71,22 +71,9 @@ public class ZipInputStream <: InputStream & Resource {
         if (b.size == 0) {
             return -1
         }
-        return read(b, 0, b.size)
-    }
-
-    func read(b: Array<Byte>, off: Int64, len: Int64): Int64 {
         if (streamClosed) {
             throw ZipIOException("Stream closed")
         }
-
-        if (len < 0) {
-            throw IllegalArgumentException("Negative read length")
-        }
-
-        if (len == 0) {
-            return 0
-        }
-
         if (localFileHeader.isNone()) {
             // localfileheader can be null when end of compressed data is reached.  If null check is missing, read method will
             // throw a NPE when end of compressed data is reached and read is called again.
@@ -94,17 +81,15 @@ public class ZipInputStream <: InputStream & Resource {
         }
 
         try {
-            var readLen = decompressedInputStream.getOrThrow().read(b[off.. len])
+            var readLen = decompressedInputStream.getOrThrow().read(b)
             if (readLen > 0) {
-                crc32.update(b[off..off + readLen]) //crc32.update(b, off, readLen)
+                crc32.update(b[0..readLen])
             }
-
             return readLen
         } catch (e: IOException | ZipIOException) {
             if (isEncryptionMethodZipStandard(localFileHeader.getOrThrow())) {
                 throw ZipException(e.message)
             }
-
             throw e
         }
     }
