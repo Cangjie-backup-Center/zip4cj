@@ -17,6 +17,16 @@ from std import unittest.testmacro.*
 from charset import charset.*
 from charset import charset.encoding.*
 from zip4cj import zip4cj.*
+
+@When[os != "windows"]
+func getNL(): Int64 {
+    0
+}
+@When[os == "windows"]
+func getNL(): Int64 {
+    1
+}
+
 @Test
 public class ZipEntryInputStreamTest { 
 
@@ -33,7 +43,7 @@ public class ZipEntryInputStreamTest {
         var file = File("invalid_zip_file_size_less_than_22kb.zip", OpenOption.Open(true, true))
         var zipEntryInputStream = ZipEntryInputStream(file,100)
         var values = Array<Byte>(100,item: 0)
-        @Assert(zipEntryInputStream.read(values) , 15)
+        @Assert(zipEntryInputStream.read(values) , 15 + getNL())
     }
 
     @TestCase
