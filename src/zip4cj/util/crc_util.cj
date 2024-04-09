@@ -41,13 +41,13 @@ public class CRC32 {
         globalCrc = 0
     }
 
-    func crc32(value: UInt32, buf: Array<UInt8>, start: Int64, length: Int64): UInt32 {
-        if (length <= 0) {
+    static func crc32(value: UInt32, buf: Array<UInt8>): UInt32 {
+        if (buf.size <= 0) {
             return UInt32(0)
         }
         var crc: UInt32 = value ^ 0xFFFFFFFF
-        var startpos: Int64 = start
-        var len: Int64 = length
+        var startpos: Int64 = 0
+        var len: Int64 = buf.size
         while (len >= 8) {
             len -= 8
             for (_ in 0..8) {
@@ -64,7 +64,7 @@ public class CRC32 {
     }
 
     public func update(buff: Array<Byte>) {
-        globalCrc = crc32(globalCrc, buff, 0, buff.size)
+        globalCrc = crc32(globalCrc, buff)
     }
 
     public func reset() {

@@ -73,7 +73,7 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
             }
         }
         try (file = File(outputFile, OpenOption.CreateOrTruncate(true))) {
-            let outputStream = BufferedOutputStream<File>(file)
+            let outputStream = BufferedOutputStream<File>(file, 8192 * 2)
             var readLength = inputStream.read(buff)
             while (readLength > 0) {
                 outputStream.write(buff[0..readLength])
