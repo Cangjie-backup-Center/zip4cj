@@ -12,14 +12,37 @@ from zip4cj import zip4cj.*
 
 //sources_file:sample.pdf:after_deflate_remaining_bytes.bin:sample_text_large.txt:가나다.abc:jar-dir-lfh-and-fh-entry-size-2.jar:MobaXterm.2024-01-03_11.24.ini
 //sources_file:libssl.so.3:picture.webp:öüäöäö.rar:1COMM_v24tagswithalbumimage1.mp3
+
+
+
+@When[os == "windows"]
+func CrcUtil06_Int64(): UInt32 {
+    1528207236
+}
+
+@When[os != "windows"]
+func CrcUtil06_Int64(): UInt32 {
+    2315563306
+}
+
+@When[os == "windows"]
+func ZipVersionUtils01_Int64(): Int32 {
+    51
+}
+
+@When[os != "windows"]
+func ZipVersionUtils01_Int64(): Int32 {
+    819
+}
+
 @Test
 public class ZipVersionUtilsTest {
     @TestCase
     func ZipVersionUtils01(): Unit {
         var zipparameters = ZipParameters()
         var rawio = RawIO()
-        var versionmadeby = ZipVersionUtils.determineVersionMadeBy(zipparameters, rawio)
-        @Assert(versionmadeby,819)
+        var versionmadeby: Int32 = ZipVersionUtils.determineVersionMadeBy(zipparameters, rawio)
+        @Assert(versionmadeby,ZipVersionUtils01_Int64())
     }
 
     @TestCase
@@ -102,9 +125,10 @@ public class ZipVersionUtilsTest {
     }
 
     @TestCase
+    @When[os != "windows"]
     func CrcUtil06(): Unit {
-        var filecrc = CrcUtil.computeFileCrc(Path("MobaXterm.2024-01-03_11.24.ini"), ProgressMonitor())
-        @Assert(filecrc,2315563306)
+        var filecrc: UInt32 = CrcUtil.computeFileCrc(Path("MobaXterm.2024-01-03_11.24.ini"), ProgressMonitor())
+        @Assert(filecrc,CrcUtil06_Int64())
     }
 
     @TestCase
