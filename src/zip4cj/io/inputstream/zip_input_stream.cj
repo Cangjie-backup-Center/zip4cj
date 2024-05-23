@@ -84,6 +84,8 @@ public class ZipInputStream <: InputStream & Resource {
             var readLen = decompressedInputStream.getOrThrow().read(b)
             if (readLen > 0) {
                 crc32.update(b[0..readLen])
+            } else if (readLen <= 0) {
+                endOfCompressedDataReached()
             }
             return readLen
         } catch (e: IOException | ZipIOException) {
@@ -92,6 +94,16 @@ public class ZipInputStream <: InputStream & Resource {
             }
             throw e
         }
+    }
+
+    private func endOfCompressedDataReached () {
+        var numberOfBytesPushedBack = decompressedInputStream.getOrThrow().pushBackInputStreamIfNecessary(inputStream)
+        //First signal the end of data for this entry so that ciphers can read any header data if applicable
+        decompressedInputStream.getOrThrow().endOfEntryReached(inputStream, numberOfBytesPushedBack)
+        readExtendedLocalFileHeaderIfPresent()
+        verifyCrc()
+        resetFields()
+        this.entryEOFReached = true
     }
 
     public func isClosed(): Bool {
