@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ */
 package zip4cj.io.inputstream
 
 // Even though this abstract class has only abstract method definitions, it is not implemented as an interface because

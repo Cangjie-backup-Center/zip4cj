@@ -1,10 +1,10 @@
 [dependencies]
   charset = {branch = "develop", git = "https://gitee.com/HW-PLLab/charset.git", version = "0.0.2"}
-  crypto4cj = {branch = "add_pbkdf2", git = "https://gitee.com/HW-PLLab/crypto4cj.git", version = "0.0.7"}
+  crypto4cj = {branch = "v0.0.8.B006", git = "https://gitee.com/HW-PLLab/crypto4cj.git", version = "0.0.7"}
 
 [package]
   cjc-version = "0.51.4"
-  compile-option = "-Woff all"
+  compile-option = "-O2 -Woff all"
   description = "nothing here"
   link-option = ""
   name = "zip4cj"
