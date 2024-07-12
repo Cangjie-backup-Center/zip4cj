@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ */
 package zip4cj.crypto.engine
 
 let CRC_TABLE: Array<Int32> = [0, 1996959894, -301047508, -1727442502, 124634137, 1886057615, -379345611, -1637575261,
