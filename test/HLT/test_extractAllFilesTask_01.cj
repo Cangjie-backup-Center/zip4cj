@@ -1,23 +1,23 @@
 //3rd_party_lib:zip4cj/build/release/zip4cj
 //3rd_party_lib:zip4cj/build/release/charset
 //3rd_party_lib:zip4cj/build/release/crypto4cj
-from std import collection.*
-from std import fs.*
-from std import io.*
-from std import unittest.*
-from std import math.*
-from std import unittest.testmacro.*
-from charset import charset.*
-from charset import charset.encoding.*
-from zip4cj import zip4cj.*
+import std.collection.*
+import std.fs.*
+import std.io.*
+import std.unittest.*
+import std.math.*
+import std.unittest.testmacro.*
+import  charset.*
+import  charset.encoding.*
+import  zip4cj.*
 @Test
 public class ExtractAllFilesTaskTest {
 
     @TestCase
     func ExtractAllFilesTask01(): Unit {
         ExtractAllFilesTask(ZipModel(),None,UnzipParameters(),AsyncTaskParameters(None,true,ProgressMonitor()))
-        ExtractAllFilesTask(ZipModel(),Array<Char>(),UnzipParameters(),AsyncTaskParameters(None,true,ProgressMonitor()))
-        ExtractAllFilesTask(ZipModel(),Array<Char>(100,item: 'c'),UnzipParameters(),AsyncTaskParameters(None,true,ProgressMonitor()))
+        ExtractAllFilesTask(ZipModel(),Array<Rune>(),UnzipParameters(),AsyncTaskParameters(None,true,ProgressMonitor()))
+        ExtractAllFilesTask(ZipModel(),Array<Rune>(100,item: r'c'),UnzipParameters(),AsyncTaskParameters(None,true,ProgressMonitor()))
         var aesVersion=AesVersion.getFromVersionNumber(1)
         @Assert(aesVersion.getVersionNumber(), 1)
     }
@@ -25,8 +25,8 @@ public class ExtractAllFilesTaskTest {
     @TestCase
     func ExtractAllFilesTask02(): Unit {
         AddStreamToZipTask(ZipModel(),None,HeaderWriter(),AsyncTaskParameters(None,true,ProgressMonitor()))
-        AddStreamToZipTask(ZipModel(),Array<Char>(),HeaderWriter(),AsyncTaskParameters(None,true,ProgressMonitor()))
-        AddStreamToZipTask(ZipModel(),Array<Char>(100,item: 'c'),HeaderWriter(),AsyncTaskParameters(None,true,ProgressMonitor()))
+        AddStreamToZipTask(ZipModel(),Array<Rune>(),HeaderWriter(),AsyncTaskParameters(None,true,ProgressMonitor()))
+        AddStreamToZipTask(ZipModel(),Array<Rune>(100,item: r'c'),HeaderWriter(),AsyncTaskParameters(None,true,ProgressMonitor()))
         var aesVersion=AesVersion.getFromVersionNumber(2)
         @Assert(aesVersion.getVersionNumber(), 2)
     }
@@ -78,8 +78,8 @@ public class ExtractAllFilesTaskTest {
     @TestCase
     func ExtractAllFilesTask08(): Unit {
         AddFilesToZipTask(ZipModel(),None,HeaderWriter(),AsyncTaskParameters(None,true,ProgressMonitor()))
-        AddFilesToZipTask(ZipModel(),Array<Char>(),HeaderWriter(),AsyncTaskParameters(None,false,ProgressMonitor()))
-        AddFilesToZipTask(ZipModel(),Array<Char>(1000,item: 'c'),HeaderWriter(),AsyncTaskParameters(None,false,ProgressMonitor()))
+        AddFilesToZipTask(ZipModel(),Array<Rune>(),HeaderWriter(),AsyncTaskParameters(None,false,ProgressMonitor()))
+        AddFilesToZipTask(ZipModel(),Array<Rune>(1000,item: r'c'),HeaderWriter(),AsyncTaskParameters(None,false,ProgressMonitor()))
         var aesKeyStrength=AesKeyStrength.KEY_STRENGTH_256
         @Assert(aesKeyStrength.getSaltLength(), 16)
     }

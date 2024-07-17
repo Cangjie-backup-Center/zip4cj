@@ -1,10 +1,10 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-from zip4cj import  zip4cj.exception.*
-from std import collection.*
-from std import unittest.*
-from std import unittest.testmacro.*
+import zip4cj.exception.*
+import std.collection.*
+import std.unittest.*
+import std.unittest.testmacro.*
 main() { 
 
     let test = ExceptionTest()

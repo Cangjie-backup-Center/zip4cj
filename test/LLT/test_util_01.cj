@@ -3,12 +3,12 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-from zip4cj import  zip4cj.util.*
-from zip4cj import  zip4cj.model.*
-from std import collection.*
-from std import fs.*
-from std import unittest.*
-from std import unittest.testmacro.*
+import  zip4cj.util.*
+import  zip4cj.model.*
+import std.collection.*
+import std.fs.*
+import std.unittest.*
+import std.unittest.testmacro.*
 main() { 
 
     let test = utilTest()

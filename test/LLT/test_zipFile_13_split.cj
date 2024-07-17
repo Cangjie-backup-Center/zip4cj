@@ -2,13 +2,13 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-from zip4cj import zip4cj.*
-from std import os.posix.*
-from std import fs.*
-from std import io.*
-from std import sync.*
-from std import random.*
-from std import time.*
+import  zip4cj.*
+import std.os.posix.*
+import std.fs.*
+import std.io.*
+import std.sync.*
+import std.random.*
+import std.time.*
 // "/home/liyanqing/NEW_FILE_0"
 // zip64 重命名
 main() { 

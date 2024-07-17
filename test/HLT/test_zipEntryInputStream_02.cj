@@ -8,15 +8,15 @@
 // sources_file:file_name_size_is_0_in_local_file_header
 // sources_file:invalid_zip_file_size_less_than_22kb.zip
 // sources_file:MobaXterm.2024-01-08_17.08.ini
-from std import collection.*
-from std import fs.*
-from std import io.*
-from std import unittest.*
-from std import math.*
-from std import unittest.testmacro.*
-from charset import charset.*
-from charset import charset.encoding.*
-from zip4cj import zip4cj.*
+import std.collection.*
+import std.fs.*
+import std.io.*
+import std.unittest.*
+import std.math.*
+import std.unittest.testmacro.*
+import  charset.*
+import  charset.encoding.*
+import  zip4cj.*
 @Test
 public class ZipEntryInputStreamTest { 
 

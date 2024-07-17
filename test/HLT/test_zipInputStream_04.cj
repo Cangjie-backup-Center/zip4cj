@@ -8,15 +8,15 @@
 // sources_file:file_name_size_is_0_in_local_file_header
 // sources_file:invalid_zip_file_size_less_than_22kb.zip
 // sources_file:MobaXterm.2024-01-08_17.08.ini
-from std import collection.*
-from std import fs.*
-from std import io.*
-from std import unittest.*
-from std import math.*
-from std import unittest.testmacro.*
-from charset import charset.*
-from charset import charset.encoding.*
-from zip4cj import zip4cj.*
+import std.collection.*
+import std.fs.*
+import std.io.*
+import std.unittest.*
+import std.math.*
+import std.unittest.testmacro.*
+import  charset.*
+import  charset.encoding.*
+import  zip4cj.*
 @Test
 public class ZipInputStreamTest { 
 
@@ -51,7 +51,7 @@ public class ZipInputStreamTest {
     func ZipInputStream05(): Unit {
         var zipInputStream = ZipInputStream(File("invalid_aes_extra_data_record_length_in_header", OpenOption.Open(true, false)),password:None,passwordCallback:PasswordCallbacks(),config:Zip4cjConfig(None, InternalZipConstants.BUFF_SIZE,
             InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING))
-        zipInputStream.setPassword(Array<Char>())
+        zipInputStream.setPassword(Array<Rune>())
         @Assert(zipInputStream.available() , 1)
     }
 
@@ -83,8 +83,8 @@ public class ZipInputStreamTest {
 }
 
 public class PasswordCallbacks <: PasswordCallback {
-    public func getPassword(): Array<Char> {
-        return Array<Char>()
+    public func getPassword(): Array<Rune> {
+        return Array<Rune>()
     }
 }
 

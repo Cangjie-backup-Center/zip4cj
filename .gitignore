@@ -17,3 +17,7 @@ report/
 tmp/
 *.macrocall
 test/tmp/*
+target/
+test_temp/
+.cache/
+cjpm.lock

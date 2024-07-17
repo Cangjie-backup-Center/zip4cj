@@ -4,15 +4,15 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-from zip4cj import zip4cj.util.*
-from zip4cj import zip4cj.*
-from zip4cj import zip4cj.progress.*
-from std import collection.*
-from std import fs.*
-from std import io.*
-from std import os.posix.*
-from std import unittest.*
-from std import unittest.testmacro.*
+import zip4cj.util.*
+import  zip4cj.*
+import zip4cj.progress.*
+import std.collection.*
+import std.fs.*
+import std.io.*
+import std.os.posix.*
+import std.unittest.*
+import std.unittest.testmacro.*
 main() { 
 
     let test = utilTest()
@@ -25,7 +25,7 @@ public class utilTest {
     @TestCase
     public func utilTest05(): Unit {
         var sc = ZipFile(Path("123.txt"))
-        ZipFile(Path("123.txt"), password: Array<Char>())
+        ZipFile(Path("123.txt"), password: Array<Rune>())
         var returnTag = 0
         try {
             sc.createSplitZipFile(ByteArrayStream(),ZipParameters(),true,6)

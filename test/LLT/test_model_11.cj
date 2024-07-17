@@ -1,27 +1,25 @@
 // RESOURCES: output.zip
 // RESOURCES: 123.txt
-// EXEC: cjc %import-path %L %l %f
+// EXEC: cjc %import-path %L %l %f --test
 // EXEC: ./main
 
-from zip4cj import  zip4cj.util.*
-from zip4cj import  zip4cj.model.enums.*
-from zip4cj import  zip4cj.model.*
-from zip4cj import  zip4cj.tasks.*
-from zip4cj import  zip4cj.progress.*
-from zip4cj import  zip4cj.exception.*
-from zip4cj import  zip4cj.io.outputstream.*
-from std import collection.*
-from std import fs.*
-from std import io.*
-from std import unittest.*
-from std import unittest.testmacro.*
-from charset import charset.*
-from charset import charset.encoding.*
+import  zip4cj.util.*
+import  zip4cj.model.enums.*
+import  zip4cj.model.*
+import  zip4cj.tasks.*
+import  zip4cj.progress.*
+import  zip4cj.exception.*
+import  zip4cj.io.outputstream.*
+import std.collection.*
+import std.fs.*
+import std.io.*
+import std.unittest.*
+import std.unittest.testmacro.*
+import  charset.*
+import  charset.encoding.*
 main() { 
 
     let test = modelTest()
-    test.execute()
-    test.printResult()
     return 0
 }
 @Test

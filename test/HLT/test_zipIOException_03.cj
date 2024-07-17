@@ -3,15 +3,15 @@
 //3rd_party_lib:zip4cj/build/release/crypto4cj
 // sources_file:a.txt
 // sources_file:archive_with_invalid_zip64_headers.zip
-from std import collection.*
-from std import fs.*
-from std import io.*
-from std import unittest.*
-from std import math.*
-from std import unittest.testmacro.*
-from charset import charset.*
-from charset import charset.encoding.*
-from zip4cj import zip4cj.*
+import std.collection.*
+import std.fs.*
+import std.io.*
+import std.unittest.*
+import std.math.*
+import std.unittest.testmacro.*
+import  charset.*
+import  charset.encoding.*
+import  zip4cj.*
 @Test
 public class AesKeyStrengthTest {
     @TestCase
