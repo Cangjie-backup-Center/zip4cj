@@ -1,36 +1,36 @@
 //3rd_party_lib:zip4cj/build/release/zip4cj
 //3rd_party_lib:zip4cj/build/release/charset
 //3rd_party_lib:zip4cj/build/release/crypto4cj
-from std import collection.*
-from std import fs.*
-from std import io.*
-from std import unittest.*
-from std import unittest.testmacro.*
-from charset import charset.*
-from charset import charset.encoding.*
-from zip4cj import zip4cj.*
+import std.collection.*
+import std.fs.*
+import std.io.*
+import std.unittest.*
+import std.unittest.testmacro.*
+import  charset.*
+import  charset.encoding.*
+import  zip4cj.*
 
 //sources_file:sample.pdf:after_deflate_remaining_bytes.bin:sample_text_large.txt:가나다.abc:jar-dir-lfh-and-fh-entry-size-2.jar:MobaXterm.2024-01-03_11.24.ini
 //sources_file:libssl.so.3:picture.webp:öüäöäö.rar:1COMM_v24tagswithalbumimage1.mp3
 
 
 
-@When[os == "windows"]
+@When[os == "Windows"]
 func CrcUtil06_Int64(): UInt32 {
     1528207236
 }
 
-@When[os != "windows"]
+@When[os != "Windows"]
 func CrcUtil06_Int64(): UInt32 {
     2315563306
 }
 
-@When[os == "windows"]
+@When[os == "Windows"]
 func ZipVersionUtils01_Int64(): Int32 {
     51
 }
 
-@When[os != "windows"]
+@When[os != "Windows"]
 func ZipVersionUtils01_Int64(): Int32 {
     819
 }
@@ -125,7 +125,6 @@ public class ZipVersionUtilsTest {
     }
 
     @TestCase
-    @When[os != "windows"]
     func CrcUtil06(): Unit {
         var filecrc: UInt32 = CrcUtil.computeFileCrc(Path("MobaXterm.2024-01-03_11.24.ini"), ProgressMonitor())
         @Assert(filecrc,CrcUtil06_Int64())

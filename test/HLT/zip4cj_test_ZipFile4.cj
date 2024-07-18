@@ -1,17 +1,17 @@
 //3rd_party_lib:zip4cj/build/release/zip4cj
 //3rd_party_lib:zip4cj/build/release/charset
 //3rd_party_lib:zip4cj/build/release/crypto4cj
-from std import collection.*
-from std import fs.*
-from std import io.*
-from std import unittest.*
-from std import unittest.testmacro.*
-from std import fs.*
-from std import os.*
-from std import os.posix.*
-from charset import charset.*
-from charset import charset.encoding.*
-from zip4cj import zip4cj.*
+import std.collection.*
+import std.fs.*
+import std.io.*
+import std.unittest.*
+import std.unittest.testmacro.*
+import std.fs.*
+import std.os.*
+import std.os.posix.*
+import  charset.*
+import  charset.encoding.*
+import  zip4cj.*
 
 //sources_file:1234.txt:MP4.mp4:archive-with-no-dir-entries1.zip:a.txt:1COMM_v24tagswithalbumimage1.mp3:missing_exended_local_file_header.zip:ab.txt:1COMM_v24tagswithalbumimagea.mp3
 //sources_file:end_of_cen_dir_not_at_expected_position.zip:video.zip:yinpin.mp4:archive-with-no-dir-entriesaa.zip:missing_exended_local_file_headera.zip

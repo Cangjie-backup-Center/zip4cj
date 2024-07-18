@@ -8,15 +8,15 @@
 // sources_file:file_name_size_is_0_in_local_file_header
 // sources_file:invalid_zip_file_size_less_than_22kb.zip
 // sources_file:MobaXterm.2024-01-08_17.08.ini
-from std import collection.*
-from std import fs.*
-from std import io.*
-from std import unittest.*
-from std import math.*
-from std import unittest.testmacro.*
-from charset import charset.*
-from charset import charset.encoding.*
-from zip4cj import zip4cj.*
+import std.collection.*
+import std.fs.*
+import std.io.*
+import std.unittest.*
+import std.math.*
+import std.unittest.testmacro.*
+import  charset.*
+import  charset.encoding.*
+import  zip4cj.*
 @Test
 public class ZipInputStreamTest { 
 
@@ -76,7 +76,7 @@ public class ZipInputStreamTest {
     @TestCase
     func ZipInputStream08(): Unit {
         try {
-            ZipInputStream(File("MobaXterm.2024-01-08_17.08.ini", OpenOption.Open(true, false)),password:Array<Char>(),passwordCallback:None,config:Zip4cjConfig(Charsets.forName("UTF-8").getOrThrow(),1,true))
+            ZipInputStream(File("MobaXterm.2024-01-08_17.08.ini", OpenOption.Open(true, false)),password:Array<Rune>(),passwordCallback:None,config:Zip4cjConfig(Charsets.forName("UTF-8").getOrThrow(),1,true))
         } catch (e: IllegalArgumentException) {
             @Assert(e.toString() , "IllegalArgumentException: Buffer size cannot be less than  512 bytes")
         }
@@ -84,8 +84,8 @@ public class ZipInputStreamTest {
 }
 
 public class PasswordCallbacks <: PasswordCallback {
-    public func getPassword(): Array<Char> {
-        return Array<Char>()
+    public func getPassword(): Array<Rune> {
+        return Array<Rune>()
     }
 }
 

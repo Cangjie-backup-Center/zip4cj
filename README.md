@@ -3,9 +3,9 @@
 </div>
 
 <p align="center">
-<img alt="" src="https://img.shields.io/badge/release-v0.0.4-brightgreen" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/release-v0.0.1-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/build-pass-brightgreen" style="display: inline-block;" />
-<img alt="" src="https://img.shields.io/badge/cjc-v0.51.4-brightgreen" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/cjc-v0.53.4-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/cjcov-92%25-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/project-open-brightgreen" style="display: inline-block;" />
 </p>
@@ -37,23 +37,21 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 ├── doc
 │   ├── assets
 │   └── cjcov
-├── module.json
 ├── src                             // 源码
-│   └── zip4cj                      
-│       ├── crypto                  // 加解密功能包
-│       │   ├── engine              
-│       │   └── PBKDF2
-│       ├── exception               // 异常类包
-│       ├── headers                 // zip文件头包
-│       ├── io                      // zip IO流包
-│       │   ├── inputstream
-│       │   └── outputstream
-│       ├── model                   // zip 配置和参数模式包
-│       │   └── enums
-│       ├── progress                // 进度监控包
-│       ├── tasks                   // 支持多种压缩和解压缩方式包
-│       ├── util                    // 工具包
-│       └── zip_file.cj             // 主程序入口类
+│   ├── crypto                  // 加解密功能包
+│   │   ├── engine              
+│   │   └── PBKDF2
+│   ├── exception               // 异常类包
+│   ├── headers                 // zip文件头包
+│   ├── io                      // zip IO流包
+│   │   ├── inputstream
+│   │   └── outputstream
+│   ├── model                   // zip 配置和参数模式包
+│   │   └── enums
+│   ├── progress                // 进度监控包
+│   ├── tasks                   // 支持多种压缩和解压缩方式包
+│   ├── util                    // 工具包
+│   └── zip_file.cj             // 主程序入口类
 └── test
     ├── HLT
     ├── LLT
@@ -70,10 +68,6 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 
 ## <img alt="" src="./doc/assets/readme-icon-compile.png" style="display: inline-block;" width=3%/> 使用说明
 
-### 项目依赖
-`charset`包<br>
-下载地址：https://gitee.com/HW-PLLab/charset
-
 ### 编译
 
 ```sh
@@ -86,11 +80,11 @@ cjpm build
 #### zip 解压
 
 ```cangjie
-from zip4cj import zip4cj.*                       // 引入zip4cj包 
-from std import os.posix.*
-from std import fs.*
-from std import sync.*
-from std import time.*
+import zip4cj.*                       // 引入zip4cj包 
+import std.os.posix.*
+import std.fs.*
+import std.sync.*
+import std.time.*
 main() { 
     let zipFile = ZipFile("MobaXtermbackup.zip")  // 创建ZipFile类
     zipFile.setRunInThread(false)                 // 设置是否用子线程运行任务
@@ -102,11 +96,11 @@ main() {
 #### zip 创建zip文件
 
 ```cangjie
-from zip4cj import zip4cj.*                      // 引入zip4cj包 
-from std import os.posix.*
-from std import fs.*
-from std import sync.*
-from std import time.*
+import zip4cj.*                      // 引入zip4cj包 
+import std.os.posix.*
+import std.fs.*
+import std.sync.*
+import std.time.*
 main() { 
     let zipParameters = ZipParameters()         // 创建 zip 参数配置 类
     zipParameters.setCompressionMethod(CompressionMethod.STORE)  // 设置压缩方式为存储
@@ -120,11 +114,11 @@ main() {
 ```
 #### 压缩文件夹
 ```cangjie
-from zip4cj import zip4cj.*                      // 引入zip4cj包 
-from std import os.posix.*
-from std import fs.*
-from std import sync.*
-from std import time.*
+import zip4cj.*                      // 引入zip4cj包 
+import std.os.posix.*
+import std.fs.*
+import std.sync.*
+import std.time.*
 main() { 
     let zipParameters = ZipParameters()         // 创建 zip 参数配置 类
     zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)  // 设置压缩方式为DEFLATE压缩
@@ -136,11 +130,11 @@ main() {
 
 #### 在zip文件中重命名/删除/添加文件
 ```cangjie
-from zip4cj import zip4cj.*                      // 引入zip4cj包 
-from std import os.posix.*
-from std import fs.*
-from std import sync.*
-from std import time.*
+import zip4cj.*                      // 引入zip4cj包 
+import std.os.posix.*
+import std.fs.*
+import std.sync.*
+import std.time.*
 main() { 
     let zipParameters = ZipParameters()         // 创建 zip 参数配置 类
     zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)  // 设置压缩方式为DEFLATE压缩
@@ -158,6 +152,10 @@ main() {
     return 0
 }
 ```
+
+## 开源协议
+
+本项目基于 [Apache License 2.0](/LICENSE) ，请自由的享受和参与开源。
 
 ## <img alt="" src="./doc/assets/readme-icon-contribute.png" style="display: inline-block;" width=3%/> 参与贡献
 

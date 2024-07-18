@@ -6,27 +6,26 @@
 // RESOURCES: 123.txt
 // RESOURCES: a.txt
 // RESOURCES: archive_with_invalid_zip64_headers.zip
-// EXEC: cjc %import-path %L %l %f
+// EXEC: cjc %import-path %L %l %f --test
 // EXEC: ./main
 
-from zip4cj import zip4cj.*
-from charset import charset.*
-from std import os.posix.*
-from std import fs.*
-from std import collection.*
-from std import io.*
-from std import sync.*
-from std import random.*
-from std import time.*
-from std import math.*
-from std import unittest.*
-from std import unittest.testmacro.*
+import  zip4cj.*
+import  charset.*
+import std.os.posix.*
+import std.fs.*
+import std.collection.*
+import std.io.*
+import std.sync.*
+import std.random.*
+import std.time.*
+import std.math.*
+import std.unittest.*
+import std.unittest.testmacro.*
 
 
 main() { 
     let test = IssuesFix()
-    test.execute()
-    test.printResult()
+    0
 }
 
 @Test
@@ -183,7 +182,7 @@ public class IssuesFix {
     func I93PKN () : Unit {
         try {
             let input = File("archive_with_invalid_zip64_headers.zip", Open(true, true))
-            var buf:Array<Char>=Array<Char>([])
+            var buf:Array<Rune>=Array<Rune>([])
             var buf1:Array<UInt8>=Array<UInt8>([1,2,3,4,5,6,85,4,2,1,22,1,5,2,1,1,2])
             var config=Zip4cjConfig(Charsets.UTF8,666,true)
             var zipoutputstream=ZipOutputStream(input)//,password: buf,zip4cjConfig: config, zipModel: ZipModel())

@@ -4,23 +4,23 @@
 // sources_file:a.txt
 // sources_file:archive_with_invalid_zip64_headers.zip
 // sources_file:jar-dir-lfh-and-fh-entry-size-2.jar
-from std import collection.*
-from std import fs.*
-from std import io.*
-from std import unittest.*
-from std import math.*
-from std import unittest.testmacro.*
-from charset import charset.*
-from charset import charset.encoding.*
-from zip4cj import zip4cj.*
+import std.collection.*
+import std.fs.*
+import std.io.*
+import std.unittest.*
+import std.math.*
+import std.unittest.testmacro.*
+import  charset.*
+import  charset.encoding.*
+import  zip4cj.*
 @Test
 public class ExtractAllFilesTaskTest {
 
     @TestCase
     func ExtractAllFilesTask01(): Unit {
         AddFolderToZipTask(ZipModel(),None,HeaderWriter(),AsyncTaskParameters(None,true,ProgressMonitor()))
-        AddFolderToZipTask(ZipModel(),Array<Char>(),HeaderWriter(),AsyncTaskParameters(None,true,ProgressMonitor()))
-        AddFolderToZipTask(ZipModel(),Array<Char>(100,item: 'c'),HeaderWriter(),AsyncTaskParameters(None,true,ProgressMonitor()))
+        AddFolderToZipTask(ZipModel(),Array<Rune>(),HeaderWriter(),AsyncTaskParameters(None,true,ProgressMonitor()))
+        AddFolderToZipTask(ZipModel(),Array<Rune>(100,item: r'c'),HeaderWriter(),AsyncTaskParameters(None,true,ProgressMonitor()))
         var aesVersion=AesVersion.getFromVersionNumber(2)
         @Assert(aesVersion.getVersionNumber(), 2)
     }
@@ -28,8 +28,8 @@ public class ExtractAllFilesTaskTest {
     @TestCase
     func ExtractAllFilesTask02(): Unit {
         ExtractFileTask(ZipModel(),None,UnzipParameters(),AsyncTaskParameters(None,true,ProgressMonitor()))
-        ExtractFileTask(ZipModel(),Array<Char>(),UnzipParameters(),AsyncTaskParameters(None,true,ProgressMonitor()))
-        ExtractFileTask(ZipModel(),Array<Char>(100,item: 'c'),UnzipParameters(),AsyncTaskParameters(None,true,ProgressMonitor()))
+        ExtractFileTask(ZipModel(),Array<Rune>(),UnzipParameters(),AsyncTaskParameters(None,true,ProgressMonitor()))
+        ExtractFileTask(ZipModel(),Array<Rune>(100,item: r'c'),UnzipParameters(),AsyncTaskParameters(None,true,ProgressMonitor()))
         var aesVersion=AesVersion.getFromVersionNumber(2)
         @Assert(aesVersion.getVersionNumber(), 2)
     }

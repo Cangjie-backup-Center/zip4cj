@@ -3,19 +3,19 @@
 // EXEC: cjc %import-path %L %l %f
 // EXEC: ./main
 
-from zip4cj import  zip4cj.util.*
-from zip4cj import  zip4cj.model.*
-from zip4cj import  zip4cj.tasks.*
-from zip4cj import  zip4cj.progress.*
-from zip4cj import  zip4cj.exception.*
-from zip4cj import  zip4cj.io.outputstream.*
-from std import collection.*
-from std import fs.*
-from std import io.*
-from std import unittest.*
-from std import unittest.testmacro.*
-from charset import charset.*
-from charset import charset.encoding.*
+import  zip4cj.util.*
+import  zip4cj.model.*
+import  zip4cj.tasks.*
+import  zip4cj.progress.*
+import  zip4cj.exception.*
+import  zip4cj.io.outputstream.*
+import std.collection.*
+import std.fs.*
+import std.io.*
+import std.unittest.*
+import std.unittest.testmacro.*
+import  charset.*
+import  charset.encoding.*
 main() { 
 
     let test = tasksTest()
@@ -47,9 +47,9 @@ public class tasksTest {
     @TestCase
     public func tasksTest02(): Unit {
         var sc = MergeSplitZipFileTask(ZipModel(),AsyncTaskParameters(ExecutorService(),true,ProgressMonitor()))
-        ExtractFileTask(ZipModel(),Array<Char>(),UnzipParameters(),AsyncTaskParameters(ExecutorService(),true,ProgressMonitor()))
+        ExtractFileTask(ZipModel(),Array<Rune>(),UnzipParameters(),AsyncTaskParameters(ExecutorService(),true,ProgressMonitor()))
         ExecutorService.new()
-        AddStreamToZipTask(ZipModel(),Array<Char>(),HeaderWriter(),AsyncTaskParameters(ExecutorService(),true,ProgressMonitor()))
+        AddStreamToZipTask(ZipModel(),Array<Rune>(),HeaderWriter(),AsyncTaskParameters(ExecutorService(),true,ProgressMonitor()))
         AddStreamToZipTaskParameters(ByteArrayStream(),ZipParameters(),Zip4cjConfig(Charsets.forName("UTF-8").getOrThrow(),1,true))
     }
 
