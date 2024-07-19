@@ -9,8 +9,8 @@ import std.unittest.testmacro.*
 import std.fs.*
 import std.os.*
 import std.os.posix.*
-import  charset.*
-import  charset.encoding.*
+import charset4cj.charset.*
+import charset4cj.charset.encoding.*
 import  zip4cj.*
 
 //sources_file:1COMM_v24tagswithalbumimage1.mp3:123.txt:file_name_size_is_0_in_local_file_header:libssl.so.3

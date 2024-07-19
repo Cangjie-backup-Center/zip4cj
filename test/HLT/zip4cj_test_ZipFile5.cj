@@ -9,8 +9,8 @@ import std.unittest.testmacro.*
 import std.fs.*
 import std.os.*
 import std.os.posix.*
-import  charset.*
-import  charset.encoding.*
+import charset4cj.charset.*
+import charset4cj.charset.encoding.*
 import  zip4cj.*
 
 //sources_file:output123.zip:MP4.mp4:renames.zip:renames2.zip

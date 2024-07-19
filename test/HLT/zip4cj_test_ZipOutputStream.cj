@@ -7,8 +7,8 @@ import std.io.*
 import std.unittest.*
 import std.math.*
 import std.unittest.testmacro.*
-import  charset.*
-import  charset.encoding.*
+import charset4cj.charset.*
+import charset4cj.charset.encoding.*
 import  zip4cj.*
 
 //sources_file:123.txt:archive_with_invalid_zip64_headers.zip:archive_with_invalid_zip64_headers1.zip

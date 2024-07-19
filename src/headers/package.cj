@@ -8,7 +8,7 @@ protected import zip4cj.util.internals.*
 protected import zip4cj.exception.*
 protected import zip4cj.model.*
 protected import zip4cj.model.enums.*
-protected import charset.*
-protected import charset.encoding.*
+protected import charset4cj.charset.*
+protected import charset4cj.charset.encoding.*
 protected import std.collection.*
 protected import std.io.*

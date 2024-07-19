@@ -20,6 +20,6 @@ internal import std.collection.concurrent.*
 internal import std.os.posix.*
 internal import std.convert.*
 internal import compress.zlib.*
-internal import charset.*
-internal import charset.encoding.*
+internal import charset4cj.charset.*
+internal import charset4cj.charset.encoding.*
 internal import crypto.crypto.*

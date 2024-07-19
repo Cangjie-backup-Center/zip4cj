@@ -19,5 +19,5 @@ internal import zip4cj.crypto.*
 internal import zip4cj.util.Zip4cjUtil
 internal import zip4cj.headers.*
 internal import zip4cj.util.internals.*
-internal import charset.*
-internal import charset.encoding.*
+internal import charset4cj.charset.*
+internal import charset4cj.charset.encoding.*

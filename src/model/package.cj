@@ -7,5 +7,5 @@ internal import zip4cj.model.enums.*
 internal import std.collection.*
 internal import std.fs.*
 internal import std.random.*
-internal import charset.encoding.*
-internal import charset.*
+internal import charset4cj.charset.encoding.*
+internal import charset4cj.charset.*

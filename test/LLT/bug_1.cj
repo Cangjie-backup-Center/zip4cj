@@ -10,7 +10,7 @@
 // EXEC: ./main
 
 import  zip4cj.*
-import  charset.*
+import charset4cj.charset.*
 import std.os.posix.*
 import std.fs.*
 import std.collection.*

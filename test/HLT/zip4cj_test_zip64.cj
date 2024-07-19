@@ -9,8 +9,8 @@ import std.unittest.testmacro.*
 import std.fs.*
 import std.os.*
 import std.os.posix.*
-import  charset.*
-import  charset.encoding.*
+import charset4cj.charset.*
+import charset4cj.charset.encoding.*
 import  zip4cj.*
 
 //sources_file:123.txt:MP4.mp4:archive-with-no-dir-entries1.zip:a.txt:1COMM_v24tagswithalbumimage1.mp3:missing_exended_local_file_header.zip

@@ -19,5 +19,5 @@ internal import std.fs.*
 internal import std.time.*
 internal import std.collection.*
 internal import compress.zlib.*
-internal import charset.*
-internal import charset.encoding.*
+internal import charset4cj.charset.*
+internal import charset4cj.charset.encoding.*
