@@ -1,6 +1,6 @@
 [dependencies]
-  charset = {branch = "update_cjc_0.53.4", git = "https://gitee.com/HW-PLLab/charset.git", version = "0.0.2"}
-  crypto4cj = {branch = "v0.0.1.B001", git = "https://gitcode.com/Cangjie-TPC/crypto4cj.git", version = "0.0.7"}
+  charset4cj = {branch = "v0.0.1.B001", git = "https://gitcode.com/Cangjie-TPC/charset4cj.git"}
+  crypto4cj = {branch = "v0.0.1.B001", git = "https://gitcode.com/Cangjie-TPC/crypto4cj.git"}
 
 [package]
   cjc-version = "0.53.4"

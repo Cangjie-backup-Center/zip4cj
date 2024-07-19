@@ -6,8 +6,8 @@ package zip4cj
 import std.collection.*
 import std.io.*
 import std.fs.*
-import charset.*
-import charset.encoding.*
+import charset4cj.charset.*
+import charset4cj.charset.encoding.*
 public import zip4cj.io.inputstream.*
 public import zip4cj.io.outputstream.*
 public import zip4cj.util.*

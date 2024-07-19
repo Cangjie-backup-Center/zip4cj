@@ -13,8 +13,8 @@ import std.io.*
 import std.os.posix.*
 import std.unittest.*
 import std.unittest.testmacro.*
-import  charset.*
-import  charset.encoding.*
+import charset4cj.charset.*
+import charset4cj.charset.encoding.*
 main() { 
 
     let test = utilTest()

@@ -9,8 +9,8 @@ import std.unittest.testmacro.*
 import std.fs.*
 import std.os.*
 import std.os.posix.*
-import  charset.*
-import  charset.encoding.*
+import charset4cj.charset.*
+import charset4cj.charset.encoding.*
 import  zip4cj.*
 
 //sources_file:MobaXtermbackup.zip:1COMM_v24tagswithalbumimage1.zip:가나다.zip:unexpected-eof-when-reading-stream.zip:MP4.zip:video.zip
