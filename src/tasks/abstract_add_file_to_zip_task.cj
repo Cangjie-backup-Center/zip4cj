@@ -36,7 +36,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         zipParameters: ZipParameters,
         config: Zip4cjConfig
     ) {
-        var readBuff = Array<Byte>(config.getBufferSize(), item: 0)
+        var readBuff = Array<Byte>(config.getBufferSize(), repeat: 0)
         var updatedFilesToAdd: ArrayList<Path> = removeFilesIfExists(filesToAdd, zipParameters, progressMonitor,
             config)
         var splitOutputStream: SplitOutputStream = SplitOutputStream(

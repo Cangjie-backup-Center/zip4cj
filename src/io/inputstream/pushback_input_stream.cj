@@ -18,7 +18,7 @@ class PushbackInputStream <: InputStream {
         if (size <= 0) {
             throw IllegalArgumentException("size <= 0")
         }
-        this.buf = Array<Byte>(size, item: 0)
+        this.buf = Array<Byte>(size, repeat: 0)
         this.pos = size
     }
 
@@ -86,7 +86,7 @@ class PushbackInputStream <: InputStream {
 
     public func skip(n: Int64): Int64 {
         ensureOpen()
-        var singleByteBuffer = Array<Byte>(1, item: 0)
+        var singleByteBuffer = Array<Byte>(1, repeat: 0)
         for (i in 0..n) {
             var flag = input.read(singleByteBuffer)
             if (flag <= 0) {

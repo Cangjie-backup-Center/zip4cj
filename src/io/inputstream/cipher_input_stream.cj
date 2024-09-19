@@ -6,7 +6,7 @@ package zip4cj.io.inputstream
 abstract class CipherInputStream <: InputStream & Resource {
     protected var zipEntryInputStream: ZipEntryInputStream
     protected var lastReadRawDataCache: Array<Byte> = Array<Byte>()
-    protected var singleByteBuffer: Array<Byte> = Array<Byte>(1, item: 0)
+    protected var singleByteBuffer: Array<Byte> = Array<Byte>(1, repeat: 0)
     protected var localFileHeader: LocalFileHeader
     protected var password: ?Array<Rune>
     protected var useUtf8ForPassword: Bool
@@ -24,7 +24,7 @@ abstract class CipherInputStream <: InputStream & Resource {
         this.zipEntryInputStream = zipEntryInputStream
         this.localFileHeader = localFileHeader
         if (Zip4cjUtil.getCompressionMethod(localFileHeader).getCode() == (CompressionMethod.DEFLATE).getCode()) {
-            lastReadRawDataCache = Array<Byte>(bufferSize, item: 0)
+            lastReadRawDataCache = Array<Byte>(bufferSize, repeat: 0)
         }
     }
 

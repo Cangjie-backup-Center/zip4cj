@@ -29,7 +29,7 @@ public class ExtractAllFilesTask <: AbstractExtractFileTask<ExtractAllFilesTaskP
 
                 splitInputStream.prepareExtractionForFileHeader(fileHeader)
 
-                var readBuff = Array<Byte>(taskParameters.zip4cjConfig.getBufferSize(), item: 0)
+                var readBuff = Array<Byte>(taskParameters.zip4cjConfig.getBufferSize(), repeat: 0)
                 extractFile(zipInputStream, fileHeader, taskParameters.outputPath, None, progressMonitor, readBuff)
                 verifyIfTaskIsCancelled()
             }

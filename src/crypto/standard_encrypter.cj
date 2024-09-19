@@ -12,7 +12,7 @@ public class StandardEncrypter <: Encrypter {
             throw ZipException("input password is null or empty, cannot initialize standard encrypter")
         }
         zipCryptoEngine.initKeys(password.getOrThrow(), useUtf8ForPassword)
-        headerBytes = Array<Byte>(InternalZipConstants.STD_DEC_HDR_SIZE, item: 0)
+        headerBytes = Array<Byte>(InternalZipConstants.STD_DEC_HDR_SIZE, repeat: 0)
         var random = SecureRandom()
         for (i in 0..InternalZipConstants.STD_DEC_HDR_SIZE) {
             headerBytes[i] = encryptByte(random.nextUInt8())

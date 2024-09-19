@@ -151,7 +151,7 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
     }
 
     public func skipBytes(n: Int64): Int64 {
-        var temp = Array<Byte>(1, item: 0)
+        var temp = Array<Byte>(1, repeat: 0)
         for (i in 0..n) {
             let read = raf.read(temp)
             if (read <= 0) {

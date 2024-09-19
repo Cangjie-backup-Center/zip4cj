@@ -277,7 +277,7 @@ public class ZipInputStream <: InputStream & Resource {
 
     private func readUntilEndOfEntry(): Unit {
         if (endOfEntryBuffer.isEmpty()) {
-            endOfEntryBuffer = Array<Byte>(512, item: 0)
+            endOfEntryBuffer = Array<Byte>(512, repeat: 0)
         }
 
         //noinspection StatementWithEmptyBody

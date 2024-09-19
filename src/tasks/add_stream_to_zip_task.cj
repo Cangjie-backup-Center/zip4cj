@@ -40,7 +40,7 @@ public class AddStreamToZipTask <: AbstractAddFileToZipTask<AddStreamToZipTaskPa
         )
         let zipOutputStream = initializeOutputStream(splitOutputStream, taskParameters.zip4cjConfig)
         try {
-            var readBuff = Array<Byte>(taskParameters.zip4cjConfig.getBufferSize(), item: 0)
+            var readBuff = Array<Byte>(taskParameters.zip4cjConfig.getBufferSize(), repeat: 0)
             var readLen: Int64
 
             var zipParameters = taskParameters.zipParameters

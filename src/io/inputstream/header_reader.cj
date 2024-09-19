@@ -8,7 +8,7 @@ let emptyArrayList = ArrayList<ExtraDataRecord>()
 public class HeaderReader {
     private var zipModel: ?ZipModel = None
     private let rawIO = RawIO()
-    private let intBuff = Array<Byte>(4, item: 0)
+    private let intBuff = Array<Byte>(4, repeat: 0)
 
     public func readAllHeaders(zip4cjRaf: RandomAccessFile, zip4cjConfig: Zip4cjConfig) {
         if (zip4cjRaf.length == 0) {
@@ -88,8 +88,8 @@ public class HeaderReader {
         var centralDirEntryCount = getNumberOfEntriesInCentralDirectory(zipModel.getOrThrow())
         zip4cjRaf.seek(offSetStartCentralDir)
 
-        var shortBuff = Array<Byte>(2, item: 0)
-        var intBuff = Array<Byte>(4, item: 0)
+        var shortBuff = Array<Byte>(2, repeat: 0)
+        var intBuff = Array<Byte>(4, repeat: 0)
 
         for (i in 0..centralDirEntryCount) {
             var fileHeader = FileHeader()
@@ -100,7 +100,7 @@ public class HeaderReader {
             fileHeader.setVersionMadeBy(rawIO.readShortLittleEndian(zip4cjRaf))
             fileHeader.setVersionNeededToExtract(rawIO.readShortLittleEndian(zip4cjRaf))
 
-            var generalPurposeFlags = Array<Byte>(2, item: 0)
+            var generalPurposeFlags = Array<Byte>(2, repeat: 0)
             zip4cjRaf.readFully(generalPurposeFlags)
             fileHeader.setEncrypted(BitUtils.isBitSet(generalPurposeFlags[0], 0))
             fileHeader.setDataDescriptorExists(BitUtils.isBitSet(generalPurposeFlags[0], 3))
@@ -135,7 +135,7 @@ public class HeaderReader {
             fileHeader.setOffsetLocalHeader(rawIO.readLongLittleEndian(intBuff, 0))
 
             if (fileNameLength > 0) {
-                var fileNameBuff = Array<Byte>(fileNameLength, item: 0)
+                var fileNameBuff = Array<Byte>(fileNameLength, repeat: 0)
                 zip4cjRaf.readFully(fileNameBuff)
                 var fileName = HeaderUtil.decodeStringWithCharset(fileNameBuff, fileHeader.isFileNameUTF8Encoded(),
                     charset)
@@ -149,7 +149,7 @@ public class HeaderReader {
             readZip64ExtendedInfo(fileHeader, rawIO)
             readAesExtraDataRecord(fileHeader, rawIO)
             if (fileCommentLength > 0) {
-                let fileCommentBuff = Array<Byte>(Int64(fileCommentLength), item: 0)
+                let fileCommentBuff = Array<Byte>(Int64(fileCommentLength), repeat: 0)
                 zip4cjRaf.readFully(fileCommentBuff)
                 fileHeader.setFileComment(
                     HeaderUtil.decodeStringWithCharset(fileCommentBuff, fileHeader.isFileNameUTF8Encoded(), charset))
@@ -172,7 +172,7 @@ public class HeaderReader {
             digitalSignature.setSizeOfData(rawIO.readShortLittleEndian(zip4cjRaf))
 
             if (digitalSignature.getSizeOfData() > 0) {
-                var signatureDataBuff = Array<Byte>(Int64(digitalSignature.getSizeOfData()), item: 0)
+                var signatureDataBuff = Array<Byte>(Int64(digitalSignature.getSizeOfData()), repeat: 0)
                 zip4cjRaf.readFully(signatureDataBuff)
                 digitalSignature.setSignatureData(String.fromUtf8(signatureDataBuff))
             }
@@ -199,7 +199,7 @@ public class HeaderReader {
     }
 
     private func readExtraDataRecords(zip4cjRaf: RandomAccessFile, extraFieldLength: Int64): ?ArrayList<ExtraDataRecord> {
-        var extraFieldBuf = Array<Byte>(1, item: 0)
+        var extraFieldBuf = Array<Byte>(1, repeat: 0)
         if (extraFieldLength < 4) {
             if (extraFieldLength > 0) {
                 // zip4cjRaf.skipBytes(extraFieldLength)
@@ -212,7 +212,7 @@ public class HeaderReader {
             return None
         }
 
-        extraFieldBuf = Array<Byte>(extraFieldLength, item: 0)
+        extraFieldBuf = Array<Byte>(extraFieldLength, repeat: 0)
         zip4cjRaf.read(extraFieldBuf)
 
         try {
@@ -224,7 +224,7 @@ public class HeaderReader {
     }
 
     private func readExtraDataRecords(inputStream: InputStream, extraFieldLength: Int64): ?ArrayList<ExtraDataRecord> {
-        var extraFieldBuf = Array<Byte>(1, item: 0)
+        var extraFieldBuf = Array<Byte>(1, repeat: 0)
         if (extraFieldLength < 4) {
             if (extraFieldLength > 0) {
                 for (_ in 0..extraFieldLength) {
@@ -235,7 +235,7 @@ public class HeaderReader {
             return None
         }
 
-        extraFieldBuf = Array<Byte>(extraFieldLength, item: 0)
+        extraFieldBuf = Array<Byte>(extraFieldLength, repeat: 0)
         Zip4cjUtil.readFully(inputStream, extraFieldBuf)
 
         try {
@@ -260,7 +260,7 @@ public class HeaderReader {
             counter += 2
 
             if (sizeOfRec > 0) {
-                var data = Array<Byte>(Int64(sizeOfRec), item: 0)
+                var data = Array<Byte>(Int64(sizeOfRec), repeat: 0)
                 ArrayCopy(extraFieldBuf, counter, data, 0, Int64(sizeOfRec))
                 extraDataRecord.setData(data)
             }
@@ -335,7 +335,7 @@ public class HeaderReader {
         //44 is the size of fixed variables in this record
         let extDataSecSize = zip64EndOfCentralDirectoryRecord.getSizeOfZip64EndCentralDirectoryRecord() - 44
         if (extDataSecSize > 0) {
-            let extDataSecRecBuf = Array<Byte>(extDataSecSize, item: 0)
+            let extDataSecRecBuf = Array<Byte>(extDataSecSize, repeat: 0)
             zip4cjRaf.readFully(extDataSecRecBuf)
             zip64EndOfCentralDirectoryRecord.setExtensibleDataSector(extDataSecRecBuf)
         }
@@ -461,7 +461,7 @@ public class HeaderReader {
 
     public func readLocalFileHeader(inputStream: InputStream, charset: ?Charset): ?LocalFileHeader {
         var localFileHeader = LocalFileHeader()
-        let intBuff = Array<Byte>(4, item: 0)
+        let intBuff = Array<Byte>(4, repeat: 0)
 
         //signature
         var sig = rawIO.readIntLittleEndian(inputStream)
@@ -474,7 +474,7 @@ public class HeaderReader {
         localFileHeader.setSignature(HeaderSignature.LOCAL_FILE_HEADER)
         localFileHeader.setVersionNeededToExtract(rawIO.readShortLittleEndian(inputStream))
 
-        let generalPurposeFlags = Array<Byte>(2, item: 0)
+        let generalPurposeFlags = Array<Byte>(2, repeat: 0)
         if (Zip4cjUtil.readFully(inputStream, generalPurposeFlags) != 2) {
             throw ZipException("Could not read enough bytes for generalPurposeFlags")
         }
@@ -498,7 +498,7 @@ public class HeaderReader {
         localFileHeader.setExtraFieldLength(rawIO.readShortLittleEndian(inputStream))
 
         if (fileNameLength > 0) {
-            let fileNameBuf = Array<Byte>(Int64(fileNameLength), item: 0)
+            let fileNameBuf = Array<Byte>(Int64(fileNameLength), repeat: 0)
             Zip4cjUtil.readFully(inputStream, fileNameBuf)
 
             var fileName = HeaderUtil.decodeStringWithCharset(fileNameBuf, localFileHeader.isFileNameUTF8Encoded(),
@@ -530,7 +530,7 @@ public class HeaderReader {
     public func readDataDescriptor(inputStream: InputStream, isZip64Format: Bool): DataDescriptor {
 
         let dataDescriptors = DataDescriptor()
-        let intBuff = Array<Byte>(4, item:0)
+        let intBuff = Array<Byte>(4, repeat:0)
         Zip4cjUtil.readFully(inputStream, intBuff)
         var sigOrCrc = rawIO.readLongLittleEndian(intBuff, 0)
         //According to zip specification, presence of extra data record header signature is optional.
@@ -582,7 +582,7 @@ public class HeaderReader {
                 var aesData = extraDataRecord.getData().getOrThrow()
                 aesExtraDataRecord.setAesVersion(
                     AesVersion.getFromVersionNumber(rawIO.readShortLittleEndian(aesData, 0)))
-                var vendorIDBytes = Array<Byte>(2, item: 0)
+                var vendorIDBytes = Array<Byte>(2, repeat: 0)
                 ArrayCopy(aesData, 2, vendorIDBytes, 0, 2)
                 aesExtraDataRecord.setVendorID(String.fromUtf8(vendorIDBytes))
                 aesExtraDataRecord.setAesKeyStrength(
@@ -649,7 +649,7 @@ public class HeaderReader {
         }
 
         try {
-            let commentBuf = Array<Byte>(commentLength, item: 0)
+            let commentBuf = Array<Byte>(commentLength, repeat: 0)
             raf.readFully(commentBuf)
             return HeaderUtil.decodeStringWithCharset(commentBuf, false,
                 charset.getOrDefault({=> return InternalZipConstants.ZIP4J_DEFAULT_CHARSET}))
