@@ -86,7 +86,7 @@ public class FileHeaderFactory {
     }
 
     private func determineGeneralPurposeBitFlag(isEncrypted: Bool, zipParameters: ZipParameters, charset: ?Charset): Array<Byte> {
-        var generalPurposeBitFlag = Array<Byte>(2, item: 0)
+        var generalPurposeBitFlag = Array<Byte>(2, repeat: 0)
         generalPurposeBitFlag[0] = generateFirstGeneralPurposeByte(isEncrypted, zipParameters)
         if (charset == None || InternalZipConstants.CHARSET_UTF_8 == (charset.getOrThrow())) {
             // set 3rd bit which corresponds to utf-8 file name charset

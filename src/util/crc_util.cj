@@ -93,7 +93,7 @@ public class CrcUtil {
                 "input file is null or does not exist or cannot read.  Cannot calculate CRC for the file")
         }
 
-        let buff = Array<Byte>(BUF_SIZE, item: 0)
+        let buff = Array<Byte>(BUF_SIZE, repeat: 0)
         let crc32 = CRC32()
         let inputStream = File(inputFile, Open(true, false))
         try {

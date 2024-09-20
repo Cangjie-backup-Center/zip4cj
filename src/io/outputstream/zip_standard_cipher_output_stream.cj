@@ -4,7 +4,7 @@
 package zip4cj.io.outputstream
 
 class ZipStandardCipherOutputStream <: CipherOutputStream {
-    private var pendingBuffer: Array<UInt8> = Array<UInt8>(16, item: 0)
+    private var pendingBuffer: Array<UInt8> = Array<UInt8>(16, repeat: 0)
 
     private var pendingBufferLength: Int32 = 0
 

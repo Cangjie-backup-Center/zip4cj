@@ -9,8 +9,8 @@ public class HeaderWriter {
     private static let AES_EXTRA_DATA_RECORD_SIZE: Int32 = 11
 
     private let rawIO = RawIO()
-    private let longBuff = Array<Byte>(8, item: 0)
-    private let intBuff = Array<Byte>(4, item: 0)
+    private let longBuff = Array<Byte>(8, repeat: 0)
+    private let intBuff = Array<Byte>(4, repeat: 0)
 
     public func writeLocalFileHeader(
         zipModel: ZipModel,
@@ -101,7 +101,7 @@ public class HeaderWriter {
             rawIO.writeShortLittleEndian(byteArrayOutputStream, aesExtraDataRecord.getAesVersion().getVersionNumber())
             byteArrayOutputStream.write(HeaderUtil.getBytesFromString(aesExtraDataRecord.getVendorID(), charset))
 
-            var aesStrengthBytes = Array<Byte>(1, item: 0)
+            var aesStrengthBytes = Array<Byte>(1, repeat: 0)
             aesStrengthBytes[0] = UInt8(aesExtraDataRecord.getAesKeyStrength().getRawCode())
             byteArrayOutputStream.write(aesStrengthBytes)
 
@@ -338,7 +338,7 @@ public class HeaderWriter {
         charset: ?Charset
     ) {
 
-        let emptyShortByte = Array<Byte>(2, item: 0)
+        let emptyShortByte = Array<Byte>(2, repeat: 0)
         var writeZip64ExtendedInfo = this.isZip64Entry(fileHeader)
 
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(fileHeader.getSignature().getOrThrow().getValue()))
@@ -365,14 +365,14 @@ public class HeaderWriter {
             byteArrayOutputStream.write(longBuff[0..4])
         }
 
-        var fileNameBytes = Array<Byte>(1, item: 0)
+        var fileNameBytes = Array<Byte>(1, repeat: 0)
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(fileHeader.getFileName())) {
             fileNameBytes = HeaderUtil.getBytesFromString(fileHeader.getFileName().getOrThrow(), charset)
         }
         rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(fileNameBytes.size))
         //Compute offset bytes before extra field is written for Zip64 compatibility
         //NOTE: this data is not written now, but written at a later point
-        var offsetLocalHeaderBytes = Array<Byte>(4, item: 0)
+        var offsetLocalHeaderBytes = Array<Byte>(4, repeat: 0)
         if (writeZip64ExtendedInfo) {
             rawIO.writeLongLittleEndian(longBuff, 0, InternalZipConstants.ZIP_64_SIZE_LIMIT)
             ArrayCopy(longBuff, 0, offsetLocalHeaderBytes, 0, 4)
@@ -436,7 +436,7 @@ public class HeaderWriter {
             rawIO.writeShortLittleEndian(byteArrayOutputStream, aesExtraDataRecord.getAesVersion().getVersionNumber())
             byteArrayOutputStream.write(HeaderUtil.getBytesFromString(aesExtraDataRecord.getVendorID(), charset))
 
-            let aesStrengthBytes = Array<Byte>(1, item: 0)
+            let aesStrengthBytes = Array<Byte>(1, repeat: 0)
             aesStrengthBytes[0] = UInt8(aesExtraDataRecord.getAesKeyStrength().getRawCode())
             byteArrayOutputStream.write(aesStrengthBytes)
 
@@ -562,7 +562,7 @@ public class HeaderWriter {
         rawIO: RawIO,
         charset: ?Charset
     ) {
-        let longByte = Array<Byte>(8, item: 0)
+        let longByte = Array<Byte>(8, repeat: 0)
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(HeaderSignature.END_OF_CENTRAL_DIRECTORY.getValue()))
         rawIO.writeShortLittleEndian(
             byteArrayOutputStream,

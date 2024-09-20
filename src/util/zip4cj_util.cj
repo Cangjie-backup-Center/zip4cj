@@ -142,7 +142,7 @@ public class Zip4cjUtil {
     }
 
     private static func convertCharArrayToByteArrayUsingDefaultCharset(charArray: Array<Rune>): Array<Byte> {
-        var bytes: Array<Byte> = Array<Byte>(charArray.size, item: 0)
+        var bytes: Array<Byte> = Array<Byte>(charArray.size, repeat: 0)
         for (i in 0..charArray.size) {
             bytes[i] = UInt8.parse(charArray[i].toString())
         }

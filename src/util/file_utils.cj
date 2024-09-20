@@ -68,7 +68,7 @@ public class FileUtils {
     public static func getFileAttributes(file: Path): Array<Byte> {
         try {
             if ((!FileInfo(file).isSymbolicLink() && !File.exists(file))) {
-                return Array<Byte>(4, item: 0)
+                return Array<Byte>(4, repeat: 0)
             }
 
             if (isWindows) {
@@ -76,10 +76,10 @@ public class FileUtils {
             } else if (isMac || isUnix) {
                 return getPosixFileAttributes(file)
             } else {
-                return Array<Byte>(4, item: 0)
+                return Array<Byte>(4, repeat: 0)
             }
         } catch (e: Exception) {
-            return Array<Byte>(4, item: 0)
+            return Array<Byte>(4, repeat: 0)
         }
     }
 
@@ -322,9 +322,9 @@ public class FileUtils {
             var bytesToRead: Int64 = end - start
 
             if ((end - start) < bufferSize) {
-                buff = Array<Byte>(bytesToRead, item: 0)
+                buff = Array<Byte>(bytesToRead, repeat: 0)
             } else {
-                buff = Array<Byte>(bufferSize, item: 0)
+                buff = Array<Byte>(bufferSize, repeat: 0)
             }
             readLen = randomAccessFile.read(buff)
 
@@ -342,7 +342,7 @@ public class FileUtils {
                 if (bytesRead == bytesToRead) {
                     break
                 } else if (bytesRead + buff.size > bytesToRead) {
-                    buff = Array<Byte>(bytesToRead - bytesRead, item: 0)
+                    buff = Array<Byte>(bytesToRead - bytesRead, repeat: 0)
                 }
                 readLen = randomAccessFile.read(buff)
             }
@@ -420,7 +420,7 @@ public class FileUtils {
     }
 
     public static func getDefaultFileAttributes(isDirectory: Bool): Array<Byte> {
-        var permissions = Array<Byte>(4, item: 0)
+        var permissions = Array<Byte>(4, repeat: 0)
         if (isUnix || isMac) {
             if (isDirectory) {
                 ArrayCopy(DEFAULT_POSIX_FOLDER_ATTRIBUTES, 0, permissions, 0, permissions.size)
@@ -462,7 +462,7 @@ public class FileUtils {
     }
 
     private static func getWindowsFileAttributes(file: Path): Array<Byte>  {
-        var fileAttributes = Array<Byte>(4, item:0)
+        var fileAttributes = Array<Byte>(4, repeat:0)
         try {
             let dosFileAttributes = FileInfo(file)
             var windowsAttribute: Byte = 0
@@ -491,7 +491,7 @@ public class FileUtils {
     }
 
     private static func getPosixFileAttributes(file: Path): Array<Byte> {
-        var fileAttributes = Array<Byte>(4, item: 0)
+        var fileAttributes = Array<Byte>(4, repeat: 0)
 
         try {
             let isSymlink = file.isSymbolicLink()

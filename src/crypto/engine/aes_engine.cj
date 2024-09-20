@@ -79,7 +79,7 @@ public class AESEngine {
         }
 
         rounds = (kc) + 6
-        var W = Array<Array<Int32>>(Int64(rounds + 1), item: Array<Int32>(4, item: 0))
+        var W = Array<Array<Int32>>(Int64(rounds + 1), repeat: Array<Int32>(4, repeat: 0))
 
         t = 0
         var i = 0
