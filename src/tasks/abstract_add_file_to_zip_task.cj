@@ -96,13 +96,14 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
     ) {
         zipOutputStream.putNextEntry(zipParameters)
         if (File.exists(fileToAdd) && !fileToAdd.isDirectory()) {
-            let inputStream = File(fileToAdd, OpenOption.Open(true, false))
-            var readLen = inputStream.read(readBuff)
-            while (readLen > 0) {
-                zipOutputStream.write(readBuff[0..readLen])
-                progressMonitor.updateWorkCompleted(readLen)
-                verifyIfTaskIsCancelled()
-                readLen = inputStream.read(readBuff)
+            try (inputStream = File(fileToAdd, OpenOption.Open(true, false))){
+                var readLen = inputStream.read(readBuff)
+                while (readLen > 0) {
+                    zipOutputStream.write(readBuff[0..readLen])
+                    progressMonitor.updateWorkCompleted(readLen)
+                    verifyIfTaskIsCancelled()
+                    readLen = inputStream.read(readBuff)
+                }
             }
         }
         closeEntry(zipOutputStream, splitOutputStream, fileToAdd, false)
@@ -193,13 +194,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         if (fileToAdd.isDirectory()) {
             clonedzp.setEntrySize(0)
         } else {
-            if (getPlatformWindows()) {
-                let file = File(fileToAdd, Open(true, false))
-                clonedzp.setEntrySize(file.length)
-                file.close()
-            } else {
-                clonedzp.setEntrySize(fileInfo.length)
-            }
+            clonedzp.setEntrySize(fileInfo.length)
         }
         if (zipParameters.getLastModifiedFileTime() <= 0) {
             clonedzp.setLastModifiedFileTime(fileInfo.lastModificationTime.toUnixTimeStamp().toNanoseconds());
