@@ -95,8 +95,7 @@ public class CrcUtil {
 
         let buff = Array<Byte>(BUF_SIZE, repeat: 0)
         let crc32 = CRC32()
-        let inputStream = File(inputFile, Open(true, false))
-        try {
+        try (inputStream = File(inputFile, Open(true, false))){
             var readLen = inputStream.read(buff)
             while (readLen != 0) {
                 crc32.update(buff[0..readLen])
@@ -110,9 +109,7 @@ public class CrcUtil {
                 }
                 readLen = inputStream.read(buff)
             }
-            return crc32.getFinalCRC()
-        } finally {
-            inputStream.close()
-        }
+        } 
+        return crc32.getFinalCRC()
     }
 }

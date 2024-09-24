@@ -31,12 +31,9 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
         var temporaryZipFile: Path = getTemporaryFile(zipModel.getZipFile().getOrThrow().toString())
         var successFlag: Bool = false
 
+        let outputStream: SplitOutputStream = SplitOutputStream(temporaryZipFile)
+        let inputStream: RandomAccessFile = RandomAccessFile(zipModel.getZipFile().getOrThrow().toString(), OpenOption.Open(true, false))
         try {
-            var outputStream: SplitOutputStream = SplitOutputStream(temporaryZipFile)
-            var inputStream: RandomAccessFile = RandomAccessFile(
-                zipModel.getZipFile().getOrThrow().toString(),
-                OpenOption.Open(true, false)
-            )
             var currentFileCopyPointer: Int64 = 0
             var sortedFileHeaders: ArrayList<FileHeader> = cloneAndSortFileHeadersByOffset(
                 zipModel.getCentralDirectory().getOrThrow().getFileHeaders())
@@ -60,13 +57,13 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
             successFlag = true
         } finally {
             this.cleanupFile(successFlag, zipModel.getZipFile().getOrThrow(), temporaryZipFile)
+            inputStream.close()
+            outputStream.close()
         }
     }
 
     protected func calculateTotalWork(taskParameters: RemoveFilesFromZipTaskParameters): Int64 {
-        taskParameters
-        let file: File = File(zipModel.getZipFile().getOrThrow(), OpenOption.Open(true, false))
-        return file.length
+        return FileInfo(zipModel.getZipFile().getOrThrow()).length
     }
 
     private func filterNonExistingEntries(filesToRemove: Collection<String>): ArrayList<String> {
