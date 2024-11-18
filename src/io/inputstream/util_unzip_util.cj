@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.io.inputstream
 
@@ -35,7 +35,7 @@ public class UnzipUtil {
 
     public static func createSplitInputStream(zipModel: ZipModel): SplitFileInputStream {
         if (let Some(zipFile) <- zipModel.getZipFile()) {
-            if (zipFile.fileName.getOrThrow().endsWith(InternalZipConstants.SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN)) {
+            if (zipFile.fileName.endsWith(InternalZipConstants.SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN)) {
                 return NumberedSplitFileInputStream(zipFile)
             }
 

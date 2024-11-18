@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.io.inputstream
 
@@ -65,7 +65,7 @@ class ZipStandardSplitFileInputStream <: SplitFileInputStream {
 
     protected func openRandomAccessFileForIndex(zipFileIndex: Int64): Unit {
         var nextSplitFile: Path = getNextSplitFile(zipFileIndex)
-        if (!File.exists(nextSplitFile)) {
+        if (!exists(nextSplitFile)) {
             throw Exception("zip split file does not exist: ${nextSplitFile}")
         }
         randomAccessFile.close()

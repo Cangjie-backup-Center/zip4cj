@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.util
 
@@ -53,7 +53,7 @@ public class FileUtils {
 
     // TODO
     public static func setFileLastModifiedTime(file: Path, lastModifiedTime: Int64) {
-        if (lastModifiedTime <= 0 || !File.exists(file)) {
+        if (lastModifiedTime <= 0 || !exists(file)) {
             return
         }
 
@@ -67,7 +67,7 @@ public class FileUtils {
 
     public static func getFileAttributes(file: Path): Array<Byte> {
         try {
-            if ((!FileInfo(file).isSymbolicLink() && !File.exists(file))) {
+            if ((!FileInfo(file).isSymbolicLink() && !exists(file))) {
                 return Array<Byte>(4, repeat: 0)
             }
 
@@ -89,11 +89,11 @@ public class FileUtils {
         zipParameters: ZipParameters,
         paths!: ArrayList<Path> = ArrayList<Path>()
     ): ArrayList<Path> {
-        if (!(File.exists(path) || Directory.exists(path))) {
+        if (path.isEmpty() || !(exists(path))) {
             return ArrayList<Path>()
         }
         let fileInfo = FileInfo(path)
-        if (!path.isDirectory() || !fileInfo.canRead()) {
+        if (!fileInfo.isDirectory() || !fileInfo.canRead()) {
             return paths
         }
         let dir = Directory(path)
@@ -125,8 +125,8 @@ public class FileUtils {
             throw ZipException("zip file name is empty or null, cannot determine zip file name")
         }
         var tmpFileName = zipFile
-        if (zipFile.contains(FileSeparator)) {
-            tmpFileName = unsafe{String.fromUtf8Unchecked(zipFile.toArray()[zipFile.lastIndexOf(FileSeparator).getOrThrow() + 1..])}
+        if (zipFile.contains(Path.Separator)) {
+            tmpFileName = unsafe{String.fromUtf8Unchecked(zipFile.toArray()[zipFile.lastIndexOf(Path.Separator).getOrThrow() + 1..])}
         }
 
         if (tmpFileName.endsWith(".zip")) {
@@ -136,7 +136,7 @@ public class FileUtils {
     }
 
     public static func getSplitZipFiles(zipModel: ZipModel): ArrayList<Path> {
-        if (!File.exists(zipModel.getZipFile().getOrThrow())) {
+        if (!exists(zipModel.getZipFile().getOrThrow())) {
             throw ZipException("zip file does not exist")
         }
         var splitZipFiles = ArrayList<Path>()
@@ -162,14 +162,14 @@ public class FileUtils {
                     if (i >= 9) {
                         fileExt = ".z"
                     }
-                    partFile = if (currZipFile.fileName.getOrThrow().contains(".")) {
+                    partFile = if (currZipFile.fileName.contains(".")) {
                         unsafe{
                             String.fromUtf8Unchecked(
-                            currZipFile.toCanonical().toString().toArray()[0..currZipFile.toCanonical().toString().
+                            currZipFile.toString().toArray()[0..currZipFile.toString().
                                 lastIndexOf(".").getOrThrow()])
                         }
                     } else {
-                        currZipFile.toCanonical().toString()
+                        currZipFile.toString()
                     }
                     partFile = partFile + fileExt + "${(i + 1)}"
                     splitZipFiles.append(Path(partFile))
@@ -180,108 +180,86 @@ public class FileUtils {
     }
 
     public static func getRelativeFileName(fileToAdd: Path, zipParameters: ZipParameters): String {
+        if (fileToAdd.isEmpty()) {
+            return ""  
+        } else if (!exists(fileToAdd)) {
+            return fileToAdd.fileName
+        }
         var fileName: String
         try {
-            let FileExists = try {
-                fileToAdd.toCanonical()
-                true
-            } catch (e: FSException) {
-                let message = e.message.toString()
-                if (message == "Failed to canonical: the path may not exist or permission denied!" ) {
-                    false
+            var defaultFolderPath = match (zipParameters.getDefaultFolderPath()) {
+                case Some(v) => v.trim()
+                case None => ""
+            }
+            if (defaultFolderPath.size != 0) {
+                var fileCanonicalPath: Path = canonicalize(fileToAdd)
+                var rootFolderFile = Path(defaultFolderPath)
+                var rootFolderFileRef = canonicalize(rootFolderFile).toString()
+
+                if (!rootFolderFileRef.toString().endsWith(InternalZipConstants.FILE_SEPARATOR)) {
+                    rootFolderFileRef += InternalZipConstants.FILE_SEPARATOR
+                }
+                var tmpFileName: String = if (FileInfo(fileToAdd).isSymbolicLink()) {
+                    var rootPath = "${canonicalize(fileToAdd.parent)}${Path.Separator}${canonicalize(fileToAdd).fileName}"
+                        // canonicalize(fileToAdd.parent).toString() + InternalZipConstants.FILE_SEPARATOR + canonicalize(fileToAdd).fileName)
+                    unsafe { String.fromUtf8Unchecked(rootPath.toArray()[rootFolderFileRef.size..])}
                 } else {
-                    true
-                }
-            }
-            try {
-                var defaultFolderPath = match (zipParameters.getDefaultFolderPath()) {
-                    case Some(v) => v.trim()
-                    case None => ""
-                }
-                if (defaultFolderPath.size != 0) {
-                    var fileCanonicalPath: Path = fileToAdd.toCanonical()
-                    var rootFolderFile = Path(defaultFolderPath)
-                    var rootFolderFileRef = rootFolderFile.toCanonical().toString()
-
-                    if (!rootFolderFileRef.toString().endsWith(InternalZipConstants.FILE_SEPARATOR)) {
-                        rootFolderFileRef += InternalZipConstants.FILE_SEPARATOR
-                    }
-                    var tmpFileName: String = if (fileToAdd.isSymbolicLink()) {
-                        var rootPath = Path(
-                            fileToAdd.directoryName.getOrThrow().toCanonical().toString() + InternalZipConstants.
-                            FILE_SEPARATOR + fileToAdd.toCanonical().fileName.getOrThrow())
-                        unsafe { String.fromUtf8Unchecked(rootPath.toString().toArray()[rootFolderFileRef.size..])}
+                    let canonicalizeFileToAdd = canonicalize(fileToAdd)
+                    if (!canonicalizeFileToAdd.toString().startsWith(rootFolderFileRef)) {
+                        "${canonicalizeFileToAdd.parent}${Path.Separator}${canonicalizeFileToAdd}"
                     } else {
-                        if (!fileToAdd.toCanonical().toString().startsWith(rootFolderFileRef)) {
-                            fileToAdd.toCanonical().directoryName.getOrThrow().toString() + InternalZipConstants.
-                                FILE_SEPARATOR + fileToAdd.toCanonical().fileName.getOrThrow()
-                        } else {
-                            unsafe { String.fromUtf8Unchecked(fileCanonicalPath.toString().toArray()[rootFolderFileRef.size..]) }
-                        }
+                        unsafe { String.fromUtf8Unchecked(fileCanonicalPath.toString().toArray()[rootFolderFileRef.size..]) }
                     }
+                }
+                    
+                if (tmpFileName.startsWith(InternalZipConstants.FILE_SEPARATOR)) {
+                    tmpFileName = unsafe { String.fromUtf8Unchecked(tmpFileName.toArray()[1..]) }
+                }
 
-                    if (tmpFileName.startsWith(InternalZipConstants.FILE_SEPARATOR)) {
-                        tmpFileName = unsafe { String.fromUtf8Unchecked(tmpFileName.toArray()[1..]) }
-                    }
+                var tmpFile = fileCanonicalPath
 
-                    var tmpFile = fileCanonicalPath
-
-                    if (tmpFile.isDirectory()) {
-                        tmpFileName = tmpFileName.replace("\\\\", InternalZipConstants.ZIP_FILE_SEPARATOR)
-                        tmpFileName += InternalZipConstants.ZIP_FILE_SEPARATOR
-                    } else {
-                        var bkFileName = unsafe {
-                            String.fromUtf8Unchecked(
-                                tmpFileName.toArray()[0..tmpFileName.lastIndexOf(tmpFile.fileName.getOrThrow()).getOrThrow()]
-                        )}
-                        bkFileName = bkFileName.replace("\\\\", InternalZipConstants.ZIP_FILE_SEPARATOR)
-                        tmpFileName = bkFileName + getNameOfFileInZip(tmpFile, zipParameters.getFileNameInZip())
-                    }
-
-                    fileName = tmpFileName
+                if (FileInfo(tmpFile).isDirectory()) {
+                    tmpFileName = "${tmpFileName.replace("\\\\", InternalZipConstants.ZIP_FILE_SEPARATOR)}${InternalZipConstants.ZIP_FILE_SEPARATOR}"
                 } else {
-                    if (FileExists) {
-                        fileName = getNameOfFileInZip(fileToAdd, zipParameters.getFileNameInZip())
-                        if (fileToAdd.isDirectory()) {
-                            fileName += InternalZipConstants.ZIP_FILE_SEPARATOR
-                        }
-                    } else {
-                        fileName = fileToAdd.fileName.getOrThrow()
-                    }
-                }
-            } catch (e: IOException) {
-                throw ZipException(e.message)
-            }
-
-            var rootFolderNameInZip = ""
-            if (let Some(v) <- zipParameters.getRootFolderNameInZip()) {
-                var rootFolderNameInZip = v
-                if (!rootFolderNameInZip.endsWith("\\") && !rootFolderNameInZip.endsWith("/")) {
-                    rootFolderNameInZip = rootFolderNameInZip + InternalZipConstants.FILE_SEPARATOR
+                    let bkFileName = unsafe {
+                        String.fromUtf8Unchecked(
+                            tmpFileName.toArray()[0..tmpFileName.lastIndexOf(tmpFile.fileName).getOrThrow()]
+                    )}
+                    tmpFileName = "${bkFileName.replace("\\\\", InternalZipConstants.ZIP_FILE_SEPARATOR)}${getNameOfFileInZip(tmpFile, zipParameters.getFileNameInZip())}"
                 }
 
-                rootFolderNameInZip = rootFolderNameInZip.replace("\\\\", InternalZipConstants.ZIP_FILE_SEPARATOR)
-                fileName = rootFolderNameInZip + fileName
-            }
-
-            if (!Zip4cjUtil.isStringNotNullAndNotEmpty(fileName)) {
-                var errorMessage = "fileName to add to zip is empty or null. fileName: '${fileName}' DefaultFolderPath: '${zipParameters.getDefaultFolderPath()}'  FileNameInZip: ${zipParameters.getFileNameInZip()}"
-
-                if (fileToAdd.isSymbolicLink()) {
-                    errorMessage += "isSymlink: true "
+                fileName = tmpFileName
+            } else {
+                fileName = getNameOfFileInZip(fileToAdd, zipParameters.getFileNameInZip())
+                if (FileInfo(fileToAdd).isDirectory()) {
+                    fileName += InternalZipConstants.ZIP_FILE_SEPARATOR
                 }
-
-                if (Zip4cjUtil.isStringNotNullAndNotEmpty(rootFolderNameInZip)) {
-                    errorMessage = "rootFolderNameInZip: '" + rootFolderNameInZip + "' "
-                }
-
-                throw ZipException(errorMessage)
             }
-        } catch (e: IllegalArgumentException) {
-            if (e.message == "The `rawPath` cannot be an empty string!") {
-                return ""
+        } catch (e: IOException) {
+            throw ZipException(e.message)
+        }
+
+        var rootFolderNameInZip = ""
+        if (let Some(v) <- zipParameters.getRootFolderNameInZip()) {
+            var rootFolderNameInZip = v
+            if (!rootFolderNameInZip.endsWith("\\") && !rootFolderNameInZip.endsWith("/")) {
+                rootFolderNameInZip = "${rootFolderNameInZip}${InternalZipConstants.FILE_SEPARATOR}"
             }
-            throw e
+            fileName = "${rootFolderNameInZip.replace("\\\\", InternalZipConstants.ZIP_FILE_SEPARATOR)}${fileName}"
+        }
+
+        if (!Zip4cjUtil.isStringNotNullAndNotEmpty(fileName)) {
+            var errorMessage = "fileName to add to zip is empty or null. fileName: '${fileName}' DefaultFolderPath: '${zipParameters.getDefaultFolderPath()}'  FileNameInZip: ${zipParameters.getFileNameInZip()}"
+
+            if (FileInfo(fileToAdd).isSymbolicLink()) {
+                errorMessage += "isSymlink: true "
+            }
+
+            if (Zip4cjUtil.isStringNotNullAndNotEmpty(rootFolderNameInZip)) {
+                errorMessage = "rootFolderNameInZip: '" + rootFolderNameInZip + "' "
+            }
+
+            throw ZipException(errorMessage)
         }
         return fileName
     }
@@ -291,7 +269,7 @@ public class FileUtils {
             return fileNameInZip.getOrThrow()
         }
         // TODO 设置链接文件
-        return fileToAdd.fileName.getOrThrow()
+        return fileToAdd.fileName
     }
 
     public static func isZipEntryDirectory(fileNameInZip: String): Bool {
@@ -366,15 +344,11 @@ public class FileUtils {
     }
 
     public static func isNumberedSplitFile(file: Path): Bool {
-        return file.fileName.getOrThrow().endsWith(InternalZipConstants.SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN)
+        return file.fileName.endsWith(InternalZipConstants.SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN)
     }
 
     public static func getFileExtension(path: Path): String {
-        var fileName = path.extensionName
-        if (fileName.isNone()) {
-            return ""
-        }
-        return fileName.getOrThrow()
+        return path.extensionName
     }
 
     /**
@@ -384,17 +358,11 @@ public class FileUtils {
      * @return sorted list of split files. Returns an empty list if no files of that pattern are found in the current directory
      */
     public static func getAllSortedNumberedSplitFiles(firstNumberedFile: Path): Array<Path> {
-        var zipFileNameWithoutExtension = FileUtils.getFileNameWithoutExtension(firstNumberedFile.fileName.getOrThrow())
+        var zipFileNameWithoutExtension = FileUtils.getFileNameWithoutExtension(firstNumberedFile.fileName)
         let listFiles = ArrayList<Path>()
-        if (let Some(v) <- try{
-            firstNumberedFile.toCanonical().directoryName
-        } catch (e: FSException) {
-            firstNumberedFile.directoryName
-        }) {
-            for (file in Directory(v) where file.isFile()) {
-                if (file.path.fileName.getOrThrow().startsWith(zipFileNameWithoutExtension + ".")) {
-                    listFiles.append(file.path)
-                }
+        for (file in Directory(firstNumberedFile.parent) where file.isRegular()) {
+            if (file.path.fileName.startsWith(zipFileNameWithoutExtension)) {
+                listFiles.append(file.path)
             }
         }
         return unsafe { listFiles.getRawArray()[0..listFiles.size] }
@@ -410,10 +378,7 @@ public class FileUtils {
 
     public static func readSymbolicLink(file: Path): String {
         return try {
-            match (FileInfo(file).symbolicLinkTarget) {
-                case Some(v) => v.toString()
-                case None => ""
-            }
+            SymbolicLink.readFrom(file).toString()
         } catch (_) {
             return ""
         }
@@ -479,13 +444,13 @@ public class FileUtils {
     }
 
     private static func assertFileExists(path: Path) {
-        if (!File.exists(path)) {
+        if (!exists(path)) {
             throw ZipException("File does not exist ${path}")
         }
     }
 
     private static func assertSymbolicLinkTargetExists(path: Path) {
-        if (!File.exists(path)) {
+        if (!exists(path)) {
             throw ZipException("Symlink target '" + readSymbolicLink(path) + "' does not exist for link '${path}'")
         }
     }
@@ -494,16 +459,16 @@ public class FileUtils {
         var fileAttributes = Array<Byte>(4, repeat: 0)
 
         try {
-            let isSymlink = file.isSymbolicLink()
+            let fileInfo = FileInfo(file)
+            let isSymlink = fileInfo.isSymbolicLink()
             if (isSymlink) {
                 // Mark as a regular file and not a directory if file is a symlink and even if the symlink points to a directory
                 fileAttributes[3] = BitUtils.setBit(fileAttributes[3], 7)
                 fileAttributes[3] = BitUtils.unsetBit(fileAttributes[3], 6)
             } else {
-                fileAttributes[3] = setBitIfApplicable(file.isFile(), fileAttributes[3], 7)
-                fileAttributes[3] = setBitIfApplicable(file.isDirectory(), fileAttributes[3], 6)
+                fileAttributes[3] = setBitIfApplicable(fileInfo.isRegular(), fileAttributes[3], 7)
+                fileAttributes[3] = setBitIfApplicable(fileInfo.isDirectory(), fileAttributes[3], 6)
             }
-            let fileInfo = FileInfo(file)
             fileAttributes[3] = setBitIfApplicable(isSymlink, fileAttributes[3], 5)
             fileAttributes[3] = setBitIfApplicable(fileInfo.canRead(), fileAttributes[3], 0)
             fileAttributes[2] = setBitIfApplicable(fileInfo.canWrite(), fileAttributes[2], 7)

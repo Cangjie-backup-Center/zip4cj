@@ -1,9 +1,8 @@
 [dependencies]
-  charset4cj = {branch = "v0.0.1.B002", git = "https://gitcode.com/Cangjie-TPC/charset4cj.git"}
-  crypto4cj = {branch = "v0.0.1.B002", git = "https://gitcode.com/Cangjie-TPC/crypto4cj.git"}
+  charset4cj = {branch = "v0.0.1.B003", git = "https://gitcode.com/Cangjie-TPC/charset4cj.git"}
 
 [package]
-  cjc-version = "0.55.3"
+  cjc-version = "0.56.4"
   compile-option = "-O2 -Woff all"
   description = "nothing here"
   link-option = ""
@@ -16,7 +15,3 @@
   scripts = {}
 
 
-[target.x86_64-unknown-linux-gnu]
-  compile-option = "-O2"
-[target.aarch64-unknown-linux-gnu]
-  compile-option = "-O2"

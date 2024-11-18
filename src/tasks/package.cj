@@ -1,7 +1,24 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.tasks
+
+internal import std.io.InputStream
+internal import std.io.OutputStream
+internal import std.io.BufferedOutputStream
+internal import std.fs.Path
+internal import std.fs.FileInfo
+internal import std.fs.File
+internal import std.fs.exists
+internal import std.fs.OpenOption
+internal import std.fs.Directory
+internal import std.fs.remove
+internal import std.fs.rename
+internal import std.fs.canonicalize
+internal import std.collection.Map
+internal import std.collection.HashMap
+internal import std.collection.concurrent.ConcurrentHashMap
+internal import std.collection.concurrent.BlockingQueue
 
 internal import zip4cj.util.*
 internal import zip4cj.model.*
@@ -13,13 +30,4 @@ internal import zip4cj.exception.*
 internal import zip4cj.model.enums.*
 internal import zip4cj.io.outputstream.*
 internal import zip4cj.io.inputstream.*
-internal import std.io.*
-internal import std.fs.*
-internal import std.collection.*
-internal import std.collection.concurrent.*
-internal import std.os.posix.*
-internal import std.convert.*
-internal import compress.zlib.*
-internal import charset4cj.charset.*
-internal import charset4cj.charset.encoding.*
-internal import crypto.crypto.*
+

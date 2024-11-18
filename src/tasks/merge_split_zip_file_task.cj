@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.tasks
 
@@ -72,7 +72,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
 
         var totalSize = 0
         for (i in 0..zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDisk()) {
-            totalSize += FileInfo(getNextSplitZipFile(zipModel, Int64(i))).length
+            totalSize += FileInfo(getNextSplitZipFile(zipModel, Int64(i))).size
         }
         return totalSize
     }

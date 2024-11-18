@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.io.outputstream
 
@@ -18,7 +18,7 @@ public class HeaderWriter {
         outputStream: OutputStream,
         charset: ?Charset
     ) {
-        let byteArrayOutputStream = ByteArrayStream()
+        let byteArrayOutputStream = ByteBuffer()
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(localFileHeader.getSignature().getOrThrow().getValue()))
         rawIO.writeShortLittleEndian(byteArrayOutputStream, localFileHeader.getVersionNeededToExtract())
         if (let Some(v) <- localFileHeader.getGeneralPurposeFlag()) {
@@ -116,7 +116,7 @@ public class HeaderWriter {
         if (localFileHeader.isNone()) {
             throw ZipException("input parameters is None, cannot write extended local header")
         }
-        let byteArrayOutputStream = ByteArrayStream()
+        let byteArrayOutputStream = ByteBuffer()
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(HeaderSignature.EXTRA_DATA_RECORD.getValue()))
 
         rawIO.writeLongLittleEndian(longBuff, 0, localFileHeader.getOrThrow().getCrc())
@@ -136,7 +136,7 @@ public class HeaderWriter {
     }
 
     public func finalizeZipFile(zipModel: ZipModel, outputStream: OutputStream, charset: ?Charset): Unit {
-        let byteArrayOutputStream = ByteArrayStream()
+        let byteArrayOutputStream = ByteBuffer()
         processHeaderData(zipModel, outputStream)
         let offsetCentralDir = getOffsetOfCentralDirectory(zipModel)
         writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO, charset)
@@ -177,7 +177,7 @@ public class HeaderWriter {
     }
 
     public func finalizeZipFileWithoutValidations(zipModel: ZipModel, outputStream: OutputStream, charset: ?Charset) {
-        let byteArrayOutputStream: ByteArrayStream = ByteArrayStream()
+        let byteArrayOutputStream: ByteBuffer = ByteBuffer()
         let offsetCentralDir = getOffsetOfCentralDirectory(zipModel)
         writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO, charset)
         let sizeOfCentralDir = byteArrayOutputStream.length
@@ -206,13 +206,10 @@ public class HeaderWriter {
         var currOutputStream: SplitOutputStream
 
         if (fileHeader.getDiskNumberStart() != Int64(outputStream.getCurrentSplitFileCounter())) {
-            var parentFile = zipModel.getZipFile().getOrThrow().directoryName
+            var parentFile = zipModel.getZipFile().getOrThrow().parent
             var fileNameWithoutExt = FileUtils.getZipFileNameWithoutExtension(
-                zipModel.getZipFile().getOrThrow().fileName.getOrThrow())
-            var fileName = ""
-            if (parentFile.isSome()) {
-                fileName = parentFile.getOrThrow().toString() + FileSeparator
-            }
+                zipModel.getZipFile().getOrThrow().fileName)
+            var fileName = parentFile.toString() + Path.Separator
             if (fileHeader.getDiskNumberStart() < 9) {
                 fileName += fileNameWithoutExt + ".z0${(fileHeader.getDiskNumberStart() + 1)}"
             } else {
@@ -263,19 +260,19 @@ public class HeaderWriter {
     }
 
     private func isSplitZipFile(outputStream: OutputStream): Bool {
-        if (let Some(output) <- outputStream as SplitOutputStream) {
+        if (let Some(output) <- (outputStream as SplitOutputStream)) {
             return output.isSplitZipFile()
-        } else if (let Some(output) <- outputStream as CountingOutputStream) {
+        } else if (let Some(output) <- (outputStream as CountingOutputStream)) {
             return output.isSplitZipFile()
         }
         return false
     }
 
     private func getCurrentSplitFileCounter(outputStream: OutputStream): Int32 {
-        if (let Some(output) <- outputStream as SplitOutputStream) {
+        if (let Some(output) <-( outputStream as SplitOutputStream)) {
             return output.getCurrentSplitFileCounter()
         }
-        if (let Some(output) <- outputStream as CountingOutputStream) {
+        if (let Some(output) <- (outputStream as CountingOutputStream)) {
             return output.getCurrentSplitFileCounter()
         }
         return -1
@@ -287,7 +284,7 @@ public class HeaderWriter {
         buff: Array<Byte>,
         charset: ?Charset
     ) {
-        if (let Some(output) <- outputStream as CountingOutputStream) {
+        if (let Some(output) <- (outputStream as CountingOutputStream)) {
             if (output.checkBuffSizeAndStartNextSplitFile(Int32(buff.size))) {
                 finalizeZipFile(zipModel, output, charset)
                 return
@@ -317,7 +314,7 @@ public class HeaderWriter {
 
     private func writeCentralDirectory(
         zipModel: ZipModel,
-        byteArrayOutputStream: ByteArrayStream,
+        byteArrayOutputStream: ByteBuffer,
         rawIO: RawIO,
         charset: ?Charset
     ) {
@@ -333,7 +330,7 @@ public class HeaderWriter {
     private func writeFileHeader(
         zipModel: ZipModel,
         fileHeader: FileHeader,
-        byteArrayOutputStream: ByteArrayStream,
+        byteArrayOutputStream: ByteBuffer,
         rawIO: RawIO,
         charset: ?Charset
     ) {
@@ -497,7 +494,7 @@ public class HeaderWriter {
 
     private func writeZip64EndOfCentralDirectoryRecord(
         zip64EndOfCentralDirectoryRecord: Zip64EndOfCentralDirectoryRecord,
-        byteArrayOutputStream: ByteArrayStream,
+        byteArrayOutputStream: ByteBuffer,
         rawIO: RawIO
     ) {
         rawIO.writeIntLittleEndian(
@@ -533,7 +530,7 @@ public class HeaderWriter {
 
     private func writeZip64EndOfCentralDirectoryLocator(
         zip64EndOfCentralDirectoryLocator: Zip64EndOfCentralDirectoryLocator,
-        byteArrayOutputStream: ByteArrayStream,
+        byteArrayOutputStream: ByteBuffer,
         rawIO: RawIO
     ) {
         rawIO.writeIntLittleEndian(
@@ -558,7 +555,7 @@ public class HeaderWriter {
         zipModel: ZipModel,
         sizeOfCentralDir: Int32,
         offsetCentralDir: Int64,
-        byteArrayOutputStream: ByteArrayStream,
+        byteArrayOutputStream: ByteBuffer,
         rawIO: RawIO,
         charset: ?Charset
     ) {

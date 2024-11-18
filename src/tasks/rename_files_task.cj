@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.tasks
 
@@ -26,7 +26,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
             return
         }
 
-        let temporaryFile = getTemporaryFile(zipModel.getZipFile().getOrThrow().toCanonical().toString())
+        let temporaryFile = getTemporaryFile(zipModel.getZipFile().getOrThrow().toString())
         var successFlag = false
         let inputStream = RandomAccessFile(zipModel.getZipFile().getOrThrow(), OpenOption.Open(true, true))
         let outputStream = SplitOutputStream(temporaryFile)
@@ -80,7 +80,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
 
     protected func calculateTotalWork(taskParameters: RenameFilesTaskParameters): Int64 {
         taskParameters
-        return FileInfo(zipModel.getZipFile().getOrThrow()).length
+        return FileInfo(zipModel.getZipFile().getOrThrow()).size
     }
 
     protected func getTask(): ProgressMonitorTask {

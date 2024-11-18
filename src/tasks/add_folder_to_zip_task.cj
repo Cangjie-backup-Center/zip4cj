@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.tasks
 
@@ -32,17 +32,16 @@ public class AddFolderToZipTask <: AbstractAddFileToZipTask<AddFolderToZipTaskPa
     private func setDefaultFolderPath(taskParameters: AddFolderToZipTaskParameters) {
         var folderToAdd = taskParameters.folderToAdd
         let rootFolderPath: Path = if (taskParameters.zipParameters.isIncludeRootFolder()) {
-            var parentFile = folderToAdd.toCanonical().directoryName
-            if (parentFile.isNone()) {
-                folderToAdd.toCanonical()
+            let parent = folderToAdd.parent
+            if (parent.isEmpty()) {
+                InternalZipConstants.FILE_CURRENT_PATH
             } else {
-                folderToAdd.toCanonical().directoryName.getOrThrow().toCanonical()
+                parent
             }
         } else {
-            folderToAdd.toCanonical()
+            folderToAdd
         }
-
-        taskParameters.zipParameters.setDefaultFolderPath(rootFolderPath.toString())
+        taskParameters.zipParameters.setDefaultFolderPath(canonicalize(rootFolderPath).toString())
     }
 
     private func getFilesToAdd(taskParameters: AddFolderToZipTaskParameters): ArrayList<Path> {

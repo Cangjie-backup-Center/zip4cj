@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.io.outputstream
 
@@ -41,7 +41,7 @@ class CountingOutputStream <: OutputStream & Resource & OutputStreamWithSplitZip
     }
 
     public func isSplitZipFile(): Bool {
-        if (let Some(output) <- outputStream as SplitOutputStream) {
+        if (let Some(output) <- (outputStream as SplitOutputStream)) {
             output.isSplitZipFile()
         } else {
             false
