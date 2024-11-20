@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.util
 
@@ -88,7 +88,7 @@ public class CrcUtil {
     private init(){}
     public static func computeFileCrc(inputFile: Path, progressMonitor: ?ProgressMonitor): UInt32 {
         let fileInfo = FileInfo(inputFile)
-        if (!File.exists(inputFile) || !fileInfo.canRead()) {
+        if (!exists(inputFile) || !fileInfo.canRead()) {
             throw ZipException(
                 "input file is null or does not exist or cannot read.  Cannot calculate CRC for the file")
         }

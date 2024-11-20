@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.tasks
 
@@ -48,9 +48,9 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
             verifyIfTaskIsCancelled()
             var clonedzp: ZipParameters = cloneAndAdjustZipParameters(zipParameters, fileToAdd,
                 progressMonitor)
-            progressMonitor.setFileName(fileToAdd.toCanonical().toString())
+            progressMonitor.setFileName(fileToAdd.toString())
 
-            if (fileToAdd.isSymbolicLink()) {
+            if (FileInfo(fileToAdd).isSymbolicLink()) {
                 if (addSymlink(clonedzp)) {
                     addSymlinkToZip(fileToAdd, zipOutputStream, clonedzp, splitOutputStream)
 
@@ -74,7 +74,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
     ) {
         var clonedzp: ZipParameters = ZipParameters(zipParameters)
         clonedzp.setFileNameInZip(
-            replaceFileNameInZip(zipParameters.getFileNameInZip().getOrThrow(), fileToAdd.fileName.getOrThrow()))
+            replaceFileNameInZip(zipParameters.getFileNameInZip().getOrThrow(), fileToAdd.fileName))
         clonedzp.setEncryptFiles(false)
         clonedzp.setCompressionMethod(CompressionMethod.STORE)
 
@@ -95,7 +95,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         readBuff: Array<Byte>
     ) {
         zipOutputStream.putNextEntry(zipParameters)
-        if (File.exists(fileToAdd) && !fileToAdd.isDirectory()) {
+        if (exists(fileToAdd) && !FileInfo(fileToAdd).isDirectory()) {
             try (inputStream = File(fileToAdd, OpenOption.Open(true, false))){
                 var readLen = inputStream.read(readBuff)
                 while (readLen > 0) {
@@ -128,13 +128,13 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
     func calculateWorkForFiles(filesToAdd: Collection<Path>, zipParameters: ZipParameters): Int64 {
         var totalWork: Int64 = 0
         for (fileToAdd in filesToAdd) {
-            if (!File.exists(fileToAdd)) {
+            if (!exists(fileToAdd)) {
                 continue
             }
             if (zipParameters.isEncryptFiles() && zipParameters.getEncryptionMethod() == EncryptionMethod.ZIP_STANDARD) {
-                totalWork += (FileInfo(fileToAdd).length * 2) // for CRC calculation
+                totalWork += (FileInfo(fileToAdd).size * 2) // for CRC calculation
             } else {
-                totalWork += FileInfo(fileToAdd).length
+                totalWork += FileInfo(fileToAdd).size
             }
 
             //If an entry already exists, we have to remove that entry first and then add content again.
@@ -142,7 +142,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
             var relativeFileName: String = FileUtils.getRelativeFileName(fileToAdd, zipParameters)
             var fileHeader: ?FileHeader = HeaderUtil.getFileHeader(getZipModel(), relativeFileName)
             if (fileHeader.isSome()) {
-                totalWork += (FileInfo(getZipModel().getZipFile().getOrThrow()).length -
+                totalWork += (FileInfo(getZipModel().getZipFile().getOrThrow()).size -
                     fileHeader.getOrThrow().getCompressedSize())
             }
         }
@@ -151,7 +151,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
     }
 
     func initializeOutputStream(splitOutputStream: SplitOutputStream, zip4cjConfig: Zip4cjConfig): ZipOutputStream {
-        if (File.exists(zipModel.getZipFile().getOrThrow())) {
+        if (exists(zipModel.getZipFile().getOrThrow())) {
             splitOutputStream.seek(HeaderUtil.getOffsetStartOfCentralDirectory(zipModel))
         }
         return ZipOutputStream(splitOutputStream, password: password, zip4cjConfig: zip4cjConfig, zipModel: zipModel)
@@ -191,10 +191,10 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
     ): ZipParameters {
         var clonedzp: ZipParameters = ZipParameters(zipParameters)
         let fileInfo = FileInfo(fileToAdd)
-        if (fileToAdd.isDirectory()) {
+        if (fileInfo.isDirectory()) {
             clonedzp.setEntrySize(0)
         } else {
-            clonedzp.setEntrySize(fileInfo.length)
+            clonedzp.setEntrySize(fileInfo.size)
         }
         if (zipParameters.getLastModifiedFileTime() <= 0) {
             clonedzp.setLastModifiedFileTime(fileInfo.lastModificationTime.toUnixTimeStamp().toNanoseconds());
@@ -206,7 +206,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
             clonedzp.setFileNameInZip(relativeFileName)
         }
 
-        if (fileToAdd.isDirectory()) {
+        if (fileInfo.isDirectory()) {
             clonedzp.setCompressionMethod(CompressionMethod.STORE)
             clonedzp.setEncryptionMethod(EncryptionMethod.NONE)
             clonedzp.setEncryptFiles(false)
@@ -218,7 +218,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
                 progressMonitor.setCurrentTask(ADD_ENTRY)
             }
 
-            if (fileInfo.length == 0) {
+            if (fileInfo.size == 0) {
                 clonedzp.setCompressionMethod(STORE)
             }
         }
@@ -233,7 +233,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
         config: Zip4cjConfig
     ): ArrayList<Path> {
         var filesToAdd: ArrayList<Path> = files
-        if (!File.exists(zipModel.getZipFile().getOrThrow())) {
+        if (!exists(zipModel.getZipFile().getOrThrow())) {
             return filesToAdd
         }
 

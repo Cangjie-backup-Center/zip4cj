@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.tasks
 
@@ -31,17 +31,11 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
         }
         var outputFile: Path = determineOutputFile(fileHeader, outputPath, newFileName)
         // progressMonitor.setFileName(outputFile.toCanonical().toString()) // Fix Run it later, there will be an error when running here
-        if (let Some(fileName) <- outputFile.fileName) {
-            progressMonitor.setFileName(
-                outputFile.directoryName.getOrThrow().toString() + FileSeparator + outputFile.fileName.getOrThrow()) // Fix Run it later, there will be an error when running here
-        } else {
-            progressMonitor.setFileName(outputFile.directoryName.getOrThrow().toString())
-        }
-
+        progressMonitor.setFileName(outputFile.toString())
         // TODO assertCanonicalPathsAreSame
         verifyNextEntry(zipInputStream, fileHeader)
         if (fileHeader.isDirectory()) {
-            if (!Directory.exists(outputFile)) {
+            if (!exists(outputFile)) {
                 Directory.create(outputFile, recursive: true)
             }
         } else if (isSymbolicLink) {
@@ -70,10 +64,8 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
         progressMonitor: ProgressMonitor,
         buff: Array<Byte>
     ) {
-        if (let Some(parentDir) <- outputFile.directoryName) {
-            if (!Directory.exists(parentDir)) {
-                Directory.create(parentDir, recursive: true)
-            }
+        if (!exists(outputFile.parent)) {
+            Directory.create(outputFile.parent, recursive: true)
         }
         try (file = File(outputFile, OpenOption.CreateOrTruncate(true))) {
             let outputStream = BufferedOutputStream<File>(file, 8192 * 2)
@@ -86,8 +78,8 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
             }
             outputStream.flush()
         } catch (e: Exception) {
-            if (File.exists(outputFile)) {
-                File.delete(outputFile)
+            if (exists(outputFile)) {
+                remove(outputFile, recursive: true)
             }
             throw e
         }
@@ -121,14 +113,14 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(newFileName)) {
             outputFileName = newFileName.getOrThrow()
         }
-        if (!Directory.exists(outputPath)) {
+        if (!exists(outputPath)) {
             Directory.create(outputPath)
         }
         return Path(outputPath).join(getFileNameWithSystemFileSeparators(outputFileName))
     }
 
     private func getFileNameWithSystemFileSeparators(fileNameToReplace: String): String {
-        return fileNameToReplace.replace(":\\\\", "_").replace("/", FileSeparator).replace("\\\\", FileSeparator)
+        return fileNameToReplace.replace(":\\\\", "_").replace("/", Path.Separator).replace("\\\\", Path.Separator)
     }
 
     protected func getTask(): ProgressMonitorTask {

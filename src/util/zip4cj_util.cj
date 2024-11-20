@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.util
 
@@ -19,12 +19,12 @@ public class Zip4cjUtil {
 
     public static func createDirectoryIfNotExists(file: Path): Bool {
         /* Temporal and Temporal Implementation */
-        if (File.exists(file)) {
-            throw ZipException("output directory is not valid")
-        } else {
-            if (!Directory.exists(file)) {
-                Directory.create(file, recursive: true)
+        if (exists(file)) {
+            if (!FileInfo(file).isDirectory()) {
+                throw ZipException("${file} output directory is not valid")
             }
+        } else {
+            Directory.create(file, recursive: true)
         }
         return true
     }
@@ -141,10 +141,11 @@ public class Zip4cjUtil {
         }
     }
 
+    @OverflowWrapping
     private static func convertCharArrayToByteArrayUsingDefaultCharset(charArray: Array<Rune>): Array<Byte> {
         var bytes: Array<Byte> = Array<Byte>(charArray.size, repeat: 0)
         for (i in 0..charArray.size) {
-            bytes[i] = UInt8.parse(charArray[i].toString())
+            bytes[i] = UInt8(UInt32(charArray[i]))
         }
         return bytes
     }

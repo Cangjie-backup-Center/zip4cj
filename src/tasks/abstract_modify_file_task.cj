@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.tasks
 
@@ -12,7 +12,7 @@ public abstract class AbstractModifyFileTask<T> <: AsyncZipTask<T> {
         var random: SecureRandom = SecureRandom()
         var tmpFile: Path = Path(zipPathWithName + "${random.nextInt32(10000)}")
 
-        while (File.exists(tmpFile)) {
+        while (exists(tmpFile)) {
             tmpFile = Path(zipPathWithName + "${random.nextInt32(10000)}")
         }
 
@@ -49,7 +49,7 @@ public abstract class AbstractModifyFileTask<T> <: AsyncZipTask<T> {
             ()
         } else {
             try {
-                File.delete(temporaryZipFile)
+                remove(temporaryZipFile, recursive: true)
             } catch (e: Exception) {
                 throw ZipException("Could not delete temporary file")
             }
@@ -87,9 +87,9 @@ public abstract class AbstractModifyFileTask<T> <: AsyncZipTask<T> {
     // TODO restore FileName
     private func restoreFileName(zipFile: Path, temporaryZipFile: Path) {
         try {
-            File.delete(zipFile)
+            remove(zipFile, recursive: true)
             try {
-                rename(temporaryZipFile.toString(), zipFile.toString())
+                rename(temporaryZipFile, to: zipFile, overwrite: true)
             } catch (e: Exception) {
                 throw ZipException("cannot rename modified zip file")
             }

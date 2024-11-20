@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.util
 
@@ -31,7 +31,9 @@ public class InternalZipConstants {
 
     public static let UPDATE_LFH_UNCOMP_SIZE: Int32 = 22
 
-    public static let FILE_SEPARATOR = FileSeparator
+    public static let FILE_SEPARATOR = Path.Separator
+
+    public static let FILE_CURRENT_PATH: Path = Path(getcwd())
 
     public static let ZIP_FILE_SEPARATOR = "/"
 

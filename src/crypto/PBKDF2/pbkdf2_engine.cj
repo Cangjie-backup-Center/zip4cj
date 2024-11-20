@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.crypto.PBKDF2
 
@@ -10,6 +10,7 @@ public class PBKDF2Engine {
         this.parameters = parameters
     }
 
+    /* 
     public func deriveKey(inputPassword: Array<Rune>, dkLen: Int32, useUtf8ForPassword: Bool): Array<Byte> {
         useUtf8ForPassword
         if (dkLen == 0) {
@@ -18,5 +19,6 @@ public class PBKDF2Engine {
         }
         return pbkdf2HmacSha1(String(inputPassword).toArray(), parameters.getSalt(), parameters.getIterationCount(),
             dkLen)
-    }
+    } 
+    */
 }

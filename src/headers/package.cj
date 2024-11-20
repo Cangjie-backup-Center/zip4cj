@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.headers
 
@@ -8,7 +8,6 @@ protected import zip4cj.util.internals.*
 protected import zip4cj.exception.*
 protected import zip4cj.model.*
 protected import zip4cj.model.enums.*
-protected import charset4cj.charset.*
-protected import charset4cj.charset.encoding.*
-protected import std.collection.*
-protected import std.io.*
+protected import charset4cj.charset.encoding.Charset
+protected import std.collection.ArrayList
+protected import std.collection.HashMap

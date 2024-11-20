@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.model
 
@@ -256,7 +256,7 @@ public class ZipParameters {
         this.entryCRC = entryCRC
     }
 
-    public func getDefaultFolderPath() {
+    public func getDefaultFolderPath(): ?String {
         return defaultFolderPath
     }
 

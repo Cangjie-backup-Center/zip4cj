@@ -1,13 +1,16 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj
 
-import std.collection.*
-import std.io.*
-import std.fs.*
-import charset4cj.charset.*
-import charset4cj.charset.encoding.*
+import std.io.InputStream
+import std.io.IOException
+import std.fs.exists
+import std.fs.canonicalize
+import std.fs.Path
+import std.fs.FileInfo
+import std.collection.Map
+
 public import zip4cj.io.inputstream.*
 public import zip4cj.io.outputstream.*
 public import zip4cj.util.*
@@ -51,7 +54,11 @@ public class ZipFile {
     }
 
     public init(zipFile: Path, password!: ?Array<Rune> = None) {
-        this.zipFile = zipFile
+        this.zipFile = if (exists(zipFile)) {
+            canonicalize(zipFile)
+        } else {
+            InternalZipConstants.FILE_CURRENT_PATH.join(zipFile)
+        }
         this.password = password
         this.runInThread = false
         this.progressMonitor = ProgressMonitor()
@@ -63,7 +70,7 @@ public class ZipFile {
         splitArchive: Bool,
         splitLength: Int64
     ) {
-        if (File.exists(zipFile)) {
+        if (exists(zipFile)) {
             throw ZipException(
                 "zip file: ${zipFile} already exists. To add files to existing zip file use addFile method")
         }
@@ -87,7 +94,7 @@ public class ZipFile {
         splitArchive: Bool,
         splitLength: Int64
     ) {
-        if (File.exists(zipFile)) {
+        if (exists(zipFile)) {
             throw ZipException(
                 "zip file: ${zipFile} already exists. To add files to existing zip file use addFile method")
         }
@@ -132,7 +139,7 @@ public class ZipFile {
             throw ZipException("input file List is None or empty")
         }
         this.readZipInfo()
-        if (File.exists(zipFile) && zipModel.isSplitArchive()) {
+        if (exists(zipFile) && zipModel.isSplitArchive()) {
             throw ZipException("Zip file already exists. Zip file format does not allow updating split/spanned files")
         }
         AddFilesToZipTask(zipModel, password, headerWriter, buildAsyncParameters()).execute(
@@ -140,7 +147,7 @@ public class ZipFile {
     }
 
     public func addFolder(folderToAdd: Path, parameters!: ZipParameters = ZipParameters(), checkSplitArchive!: Bool = true) {
-        if (!folderToAdd.isDirectory()) {
+        if (!FileInfo(folderToAdd).isDirectory()) {
             throw ZipException("input folder is not a directory")
         }
         this.readZipInfo()
@@ -157,7 +164,7 @@ public class ZipFile {
     public func addStream(inputStream: InputStream, parameters: ZipParameters) {
         this.setRunInThread(false)
         this.readZipInfo()
-        if (File.exists(zipFile) && zipModel.isSplitArchive()) {
+        if (exists(zipFile) && zipModel.isSplitArchive()) {
             throw ZipException("Zip file already exists. Zip file format does not allow updating split/spanned files")
         }
         AddStreamToZipTask(zipModel, password, headerWriter, buildAsyncParameters()).execute(
@@ -313,7 +320,7 @@ public class ZipFile {
     }
 
     public func mergeSplitFiles(outputZipFile: Path) {
-        if (File.exists(outputZipFile)) {
+        if (exists(outputZipFile)) {
             throw ZipException("output Zip File already exists")
         }
         this.readZipInfo()
@@ -325,7 +332,7 @@ public class ZipFile {
     }
 
     public func setComment(comment: String): Unit {
-        if (!File.exists(this.zipFile)) {
+        if (!exists(this.zipFile)) {
             throw ZipException("zip file does not exist, cannot set comment for zip file")
         }
         readZipInfo()
@@ -334,7 +341,7 @@ public class ZipFile {
     }
 
     public func getComment(): String {
-        if (!File.exists(this.zipFile)) {
+        if (!exists(this.zipFile)) {
             throw ZipException("zip file does not exist, cannot read comment")
         }
         readZipInfo()
@@ -353,7 +360,7 @@ public class ZipFile {
     }
 
     public func isValidZipFile(): Bool {
-        if (!File.exists(zipFile)) {
+        if (!exists(zipFile)) {
             return false
         }
         try {
@@ -428,7 +435,7 @@ public class ZipFile {
 
     private func verifyAllSplitFilesOfZipExists(allSplitFiles: ArrayList<Path>): Bool {
         for (splitFile in allSplitFiles) {
-            if (!File.exists(splitFile)) {
+            if (!exists(splitFile)) {
                 return false
             }
         }

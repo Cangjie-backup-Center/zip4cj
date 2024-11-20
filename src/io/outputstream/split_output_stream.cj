@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.io.outputstream
 
@@ -21,7 +21,7 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
             throw ZipException(
                 "split length less than minimum allowed split length of ${InternalZipConstants.MIN_SPLIT_LENGTH} Bytes")
         }
-        this.raf = if (File.exists(file)) {
+        this.raf = if (exists(file) && FileInfo(file).isRegular()) {
             RandomAccessFile(file, OpenOption.Open(true, true))
         } else {
             RandomAccessFile(file, OpenOption.CreateOrTruncate(true))
@@ -64,31 +64,28 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
     }
 
     private func startNextSplitFile() {
-        var zipFileWithoutExt = zipFile.fileNameWithoutExtension.getOrThrow()
-        var zipFileName = zipFile.toCanonical()
-        var parentPath = match (zipFileName.directoryName) {
-            case Some(v) => v.toString()
-            case None => ""
-        }
+        var zipFileWithoutExt = zipFile.fileNameWithoutExtension
+        var zipFileName = canonicalize(zipFile)
+        var parentPath = zipFileName.parent
         var fileExtension =  if (currSplitFileCounter >= 9) {
             ".z${currSplitFileCounter + 1}"
         } else {
             ".z0${currSplitFileCounter + 1}"
         }
 
-        var currSplitFile = Path(parentPath).join(zipFileWithoutExt + fileExtension)
+        var currSplitFile = parentPath.join(zipFileWithoutExt + fileExtension)
         raf.flush()
         raf.close()
 
-        if (File.exists(currSplitFile)) {
+        if (exists(currSplitFile)) {
             throw ZipException(
                 "split file: ${currSplitFile} already exists in the current directory, cannot rename this file")
         }
 
-        if (File.exists(currSplitFile)) {
+        if (exists(currSplitFile)) {
             throw ZipException("cannot rename newly created split file")
         }
-        File.move(zipFileName, currSplitFile, true)
+        rename(zipFileName, to: currSplitFile, overwrite: true)
         raf = RandomAccessFile(zipFile, OpenOption.Create(true))
         currSplitFileCounter++
     }

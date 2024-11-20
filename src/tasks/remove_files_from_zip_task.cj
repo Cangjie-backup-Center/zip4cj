@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.tasks
 
@@ -63,7 +63,7 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
     }
 
     protected func calculateTotalWork(taskParameters: RemoveFilesFromZipTaskParameters): Int64 {
-        return FileInfo(zipModel.getZipFile().getOrThrow()).length
+        return FileInfo(zipModel.getZipFile().getOrThrow()).size
     }
 
     private func filterNonExistingEntries(filesToRemove: Collection<String>): ArrayList<String> {

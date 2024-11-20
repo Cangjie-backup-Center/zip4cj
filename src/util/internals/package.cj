@@ -1,11 +1,9 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 protected package zip4cj.util.internals
 
-import std.fs.*
-import std.sync.*
-import std.collection.*
+import std.collection.ArrayList
 
 public interface UnsignedRightShift<T> {
     operator func [](right: Int64): T
@@ -40,15 +38,6 @@ public func ArrayCopy<T>(src: Array<T>, srcPos: Int64, dest: Array<T>, destPos: 
     }
     src.copyTo(dest, srcPos, destPos, length)
 }
-
-func generateDirectorySeparator(): String {
-    let pathA = "path1"
-    let pathB = "path2"
-    let path = Path(pathA).join(pathB).toString()
-    path.split(pathA)[1].split(pathB)[0]
-}
-
-public let FileSeparator: String = generateDirectorySeparator()
 
 public func ListRmove<T>(arr: ArrayList<T>, item: T): Unit where T <: Equatable<T> {
     for (i in 0..arr.size where arr[i] == item) {

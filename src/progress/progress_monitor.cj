@@ -1,10 +1,7 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights resvered.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.progress
-
-import std.time.*
-import std.sync.*
 
 public enum ProgressMonitorState <: Equal<ProgressMonitorState> {
     | READY
