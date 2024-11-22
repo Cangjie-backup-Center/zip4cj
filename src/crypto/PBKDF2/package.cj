@@ -3,10 +3,14 @@
  */
 package zip4cj.crypto.PBKDF2
 
-protected import zip4cj.util.*
-protected import zip4cj.progress.*
-protected import zip4cj.exception.*
-protected import zip4cj.model.*
-protected import zip4cj.model.enums.*
-protected import zip4cj.exception.ZipException
-// protected import std.collection.*
+// internal import std.io.ByteBuffer
+internal import std.collection.ArrayList
+internal import crypto.digest.HashType
+internal import crypto.digest.HMAC
+
+internal import zip4cj.util.*
+internal import zip4cj.progress.*
+internal import zip4cj.exception.*
+internal import zip4cj.model.*
+internal import zip4cj.model.enums.*
+internal import zip4cj.exception.ZipException

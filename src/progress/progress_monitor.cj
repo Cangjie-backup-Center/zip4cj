@@ -3,7 +3,7 @@
  */
 package zip4cj.progress
 
-public enum ProgressMonitorState <: Equal<ProgressMonitorState> {
+public enum ProgressMonitorState <: Equatable<ProgressMonitorState> & ToString{
     | READY
     | BUSY
 
@@ -14,6 +14,18 @@ public enum ProgressMonitorState <: Equal<ProgressMonitorState> {
             case _ => false
         }
     }
+
+    public operator func !=(that: ProgressMonitorState): Bool {
+        !(this == that)
+    }
+
+    public func toString(): String {
+        return match(this) {
+            case READY => "READY"
+            case BUSY => "BUSY"
+        }
+    }
+
 }
 
 public enum ProgressMonitorResult {

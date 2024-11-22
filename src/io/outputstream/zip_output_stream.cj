@@ -72,7 +72,7 @@ public class ZipOutputStream <: OutputStream & Resource {
     }
 
     public func closeEntry(): FileHeader {
-        this.checkCompressedOutputStream()
+        // this.checkCompressedOutputStream()
         compressedOutputStream.closeEntry()
 
         var compressedSize: Int64 = compressedOutputStream.getCompressedSize()
@@ -133,11 +133,11 @@ public class ZipOutputStream <: OutputStream & Resource {
 
     func initializeCompressedOutputStream(zipParameters: ZipParameters): CompressedOutputStream {
         var zipEntryOutputStream: ZipEntryOutputStream = ZipEntryOutputStream(this.countingOutputStream)
-        var cipherOutputStream: CipherOutputStream = initializeCipherOutputStream(zipEntryOutputStream, zipParameters)
+        var cipherOutputStream: ICipherOutputStream = initializeCipherOutputStream(zipEntryOutputStream, zipParameters)
         return initializeCompressedOutputStream(cipherOutputStream, zipParameters)
     }
 
-    func initializeCipherOutputStream(zipEntryOutputStream: ZipEntryOutputStream, zipParameters: ZipParameters): CipherOutputStream {
+    func initializeCipherOutputStream(zipEntryOutputStream: ZipEntryOutputStream, zipParameters: ZipParameters): ICipherOutputStream {
         if (!zipParameters.isEncryptFiles()) {
             return NoCipherOutputStream(zipEntryOutputStream, zipParameters, Array<Rune>())
         }
@@ -145,8 +145,8 @@ public class ZipOutputStream <: OutputStream & Resource {
             throw ZipException("password not set")
         }
         if (zipParameters.getEncryptionMethod() == EncryptionMethod.AES) {
-            // return AesCipherOutputStream(zipEntryOutputStream, zipParameters, password, Zip4cjConfig.isUseUtf8CharsetForPasswords())
-            throw Exception(" not supported")
+            return AesCipherOutputStream(zipEntryOutputStream, zipParameters, password, zip4cjConfig.isUseUtf8CharsetForPasswords())
+            // throw Exception(" not supported")
         } else if (zipParameters.getEncryptionMethod() == EncryptionMethod.ZIP_STANDARD) {
             return ZipStandardCipherOutputStream(zipEntryOutputStream, zipParameters, password.getOrThrow(),
                 zip4cjConfig.isUseUtf8CharsetForPasswords())
@@ -157,7 +157,7 @@ public class ZipOutputStream <: OutputStream & Resource {
         }
     }
 
-    func initializeCompressedOutputStream(cipherOutputStream: CipherOutputStream, zipParameters: ZipParameters): CompressedOutputStream {
+    func initializeCompressedOutputStream(cipherOutputStream: ICipherOutputStream, zipParameters: ZipParameters): CompressedOutputStream {
         if (zipParameters.getCompressionMethod() == CompressionMethod.DEFLATE) {
             return DeflaterOutputStream(cipherOutputStream, zipParameters.getCompressionLevel(),
                 zip4cjConfig.getBufferSize())

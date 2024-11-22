@@ -59,7 +59,7 @@ public class HeaderWriter {
             localFileHeader.setWriteCompressedSizeInZip64ExtraRecord(false)
         }
 
-        var fileNameBytes = Array<Byte>()
+        var fileNameBytes = InternalZipConstants.NULL_BYTE_ARRAY
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(localFileHeader.getFileName())) {
             fileNameBytes = HeaderUtil.getBytesFromString(localFileHeader.getFileName().getOrThrow(), charset)
         }
@@ -382,7 +382,7 @@ public class HeaderWriter {
         rawIO.writeShortLittleEndian(byteArrayOutputStream, extraFieldLength)
 
         var fileComment = fileHeader.getFileComment()
-        var fileCommentBytes = Array<Byte>()
+        var fileCommentBytes = InternalZipConstants.NULL_BYTE_ARRAY
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(fileComment)) {
             fileCommentBytes = HeaderUtil.getBytesFromString(fileComment.getOrThrow(), charset)
         }

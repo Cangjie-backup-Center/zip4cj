@@ -24,9 +24,9 @@ public import zip4cj.exception.*
 public import zip4cj.model.enums.*
 import zip4cj.util.internals.*
 
-public class ZipFile {
+public class ZipFile <: Resource {
     private let zipFile: Path
-
+    private var isClose = false
     private var zipModelOpt: ZipModel = unsafe { zeroValue<ZipModel>() }
 
     private prop zipModel: ZipModel {
@@ -44,16 +44,24 @@ public class ZipFile {
     private var password: ?Array<Rune>
     private let headerWriter = HeaderWriter()
     private var charset: ?Charset = None
-    private var executorService: ExecutorService = unsafe { zeroValue<ExecutorService>() }
+    private var executorService: ?ExecutorService = None
     private var bufferSize: Int64 = InternalZipConstants.BUFF_SIZE
-    private let openInputStreams = ArrayList<InputStream>()
+    private let openInputStreams = ArrayList<Resource>()
     private var useUtf8CharsetForPasswords = InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING
 
-    public init(zipFile: String, password!: ?Array<Rune> = None) {
-        this(Path(zipFile), password: password)
+    public init(zipFile: String) {
+        this(Path(zipFile), None)
     }
 
-    public init(zipFile: Path, password!: ?Array<Rune> = None) {
+    public init(zipFile: Path) {
+        this(zipFile, None)
+    }
+
+    public init(zipFile: String, password: Array<Rune>) {
+        this(Path(zipFile), password)
+    }
+
+    public init(zipFile: Path, password: ?Array<Rune>) {
         this.zipFile = if (exists(zipFile)) {
             canonicalize(zipFile)
         } else {
@@ -168,7 +176,7 @@ public class ZipFile {
             throw ZipException("Zip file already exists. Zip file format does not allow updating split/spanned files")
         }
         AddStreamToZipTask(zipModel, password, headerWriter, buildAsyncParameters()).execute(
-            AddStreamToZipTaskParameters(inputStream, parameters, buildConfig()));
+            AddStreamToZipTaskParameters(inputStream, parameters, buildConfig()))
     }
 
     public func extractAll(destinationPath: String, unzipParameters!: UnzipParameters = UnzipParameters()) {
@@ -213,7 +221,7 @@ public class ZipFile {
         }
         this.readZipInfo()
         ExtractFileTask(zipModel, password, parameters, buildAsyncParameters()).execute(
-            ExtractFileTaskParameters(destinationPath, fileName, newFileName, buildConfig()));
+            ExtractFileTaskParameters(destinationPath, fileName, newFileName, buildConfig()))
     }
 
     public func getFileHeaders(): ArrayList<FileHeader> {
@@ -379,13 +387,22 @@ public class ZipFile {
     }
 
     public func close(): Unit {
-        for (input in openInputStreams) {
-            match ((input as Resource)) {
-                case Some(v) => v.close()
-                case None => ()
+        func tmp(): Unit {
+            for (input in openInputStreams) {
+                input.close()
             }
+            this.openInputStreams.clear()
         }
-        openInputStreams.clear()
+        if (let Some(v) <- this.executorService) {
+            v.close(this.progressMonitor.getState() == ProgressMonitorState.BUSY, tmp)
+        } else {
+            tmp()
+        }
+        this.isClose = true
+    }
+
+    public func isClosed(): Bool {
+        return this.isClose
     }
 
     public func setPassword(password: ?Array<Rune>) {
@@ -469,7 +486,7 @@ public class ZipFile {
         this.charset = charset
     }
 
-    public func getExecutorService(): ExecutorService {
+    public func getExecutorService(): ?ExecutorService {
         return executorService
     }
 

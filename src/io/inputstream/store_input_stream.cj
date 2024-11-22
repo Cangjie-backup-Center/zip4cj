@@ -4,7 +4,7 @@
 package zip4cj.io.inputstream
 
 class StoreInputStream <: DecompressedInputStream {
-    public init(cipherInputStream: CipherInputStream) {
+    public init(cipherInputStream: ICipherInputStream) {
         super(cipherInputStream)
     }
 }

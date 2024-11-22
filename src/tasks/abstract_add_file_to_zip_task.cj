@@ -44,6 +44,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
             zipModel.getSplitLength()
         )
         var zipOutputStream: ZipOutputStream = initializeOutputStream(splitOutputStream, config)
+
         for (fileToAdd in updatedFilesToAdd) {
             verifyIfTaskIsCancelled()
             var clonedzp: ZipParameters = cloneAndAdjustZipParameters(zipParameters, fileToAdd,
@@ -59,7 +60,6 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
                     }
                 }
             }
-
             addFileToZip(fileToAdd, zipOutputStream, clonedzp, splitOutputStream, progressMonitor, readBuff)
         }
         zipOutputStream.close()
@@ -197,7 +197,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
             clonedzp.setEntrySize(fileInfo.size)
         }
         if (zipParameters.getLastModifiedFileTime() <= 0) {
-            clonedzp.setLastModifiedFileTime(fileInfo.lastModificationTime.toUnixTimeStamp().toNanoseconds());
+            clonedzp.setLastModifiedFileTime(fileInfo.lastModificationTime.toUnixTimeStamp().toNanoseconds())
         }
         clonedzp.setWriteExtendedLocalFileHeader(false)
 

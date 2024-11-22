@@ -10,18 +10,18 @@ public class PBKDF2Parameters {
     // 迭代次数
     protected var iterationCount: Int32
     // hash算法
-    protected var hashAlgorithm: String
+    protected var hashAlgorithm: HashType
     // 散列字符集
     protected var hashCharset: String
     // 派生密钥
     protected var derivedKey: ?Array<Byte>
 
-    public init(hashAlgorithm: String, hashCharset: String, salt: Array<Byte>, iterationCount: Int32) {
+    public init(hashAlgorithm: HashType, hashCharset: String, salt: Array<Byte>, iterationCount: Int32) {
         this(hashAlgorithm, hashCharset, salt, iterationCount, None)
     }
 
     public init(
-        hashAlgorithm: String,
+        hashAlgorithm: HashType,
         hashCharset: String,
         salt: Array<Byte>,
         iterationCount: Int32,
@@ -58,11 +58,11 @@ public class PBKDF2Parameters {
         this.derivedKey = derivedKey
     }
 
-    public func getHashAlgorithm(): String {
+    public func getHashAlgorithm(): HashType {
         return hashAlgorithm
     }
 
-    public func setHashAlgorithm(hashAlgorithm: String) {
+    public func setHashAlgorithm(hashAlgorithm: HashType) {
         this.hashAlgorithm = hashAlgorithm
     }
 

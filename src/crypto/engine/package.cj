@@ -3,10 +3,10 @@
  */
 package zip4cj.crypto.engine
 
-protected import zip4cj.util.*
-protected import zip4cj.progress.*
-protected import zip4cj.exception.*
-protected import zip4cj.model.*
-protected import zip4cj.model.enums.*
-protected import zip4cj.util.internals.*
-protected import zip4cj.exception.ZipException
+internal import zip4cj.util.*
+internal import zip4cj.progress.*
+internal import zip4cj.exception.*
+internal import zip4cj.model.*
+internal import zip4cj.model.enums.*
+internal import zip4cj.util.internals.*
+internal import zip4cj.exception.ZipException

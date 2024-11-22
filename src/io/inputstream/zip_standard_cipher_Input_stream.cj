@@ -3,21 +3,7 @@
  */
 package zip4cj.io.inputstream
 
-class ZipStandardCipherInputStream <: CipherInputStream {
-    private var mydecrypter: ?StandardDecrypter = None
-
-    protected prop decrypter: Decrypter {
-        get() {
-            if (let Some(v) <- mydecrypter) {
-                v
-            } else {
-                let value = initializeDecrypter(this.localFileHeader, this.password, this.useUtf8ForPassword)
-                this.mydecrypter = value
-                value
-            }
-        }
-    }
-
+class ZipStandardCipherInputStream <: CipherInputStream<StandardDecrypter> {
     public init(
         zipEntryInputStream: ZipEntryInputStream,
         localFileHeader: LocalFileHeader,
@@ -26,9 +12,10 @@ class ZipStandardCipherInputStream <: CipherInputStream {
         useUtf8ForPassword: Bool
     ) {
         super(zipEntryInputStream, localFileHeader, password, bufferSize, useUtf8ForPassword)
+        this.decrypter = initializeDecrypter(this.localFileHeader, this.password, this.useUtf8ForPassword) 
     }
 
-    protected func initializeDecrypter(
+    protected override func initializeDecrypter(
         localFileHeader: LocalFileHeader,
         password: ?Array<Rune>,
         useUtf8ForPassword: Bool

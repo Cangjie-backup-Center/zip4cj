@@ -10,13 +10,13 @@ public class InternalZipConstants {
     public static let STD_DEC_HDR_SIZE: Int64 = 12
     public static let MAX_COMMENT_SIZE: Int64 = 65536
 
-    public static let AES_AUTH_LENGTH: Int32 = 10
-    public static let AES_BLOCK_SIZE: Int32 = 16
+    public static let AES_AUTH_LENGTH: Int64 = 10
+    public static let AES_BLOCK_SIZE: Int64 = 16
     public static let AES_EXTRA_DATA_RECORD_SIZE: Int32 = 11
-    public static let AES_MAC_ALGORITHM = "HmacSHA1"
+    public static let AES_MAC_ALGORITHM = HashType.SHA1
     public static let AES_HASH_CHARSET = "ISO-8859-1"
     public static let AES_HASH_ITERATIONS: Int32 = 1000
-    public static let AES_PASSWORD_VERIFIER_LENGTH: Int32 = 2
+    public static let AES_PASSWORD_VERIFIER_LENGTH: Int64 = 2
 
     public static let MIN_SPLIT_LENGTH: Int64 = 65536
     public static let ZIP_64_SIZE_LIMIT: Int64 = 4294967295
@@ -31,7 +31,7 @@ public class InternalZipConstants {
 
     public static let UPDATE_LFH_UNCOMP_SIZE: Int32 = 22
 
-    public static let FILE_SEPARATOR = Path.Separator
+    // public static let FILE_SEPARATOR = Path.Separator
 
     public static let FILE_CURRENT_PATH: Path = Path(getcwd())
 
@@ -48,4 +48,6 @@ public class InternalZipConstants {
     public static let SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN = ".zip.001"
 
     public static let USE_UTF8_FOR_PASSWORD_ENCODING_DECODING = true
+
+    public static let NULL_BYTE_ARRAY = Array<Byte>()
 }

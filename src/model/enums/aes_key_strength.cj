@@ -2,7 +2,7 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.model.enums
-public enum AesKeyStrength <: Equal<AesKeyStrength> {
+public enum AesKeyStrength <: Equatable<AesKeyStrength> {
     /**
      * 128-bit AES key length 
      */
@@ -26,7 +26,7 @@ public enum AesKeyStrength <: Equal<AesKeyStrength> {
         }
     }
 
-    public func getSaltLength(): Int32 {
+    public func getSaltLength(): Int64 {
         return match(this){
             case KEY_STRENGTH_128 => 8
             case KEY_STRENGTH_192 => 12
@@ -34,7 +34,7 @@ public enum AesKeyStrength <: Equal<AesKeyStrength> {
         }
     }
 
-    public func getMacLength(): Int32 {
+    public func getMacLength(): Int64 {
         return match(this){
             case KEY_STRENGTH_128 => 16
             case KEY_STRENGTH_192 => 24
@@ -42,7 +42,7 @@ public enum AesKeyStrength <: Equal<AesKeyStrength> {
         }
     }
 
-    public func getKeyLength(): Int32 {
+    public func getKeyLength(): Int64 {
         return match(this){
             case KEY_STRENGTH_128 => 16
             case KEY_STRENGTH_192 => 24
@@ -66,5 +66,9 @@ public enum AesKeyStrength <: Equal<AesKeyStrength> {
             case (KEY_STRENGTH_256, KEY_STRENGTH_256) => true
             case _ => false
         }
+    }
+
+    public operator func !=(that: AesKeyStrength): Bool {
+        !(this == that)
     }
 }

@@ -4,8 +4,8 @@
 package zip4cj.io.outputstream
 
 open class CompressedOutputStream <: OutputStream & Resource {
-    private var cipherOutputStream: CipherOutputStream
-    public init(cipherOutputStream: CipherOutputStream) {
+    private var cipherOutputStream: ICipherOutputStream
+    public init(cipherOutputStream: ICipherOutputStream) {
         this.cipherOutputStream = cipherOutputStream
     }
 

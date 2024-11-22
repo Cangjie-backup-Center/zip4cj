@@ -36,9 +36,9 @@ public class ZipCryptoEngine {
         keys[0] = 305419896
         keys[1] = 591751049
         keys[2] = 878082192
-        var bytes = Zip4cjUtil.convertCharArrayToByteArray(password, useUtf8ForPassword);
+        var bytes = Zip4cjUtil.convertCharArrayToByteArray(password, useUtf8ForPassword)
         for (b in bytes) {
-            updateKeys((b & 0xff));
+            updateKeys((b & 0xff))
         }
     }
 
@@ -52,11 +52,12 @@ public class ZipCryptoEngine {
 
     @OverflowWrapping
     private func crc32(oldCrc: Int32, charAt: Byte): Int32 {
-        return ((oldCrc[8]) ^ CRC_TABLE[Int64(oldCrc ^ Int32(charAt)) & 0xff]);
+        return ((oldCrc[8]) ^ CRC_TABLE[Int64(oldCrc ^ Int32(charAt)) & 0xff])
     }
 
+    @OverflowWrapping
     public func decryptByte(): Byte {
-        var temp = keys[2] | 2;
-        return UInt8((temp * (temp ^ 1))[8]);
+        var temp = keys[2] | 2
+        return UInt8((temp * (temp ^ 1))[8])
     }
 }

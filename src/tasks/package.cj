@@ -19,6 +19,7 @@ internal import std.collection.Map
 internal import std.collection.HashMap
 internal import std.collection.concurrent.ConcurrentHashMap
 internal import std.collection.concurrent.BlockingQueue
+internal import std.sync.Monitor
 
 internal import zip4cj.util.*
 internal import zip4cj.model.*
