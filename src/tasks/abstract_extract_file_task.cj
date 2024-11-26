@@ -26,8 +26,8 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
         if (isSymbolicLink && !unzipParameters.isExtractSymbolicLinks()) {
             return
         }
-        if (!outputPath.endsWith(InternalZipConstants.FILE_SEPARATOR)) {
-            outputPath += InternalZipConstants.FILE_SEPARATOR
+        if (!outputPath.endsWith(Path.Separator)) {
+            outputPath = "${outputPath}${Path.Separator}"
         }
         var outputFile: Path = determineOutputFile(fileHeader, outputPath, newFileName)
         // progressMonitor.setFileName(outputFile.toCanonical().toString()) // Fix Run it later, there will be an error when running here

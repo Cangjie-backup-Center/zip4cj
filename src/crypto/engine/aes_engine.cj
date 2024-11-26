@@ -3,19 +3,38 @@
  */
 package zip4cj.crypto.engine
 
-let AES_BLOCK_SIZE: Int32 = 16
-
-let S: Array<Int8> = [99, 124, 119, 123, -14, 107, 111, -59, 48, 1, 103, 43, -2, -41, -85, 118, -54, -126, -55, 125, -6,
-89, 71, -16, -83, -44, -94, -81, -100, -92, 114, -64, -73, -3, -109, 38, 54, 63, -9, -52, 52, -91, -27, -15, 113, -40,
-49, 21, 4, -57, 35, -61, 24, -106, 5, -102, 7, 18, -128, -30, -21, 39, -78, 117, 9, -125, 44, 26, 27, 110, 90, -96, 82,
-59, -42, -77, 41, -29, 47, -124, 83, -47, 0, -19, 32, -4, -79, 91, 106, -53, -66, 57, 74, 76, 88, -49, -48, -17, -86,
--5, 67, 77, 51, -123, 69, -7, 2, 127, 80, 60, -97, -88, 81, -93, 64, -113, -110, -99, 56, -11, -68, -74, -38, 33, 16,
--1, -13, -46, -51, 12, 19, -20, 95, -105, 68, 23, -60, -89, 126, 61, 100, 93, 25, 115, 96, -127, 79, -36, 34, 42, -112,
--120, 70, -18, -72, 20, -34, 94, 11, -37, -32, 50, 58, 10, 73, 6, 36, 92, -62, -45, -84, 98, -111, -107, -28, 121, -25,
--56, 55, 109, -115, -43, 78, -87, 108, 86, -12, -22, 101, 122, -82, 8, -70, 120, 37, 46, 28, -90, -76, -58, -24, -35,
-116, 31, 75, -67, -117, -118, 112, 62, -75, 102, 72, 3, -10, 14, 97, 53, 87, -71, -122, -63, 29, -98, -31, -8, -104, 17,
-105, -39, -114, -108, -101, 30, -121, -23, -50, 85, 40, -33, -116, -95, -119, 13, -65, -26, 66, 104, 65, -103, 45, 15,
--80, 84, -69, 22]
+let S: Array<Byte> = [99, 124, 119, 123, 242, 107, 111, 197,
+      48, 1, 103, 43, 254, 215, 171, 118,
+      202, 130, 201, 125, 250, 89, 71, 240,
+      173, 212, 162, 175, 156, 164, 114, 192,
+      183, 253, 147, 38, 54, 63, 247, 204,
+      52, 165, 229, 241, 113, 216, 49, 21,
+      4, 199, 35, 195, 24, 150, 5, 154,
+      7, 18, 128, 226, 235, 39, 178, 117,
+      9, 131, 44, 26, 27, 110, 90, 160,
+      82, 59, 214, 179, 41, 227, 47, 132,
+      83, 209, 0, 237, 32, 252, 177, 91,
+      106, 203, 190, 57, 74, 76, 88, 207,
+      208, 239, 170, 251, 67, 77, 51, 133,
+      69, 249, 2, 127, 80, 60, 159, 168,
+      81, 163, 64, 143, 146, 157, 56, 245,
+      188, 182, 218, 33, 16, 255, 243, 210,
+      205, 12, 19, 236, 95, 151, 68, 23,
+      196, 167, 126, 61, 100, 93, 25, 115,
+      96, 129, 79, 220, 34, 42, 144, 136,
+      70, 238, 184, 20, 222, 94, 11, 219,
+      224, 50, 58, 10, 73, 6, 36, 92,
+      194, 211, 172, 98, 145, 149, 228, 121,
+      231, 200, 55, 109, 141, 213, 78, 169,
+      108, 86, 244, 234, 101, 122, 174, 8,
+      186, 120, 37, 46, 28, 166, 180, 198,
+      232, 221, 116, 31, 75, 189, 139, 138,
+      112, 62, 181, 102, 72, 3, 246, 14,
+      97, 53, 87, 185, 134, 193, 29, 158,
+      225, 248, 152, 17, 105, 217, 142, 148,
+      155, 30, 135, 233, 206, 85, 40, 223,
+      140, 161, 137, 13, 191, 230, 66, 104,
+      65, 153, 45, 15, 176, 84, 187, 22]
 
 let rcon: Array<Int32> = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a,
 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91]
@@ -48,14 +67,18 @@ let T0: Array<Int32> = [-1520213050, -2072216328, -1720223762, -1921287178, 2340
 -123625127, -2138470135, 386731290, -624967835, 837215959, -968736124, -1201116976, -1019133566, -1332111063,
 1999449434, 286199582, -877612933, -61582168, -692339859, 974525996]
 
-func subWord(x: Int64): Int32 {
-    return (Int32(S[x & 255]) & 255 | (((Int32(S[(x >> 8) & 255])) & 255) << 8) | ((Int32(S[(x >> 16) & 255]) & 255) <<
-        16) | Int32(S[(x >> 24) & 255]) << 24);
+func subWord(x: Int32): Int32 {
+    return (Int32(S[Int64(x & 255)]) & 255 | 
+            (((Int32(S[Int64((x >> 8) & 255)])) & 255) << 8) | 
+            ((Int32(S[Int64((x >> 16) & 255)]) & 255) << 16) | 
+            Int32(S[Int64((x >> 24) & 255)]) << 24)
 }
 
 func shift(r: Int32, shift: Int64): Int32 {
-    return (r[shift]) | (r << 32 - shift);
+    return (r[shift]) | (r << (32-shift))
 }
+
+
 
 /**
  * Core Engine for AES Encryption
@@ -63,14 +86,18 @@ func shift(r: Int32, shift: Int64): Int32 {
  * @author Srikanth Reddy Lingala
  */
 public class AESEngine {
-    private var rounds: Int64
-    private var workingKey: Array<Array<Int32>>
-    private var C0: Int64 = 0
-    private var C1: Int64 = 0
-    private var C2: Int64 = 0
-    private var C3: Int64 = 0
+    private var rounds: Int64 = 0
+    private var workingKey: Array<Array<Int32>> = unsafe { zeroValue<Array<Array<Int32>>>() }
+    private var C0: Int32 = 0
+    private var C1: Int32 = 0
+    private var C2: Int32 = 0
+    private var C3: Int32 = 0
 
-    public init(key: Array<Int8>) {
+    public init(key: Array<Byte>) {
+        workingKey = generateWorkingKey(key)
+    }
+
+    func generateWorkingKey(key: Array<UInt8>): Array<Array<Int32>> {
         var kc: Int64 = key.size / 4
         var t: Int64
 
@@ -78,8 +105,8 @@ public class AESEngine {
             throw ZipException("invalid key length (not 128/192/256)")
         }
 
-        rounds = (kc) + 6
-        var W = Array<Array<Int32>>(Int64(rounds + 1), repeat: Array<Int32>(4, repeat: 0))
+        rounds = kc + 6
+        var W = Array<Array<Int32>>(Int64(rounds + 1), {i => Array<Int32>(4, repeat: 0)})
 
         t = 0
         var i = 0
@@ -90,24 +117,25 @@ public class AESEngine {
             t++
         }
 
-        for (i in kc..Int64(rounds + 1) << 2) {
+        for (i in kc..(Int64(rounds + 1) << 2)) {
             var temp = W[(i - 1) >> 2][(i - 1) & 3]
             if ((i % kc) == 0) {
-                temp = subWord(Int64(shift(temp, 8))) ^ rcon[(i / kc) - 1]
+                temp = subWord(shift(temp, 8)) ^ rcon[(i / kc) - 1]
             } else if ((kc > 6) && ((i % kc) == 4)) {
-                temp = subWord(Int64(temp))
+                temp = subWord(temp)
             }
 
             W[i >> 2][i & 3] = W[(i - kc) >> 2][(i - kc) & 3] ^ temp
         }
-        workingKey = W
+
+        return W
     }
 
-    public func processBlock(input: Array<Int8>, out: Array<Int8>): Int32 {
+    public func processBlock(input: Array<UInt8>, out: Array<UInt8>): Int64 {
         return processBlock(input, 0, out, 0)
     }
 
-    public func processBlock(input: Array<Int8>, inOff: Int64, out: Array<Int8>, outOff: Int64) {
+    public func processBlock(input: Array<UInt8>, inOff: Int64, out: Array<UInt8>, outOff: Int64): Int64 {
         if ((inOff + (32 / 2)) > input.size) {
             throw ZipException("input buffer too short")
         }
@@ -120,141 +148,124 @@ public class AESEngine {
         encryptBlock(workingKey)
         stateOut(out, outOff)
 
-        return AES_BLOCK_SIZE
+        return InternalZipConstants.AES_BLOCK_SIZE
     }
 
-    private func stateIn(bytes: Array<Int8>, off: Int64) {
+    private func stateIn(bytes: Array<UInt8>, off: Int64) {
         var index = off
 
-        C0 = (Int64(bytes[index]) & 0xff)
+        C0 = (Int32(bytes[index]) & 0xff)
         index++
-        C0 |= (Int64(bytes[index]) & 0xff) << 8
+        C0 |= (Int32(bytes[index]) & 0xff) << 8
         index++
-        C0 |= (Int64(bytes[index]) & 0xff) << 16
+        C0 |= (Int32(bytes[index]) & 0xff) << 16
         index++
-        C0 |= Int64(bytes[index]) << 24
+        C0 |= Int32(bytes[index]) << 24
         index++
-
-        C1 = (Int64(bytes[index]) & 0xff)
+    
+        C1 = (Int32(bytes[index]) & 0xff)
         index++
-        C1 |= (Int64(bytes[index]) & 0xff) << 8
+        C1 |= (Int32(bytes[index]) & 0xff) << 8
         index++
-        C1 |= (Int64(bytes[index]) & 0xff) << 16
+        C1 |= (Int32(bytes[index]) & 0xff) << 16
         index++
-        C1 |= Int64(bytes[index]) << 24
-        index++
-
-        C2 = (Int64(bytes[index]) & 0xff)
-        index++
-        C2 |= (Int64(bytes[index]) & 0xff) << 8
-        index++
-        C2 |= (Int64(bytes[index]) & 0xff) << 16
-        index++
-        C2 |= Int64(bytes[index]) << 24
+        C1 |= Int32(bytes[index]) << 24
         index++
 
-        C3 = (Int64(bytes[index]) & 0xff)
+        C2 = (Int32(bytes[index]) & 0xff)
         index++
-        C3 |= (Int64(bytes[index]) & 0xff) << 8
+        C2 |= (Int32(bytes[index]) & 0xff) << 8
         index++
-        C3 |= (Int64(bytes[index]) & 0xff) << 16
+        C2 |= (Int32(bytes[index]) & 0xff) << 16
         index++
-        C3 |= Int64(bytes[index]) << 24
+        C2 |= Int32(bytes[index]) << 24
         index++
+
+        C3 = (Int32(bytes[index]) & 0xff)
+        index++
+        C3 |= (Int32(bytes[index]) & 0xff) << 8
+        index++
+        C3 |= (Int32(bytes[index]) & 0xff) << 16
+        index++
+        C3 |= Int32(bytes[index]) << 24
     }
 
-    private func stateOut(bytes: Array<Int8>, off: Int64) {
+    @OverflowWrapping
+    private func stateOut(bytes: Array<UInt8>, off: Int64) {
         var index = off
 
-        bytes[index] = Int8(C0)
+        bytes[index] = UInt8(C0)
         index++
-        bytes[index] = Int8(C0 >> 8)
+        bytes[index] = UInt8(C0 >> 8)
         index++
-        bytes[index] = Int8(C0 >> 16)
+        bytes[index] = UInt8(C0 >> 16)
         index++
-        bytes[index] = Int8(C0 >> 24)
-        index++
-
-        bytes[index] = Int8(C1)
-        index++
-        bytes[index] = Int8(C1 >> 8)
-        index++
-        bytes[index] = Int8(C1 >> 16)
-        index++
-        bytes[index] = Int8(C1 >> 24)
+        bytes[index] = UInt8(C0 >> 24)
         index++
 
-        bytes[index] = Int8(C2)
+        bytes[index] = UInt8(C1)
         index++
-        bytes[index] = Int8(C2 >> 8)
+        bytes[index] = UInt8(C1 >> 8)
         index++
-        bytes[index] = Int8(C2 >> 16)
+        bytes[index] = UInt8(C1 >> 16)
         index++
-        bytes[index] = Int8(C2 >> 24)
+        bytes[index] = UInt8(C1 >> 24)
         index++
 
-        bytes[index] = Int8(C3)
+        bytes[index] = UInt8(C2)
         index++
-        bytes[index] = Int8(C3 >> 8)
+        bytes[index] = UInt8(C2 >> 8)
         index++
-        bytes[index] = Int8(C3 >> 16)
+        bytes[index] = UInt8(C2 >> 16)
         index++
-        bytes[index] = Int8(C3 >> 24)
+        bytes[index] = UInt8(C2 >> 24)
         index++
+
+        bytes[index] = UInt8(C3)
+        index++
+        bytes[index] = UInt8(C3 >> 8)
+        index++
+        bytes[index] = UInt8(C3 >> 16)
+        index++
+        bytes[index] = UInt8(C3 >> 24)
     }
 
     private func encryptBlock(KW: Array<Array<Int32>>) {
         var r = 0
-        var r0 = 0
-        var r1 = 0
-        var r2 = 0
-        var r3 = 0
+        var r0: Int32 = 0
+        var r1: Int32 = 0
+        var r2: Int32 = 0
+        var r3: Int32 = 0
 
-        C0 = Int64(Int32(C0) ^ KW[0][0])
-        C1 = Int64(Int32(C1) ^ KW[0][1])
-        C2 = Int64(Int32(C2) ^ KW[0][2])
-        C3 = Int64(Int32(C3) ^ KW[0][3])
+        C0 = (Int32(C0) ^ KW[0][0])
+        C1 = (Int32(C1) ^ KW[0][1])
+        C2 = (Int32(C2) ^ KW[0][2])
+        C3 = (Int32(C3) ^ KW[0][3])
 
         r = 1
 
         while (r < rounds - 1) {
-            r0 = Int64(T0[C0 & 255] ^ shift(T0[(C1 >> 8) & 255], 24) ^ shift(T0[(C2 >> 16) & 255], 16) ^ shift(
-                    T0[(C3 >> 24) & 255], 8) ^ KW[r][0])
-            r1 = Int64(T0[C1 & 255] ^ shift(T0[(C2 >> 8) & 255], 24) ^ shift(T0[(C3 >> 16) & 255], 16) ^ shift(
-                    T0[(C0 >> 24) & 255], 8) ^ KW[r][1])
-            r2 = Int64(T0[C2 & 255] ^ shift(T0[(C3 >> 8) & 255], 24) ^ shift(T0[(C0 >> 16) & 255], 16) ^ shift(
-                    T0[(C1 >> 24) & 255], 8) ^ KW[r][2])
-            r3 = Int64(T0[C3 & 255] ^ shift(T0[(C0 >> 8) & 255], 24) ^ shift(T0[(C1 >> 16) & 255], 16) ^ shift(
-                    T0[(C2 >> 24) & 255], 8) ^ KW[r][3])
+            r0 = T0[Int64(C0 & 255)] ^ shift(T0[Int64((C1 >> 8) & 255)], 24) ^ shift(T0[Int64((C2 >> 16) & 255)], 16) ^ shift(T0[Int64((C3 >> 24) & 255)], 8) ^ KW[r][0]
+            r1 = T0[Int64(C1 & 255)] ^ shift(T0[Int64((C2 >> 8) & 255)], 24) ^ shift(T0[Int64((C3 >> 16) & 255)], 16) ^ shift(T0[Int64((C0 >> 24) & 255)], 8) ^ KW[r][1]
+            r2 = T0[Int64(C2 & 255)] ^ shift(T0[Int64((C3 >> 8) & 255)], 24) ^ shift(T0[Int64((C0 >> 16) & 255)], 16) ^ shift(T0[Int64((C1 >> 24) & 255)], 8) ^ KW[r][2]
+            r3 = T0[Int64(C3 & 255)] ^ shift(T0[Int64((C0 >> 8) & 255)], 24) ^ shift(T0[Int64((C1 >> 16) & 255)], 16) ^ shift(T0[Int64((C2 >> 24) & 255)], 8) ^ KW[r][3]
             r++
-            C0 = Int64(T0[r0 & 255] ^ shift(T0[(r1 >> 8) & 255], 24) ^ shift(T0[(r2 >> 16) & 255], 16) ^ shift(
-                    T0[(r3 >> 24) & 255], 8) ^ KW[r][0])
-            C1 = Int64(T0[r1 & 255] ^ shift(T0[(r2 >> 8) & 255], 24) ^ shift(T0[(r3 >> 16) & 255], 16) ^ shift(
-                    T0[(r0 >> 24) & 255], 8) ^ KW[r][1])
-            C2 = Int64(T0[r2 & 255] ^ shift(T0[(r3 >> 8) & 255], 24) ^ shift(T0[(r0 >> 16) & 255], 16) ^ shift(
-                    T0[(r1 >> 24) & 255], 8) ^ KW[r][2])
-            C3 = Int64(T0[r3 & 255] ^ shift(T0[(r0 >> 8) & 255], 24) ^ shift(T0[(r1 >> 16) & 255], 16) ^ shift(
-                    T0[(r2 >> 24) & 255], 8) ^ KW[r][3])
+            C0 = T0[Int64(r0 & 255)] ^ shift(T0[Int64((r1 >> 8) & 255)], 24) ^ shift(T0[Int64((r2 >> 16) & 255)], 16) ^ shift(T0[Int64((r3 >> 24) & 255)], 8) ^ KW[r][0]
+            C1 = T0[Int64(r1 & 255)] ^ shift(T0[Int64((r2 >> 8) & 255)], 24) ^ shift(T0[Int64((r3 >> 16) & 255)], 16) ^ shift(T0[Int64((r0 >> 24) & 255)], 8) ^ KW[r][1]
+            C2 = T0[Int64(r2 & 255)] ^ shift(T0[Int64((r3 >> 8) & 255)], 24) ^ shift(T0[Int64((r0 >> 16) & 255)], 16) ^ shift(T0[Int64((r1 >> 24) & 255)], 8) ^ KW[r][2]
+            C3 = T0[Int64(r3 & 255)] ^ shift(T0[Int64((r0 >> 8) & 255)], 24) ^ shift(T0[Int64((r1 >> 16) & 255)], 16) ^ shift(T0[Int64((r2 >> 24) & 255)], 8) ^ KW[r][3]
             r++
         }
 
-        r0 = Int64(T0[C0 & 255] ^ shift(T0[(C1 >> 8) & 255], 24) ^ shift(T0[(C2 >> 16) & 255], 16) ^ shift(
-                T0[(C3 >> 24) & 255], 8) ^ KW[r][0])
-        r1 = Int64(T0[C1 & 255] ^ shift(T0[(C2 >> 8) & 255], 24) ^ shift(T0[(C3 >> 16) & 255], 16) ^ shift(
-                T0[(C0 >> 24) & 255], 8) ^ KW[r][1])
-        r2 = Int64(T0[C2 & 255] ^ shift(T0[(C3 >> 8) & 255], 24) ^ shift(T0[(C0 >> 16) & 255], 16) ^ shift(
-                T0[(C1 >> 24) & 255], 8) ^ KW[r][2])
-        r3 = Int64(T0[C3 & 255] ^ shift(T0[(C0 >> 8) & 255], 24) ^ shift(T0[(C1 >> 16) & 255], 16) ^ shift(
-                T0[(C2 >> 24) & 255], 8) ^ KW[r][3])
+        r0 = T0[Int64(C0 & 255)] ^ shift(T0[Int64((C1 >> 8) & 255)], 24) ^ shift(T0[Int64((C2 >> 16) & 255)], 16) ^ shift(T0[Int64((C3 >> 24) & 255)], 8) ^ KW[r][0]
+        r1 = T0[Int64(C1 & 255)] ^ shift(T0[Int64((C2 >> 8) & 255)], 24) ^ shift(T0[Int64((C3 >> 16) & 255)], 16) ^ shift(T0[Int64((C0 >> 24) & 255)], 8) ^ KW[r][1]
+        r2 = T0[Int64(C2 & 255)] ^ shift(T0[Int64((C3 >> 8) & 255)], 24) ^ shift(T0[Int64((C0 >> 16) & 255)], 16) ^ shift(T0[Int64((C1 >> 24) & 255)], 8) ^ KW[r][2]
+        r3 = T0[Int64(C3 & 255)] ^ shift(T0[Int64((C0 >> 8) & 255)], 24) ^ shift(T0[Int64((C1 >> 16) & 255)], 16) ^ shift(T0[Int64((C2 >> 24) & 255)], 8) ^ KW[r][3]
         r++
 
-        C0 = Int64((Int32(S[r0 & 255]) & 255) ^ ((Int32(S[(r1 >> 8) & 255]) & 255) << 8) ^ ((Int32(S[(r2 >> 16) & 255]) &
-                255) << 16) ^ (Int32(S[(r3 >> 24) & 255]) << 24) ^ KW[r][0])
-        C1 = Int64((Int32(S[r1 & 255]) & 255) ^ ((Int32(S[(r2 >> 8) & 255]) & 255) << 8) ^ ((Int32(S[(r3 >> 16) & 255]) &
-                255) << 16) ^ (Int32(S[(r0 >> 24) & 255]) << 24) ^ KW[r][1])
-        C2 = Int64((Int32(S[r2 & 255]) & 255) ^ ((Int32(S[(r3 >> 8) & 255]) & 255) << 8) ^ ((Int32(S[(r0 >> 16) & 255]) &
-                255) << 16) ^ (Int32(S[(r1 >> 24) & 255]) << 24) ^ KW[r][2])
-        C3 = Int64((Int32(S[r3 & 255]) & 255) ^ ((Int32(S[(r0 >> 8) & 255]) & 255) << 8) ^ ((Int32(S[(r1 >> 16) & 255]) &
-                255) << 16) ^ (Int32(S[(r2 >> 24) & 255]) << 24) ^ KW[r][3])
+        C0 = (Int32(S[Int64(r0 & 255)]) & 255) ^ ((Int32(S[Int64((r1 >> 8) & 255)]) & 255) << 8) ^ ((Int32(S[Int64((r2 >> 16) & 255)]) & 255) << 16) ^ (Int32(S[Int64((r3 >> 24) & 255)]) << 24) ^ KW[r][0]
+        C1 = (Int32(S[Int64(r1 & 255)]) & 255) ^ ((Int32(S[Int64((r2 >> 8) & 255)]) & 255) << 8) ^ ((Int32(S[Int64((r3 >> 16) & 255)]) & 255) << 16) ^ (Int32(S[Int64((r0 >> 24) & 255)]) << 24) ^ KW[r][1]
+        C2 = (Int32(S[Int64(r2 & 255)]) & 255) ^ ((Int32(S[Int64((r3 >> 8) & 255)]) & 255) << 8) ^ ((Int32(S[Int64((r0 >> 16) & 255)]) & 255) << 16) ^ (Int32(S[Int64((r1 >> 24) & 255)]) << 24) ^ KW[r][2]
+        C3 = (Int32(S[Int64(r3 & 255)]) & 255) ^ ((Int32(S[Int64((r0 >> 8) & 255)]) & 255) << 8) ^ ((Int32(S[Int64((r1 >> 16) & 255)]) & 255) << 16) ^ (Int32(S[Int64((r2 >> 24) & 255)]) << 24) ^ KW[r][3]
     }
 }

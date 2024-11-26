@@ -5,7 +5,7 @@ package zip4cj.io.outputstream
 
 enum OUTPUT <: OutputStream & Resource {
     | DEFLATE(CompressOutputStream)
-    | BUFFER(BufferedOutputStream<CipherOutputStream>)
+    | BUFFER(BufferedOutputStream<ICipherOutputStream>)
 
     public func write(b: Array<UInt8>): Unit {
         match(this) {
@@ -38,10 +38,10 @@ enum OUTPUT <: OutputStream & Resource {
 
 class DeflaterOutputStream <: CompressedOutputStream {
     var deflater: OUTPUT
-    public init(cipherOutputStream: CipherOutputStream, compressionLevel: CompressionLevel, bufferSize: Int64) {
+    public init(cipherOutputStream: ICipherOutputStream, compressionLevel: CompressionLevel, bufferSize: Int64) {
         super(cipherOutputStream)
         this.deflater = match (compressionLevel.getLevel()) {
-            case 0 => OUTPUT.BUFFER(BufferedOutputStream<CipherOutputStream>(cipherOutputStream))
+            case 0 => OUTPUT.BUFFER(BufferedOutputStream<ICipherOutputStream>(cipherOutputStream))
             case 1 | 2 | 3 => OUTPUT.DEFLATE(CompressOutputStream(cipherOutputStream, compressLevel: BestSpeed, bufLen: bufferSize))
             case 4 | 5 | 6 => OUTPUT.DEFLATE(CompressOutputStream(cipherOutputStream, compressLevel: DefaultCompression, bufLen: bufferSize))
             case 7 | 8 | 9 => OUTPUT.DEFLATE(CompressOutputStream(cipherOutputStream, compressLevel: BestCompression, bufLen: bufferSize))

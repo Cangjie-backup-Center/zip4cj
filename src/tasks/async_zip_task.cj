@@ -2,45 +2,43 @@
  * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
  */
 package zip4cj.tasks
+import std.sync.AtomicBool
 
 public open class ExecutorService {
-    private var map = ConcurrentHashMap<Int64, Future<Unit>>()
-    private let TASK = BlockingQueue<() -> Unit>()
-    private let shutdownTASK = BlockingQueue<Int64>()
-    private let taskDone = BlockingQueue<Bool>()
+    let map = ConcurrentHashMap<Int64, Future<Unit>>()
+    let TASK = BlockingQueue<() -> Unit>()
+    let shutdownTASK = BlockingQueue<Int64>()
+    let mon = Monitor()
+    let threadId = BlockingQueue<Int64>()
     public init() {}
 
     public static func new(): ExecutorService {
         let service = ExecutorService()
-        let threadId = BlockingQueue<Int64>()
-        let thread = spawn {
-            threadId.enqueue(Thread.currentThread.id)
-            while (true) {
-                let fn = service.TASK.dequeue()
-                fn()
-                service.taskDone.enqueue(true)
-            }
-        }
-        service.map.put(threadId.dequeue(), thread)
-
+        service.reset()
         spawn {
             while (true) {
                 let shutdownId = service.shutdownTASK.dequeue()
-                service.map[shutdownId].cancel()
-                service.map.remove(shutdownId)
-                service.reset()
+                if (let Some(v) <- service.map.get(shutdownId)) {
+                    v.cancel()
+                    service.map.remove(shutdownId)
+                    service.reset()
+                } else {
+                    break
+                }
             }
         }
         return service
     }
 
     private func reset() {
-        let threadId = BlockingQueue<Int64>()
-        let thread = spawn {
+        let thread: Future<Unit> = spawn {
             threadId.enqueue(Thread.currentThread.id)
             while (true) {
                 let fn = this.TASK.dequeue()
                 fn()
+                mon.lock()
+                mon.notifyAll()
+                mon.unlock()
             }
         }
         this.map.put(threadId.dequeue(), thread)
@@ -48,14 +46,26 @@ public open class ExecutorService {
 
     public func execute(fn: () -> Unit): Unit {
         this.TASK.enqueue(fn)
-        if (this.taskDone.dequeue()) {
-            return
-        }
     }
 
     public func shutdown() {
-        let id = Thread.currentThread.id
-        shutdownTASK.enqueue(id)
+        for ((id, _) in this.map) {
+            shutdownTASK.enqueue(id)
+        }
+    }
+
+    public func close (isBusy:Bool, fn: () -> Unit) {
+        spawn {
+            if (isBusy) {
+                mon.lock()
+                mon.wait()
+                mon.unlock()
+            }
+            fn()
+            for ((id, _) in this.map) {
+                shutdownTASK.enqueue(id)
+            }
+        }
     }
 }
 

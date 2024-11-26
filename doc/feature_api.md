@@ -25,7 +25,7 @@ API测试范围：public 接口
 ##### 1.1.1 主要接口
 
 ```
-public class ZipFile {
+public class ZipFile <: Resource {
     /*
      * 构造 
      * 

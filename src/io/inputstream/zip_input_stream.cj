@@ -11,7 +11,7 @@ public class ZipInputStream <: InputStream & Resource {
     private var passwordCallback: ?PasswordCallback
     private var localFileHeader: ?LocalFileHeader = None
     private var crc32: CRC32 = CRC32()
-    private var endOfEntryBuffer: Array<Byte> = Array<Byte>()
+    private var endOfEntryBuffer: Array<Byte> = InternalZipConstants.NULL_BYTE_ARRAY
     private var canSkipExtendedLocalFileHeader: Bool = false
     private var zip4cjConfig: Zip4cjConfig
     private var streamClosed: Bool = false
@@ -140,7 +140,7 @@ public class ZipInputStream <: InputStream & Resource {
             inputStream,
             getCompressedSize(localFileHeader)
         )
-        var cipherInputStream: CipherInputStream = initializeCipherInputStream(
+        var cipherInputStream: ICipherInputStream = initializeCipherInputStream(
             zipEntryInputStream,
             localFileHeader
         )
@@ -150,15 +150,15 @@ public class ZipInputStream <: InputStream & Resource {
     private func initializeCipherInputStream(
         zipEntryInputStream: ZipEntryInputStream,
         localFileHeader: LocalFileHeader
-    ): CipherInputStream {
+    ): ICipherInputStream {
         if (!localFileHeader.isEncrypted()) {
             return NoCipherInputStream(zipEntryInputStream, localFileHeader, password,
                 Int64(zip4cjConfig.getBufferSize()))
         }
 
         if (localFileHeader.getEncryptionMethod() == EncryptionMethod.AES) {
-            // TODO AES
-            throw ZipException("AES Not Supported")
+            return AesCipherInputStream(zipEntryInputStream, localFileHeader, password, zip4cjConfig.getBufferSize(),
+              zip4cjConfig.isUseUtf8CharsetForPasswords())
         } else if (localFileHeader.getEncryptionMethod() == EncryptionMethod.ZIP_STANDARD) {
             return ZipStandardCipherInputStream(zipEntryInputStream, localFileHeader, password,
                 Int64(zip4cjConfig.getBufferSize()), zip4cjConfig.isUseUtf8CharsetForPasswords())
@@ -169,7 +169,7 @@ public class ZipInputStream <: InputStream & Resource {
     }
 
     private func initializeDecompressorForThisEntry(
-        cipherInputStream: CipherInputStream,
+        cipherInputStream: ICipherInputStream,
         localFileHeader: LocalFileHeader
     ): DecompressedInputStream {
         var compressionMethod = localFileHeader.getCompressionMethod().getOrThrow()
@@ -187,10 +187,10 @@ public class ZipInputStream <: InputStream & Resource {
             return
         }
         let dataDescriptor = headerReader.readDataDescriptor(inputStream,
-            checkIfZip64ExtraDataRecordPresentInLFH(localFileHeaders.getExtraDataRecords()));
-        localFileHeaders.setCompressedSize(dataDescriptor.getCompressedSize());
-        localFileHeaders.setUncompressedSize(dataDescriptor.getUncompressedSize());
-        localFileHeaders.setCrc(dataDescriptor.getCrc());
+            checkIfZip64ExtraDataRecordPresentInLFH(localFileHeaders.getExtraDataRecords()))
+        localFileHeaders.setCompressedSize(dataDescriptor.getCompressedSize())
+        localFileHeaders.setUncompressedSize(dataDescriptor.getUncompressedSize())
+        localFileHeaders.setCrc(dataDescriptor.getCrc())
     }
 
     private func verifyLocalFileHeader(localFileHeader: LocalFileHeader): Unit {

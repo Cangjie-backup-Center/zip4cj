@@ -4,6 +4,9 @@
 package zip4cj.io.outputstream
 
 class NoEncrypter <: Encrypter {
+
+    static let INSTANCE = NoEncrypter()
+
     public func encryptData(buff: Array<Byte>): Int64 {
         return encryptData(buff, 0, buff.size)
     }
@@ -13,15 +16,19 @@ class NoEncrypter <: Encrypter {
     }
 }
 
-class NoCipherOutputStream <: CipherOutputStream {
-    var initializeEncrypte = NoEncrypter()
-    protected prop encrypter: Encrypter {
-        get() {
-            initializeEncrypte
-        }
-    }
-
+class NoCipherOutputStream <: CipherOutputStream<NoEncrypter> {
     public init(zipEntryOutputStream: ZipEntryOutputStream, zipParameters: ZipParameters, password: ?Array<Rune>) {
         super(zipEntryOutputStream, zipParameters, password, true)
+        this.encrypter = initializeEncrypter(zipEntryOutputStream, zipParameters, password, true)
+    }
+
+
+    protected func initializeEncrypter(
+        outputStream: OutputStream,
+        zipParameters: ZipParameters,
+        password: ?Array<Rune>,
+        useUtf8ForPassword: Bool
+    ): NoEncrypter {
+        NoEncrypter.INSTANCE
     }
 }

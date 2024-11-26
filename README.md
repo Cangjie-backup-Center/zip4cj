@@ -20,11 +20,6 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 
 - 🚀 zip 压缩和解压缩。
 
-### 未来规划
-
-- 实现压缩解密和加密
-
-- 支持压缩和解压进度监控
 
 ##    <img alt="" src="./doc/assets/readme-icon-framework.png" style="display: inline-block;" width=3%/> 架构
 
@@ -86,9 +81,10 @@ import std.fs.*
 import std.sync.*
 import std.time.*
 main() { 
-    let zipFile = ZipFile("MobaXtermbackup.zip")  // 创建ZipFile类
+    let zipFile = ZipFile("demo.zip")  // 创建ZipFile类
     zipFile.setRunInThread(false)                 // 设置是否用子线程运行任务
     zipFile.extractAll("./output")                // 解压到 output 文件夹, 文件夹不存在则创建
+    zipFile.close()                               // 资源关闭
     0
 }
 ```
@@ -109,6 +105,7 @@ main() {
         Path("123.txt")
     ]
     zipFile.createSplitZipFile(files, zipParameters, false, InternalZipConstants.MIN_SPLIT_LENGTH)                           // 创建文件
+    zipFile.close()                                           // 资源关闭
     return 0
 }
 ```
@@ -124,6 +121,7 @@ main() {
     zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)  // 设置压缩方式为DEFLATE压缩
     let zipFile = ZipFile("output.zip")         // 创建ZipFile类, 并指定文件为 output.zip
     zipFile.addFolder("test")                   // 添加文件夹压缩
+    zipFile.close()                             // 资源关闭
     return 0
 }
 ```
@@ -149,9 +147,35 @@ main() {
         Path("1234.mp3")
     ]
     zipFile.addFiles(paths, parameters: zipParameters)        // 添加文件集合
+    zipFile.close()                                           // 资源关闭
     return 0
 }
 ```
+
+
+#### 压缩时使用子线程压缩, 不阻塞主线程并使用进度监控
+```cangjie
+import zip4cj.*
+import std.fs.*
+
+main() { 
+    var zipParameters = ZipParameters();
+    zipParameters.setCompressionMethod(CompressionMethod.STORE);                // 设置压缩方式, 存储
+    let zipFile = ZipFile("output.zip")
+    zipFile.setRunInThread(true);                                               // 设置子线程压缩
+    zipFile.createSplitZipFile([Path("FILE_0")],zipParameters, false, 65536);   // 添加 FILE_0(4Gb大小) 文件到zip
+    let progress = zipFile.getProgressMonitor()                                 // 获取压缩进度类
+    let state = progress.getState()                                             // 获取 压缩状态
+    println(state)
+    while (progress.getState() != ProgressMonitorState.READY) {
+        sleep(Duration.millisecond * 1000)
+    }
+    println(progress.getState())
+    zipFile.close()                                                             // 资源关闭
+    0
+}
+```
+
 
 ## 开源协议
 

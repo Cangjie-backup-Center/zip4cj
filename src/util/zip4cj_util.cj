@@ -74,11 +74,11 @@ public class Zip4cjUtil {
         }
     }
 
-    public static func readFully(inputStream: InputStream, bufferToReadInto: Array<Byte>): Int32 {
+    public static func readFully(inputStream: InputStream, bufferToReadInto: Array<Byte>): Int64 {
         if (bufferToReadInto.size == 0) {
             return 0
         }
-        var readLen: Int32 = Int32(inputStream.read(bufferToReadInto))
+        var readLen: Int64 = inputStream.read(bufferToReadInto)
         if (readLen == 0) {
             throw ZipIOException("Unexpected EOF reached when trying to read stream")
         }
@@ -107,23 +107,23 @@ public class Zip4cjUtil {
         return inputStream.read(b[offset..offset + length])
     }
 
-    private static func readUntilBufferIsFull(inputStream: InputStream, bufferToReadInto: Array<Byte>, readLength: Int32): Int32 {
+    private static func readUntilBufferIsFull(inputStream: InputStream, bufferToReadInto: Array<Byte>, readLength: Int64): Int64 {
         if (readLength < 0) {
             throw ZipIOException("Invalid readLength")
         }
         if (readLength == 0) {
             return 0
         }
-        var remainingLength: Int32 = Int32(bufferToReadInto.size) - readLength
-        var loopReadLength: Int32 = 0
+        var remainingLength: Int64 = bufferToReadInto.size - readLength
+        var loopReadLength: Int64 = 0
 
         // first attempt is already done before this method is called
         var retryAttempt: Int32 = 1
-        var readLengthNew: Int32 = readLength
-        while (readLengthNew < Int32(bufferToReadInto.size) && loopReadLength != -1 && retryAttempt <
+        var readLengthNew: Int64 = readLength
+        while (readLengthNew < bufferToReadInto.size && loopReadLength != -1 && retryAttempt <
                 MAX_RAW_READ_FULLY_RETRY_ATTEMPTS) {
-            loopReadLength = Int32(inputStream.read(
-                    bufferToReadInto[Int64(readLengthNew)..Int64(readLengthNew) + Int64(remainingLength)]))
+            loopReadLength = inputStream.read(
+                    bufferToReadInto[Int64(readLengthNew)..Int64(readLengthNew) + Int64(remainingLength)])
             if (loopReadLength > 0) {
                 readLengthNew += loopReadLength
                 remainingLength -= loopReadLength

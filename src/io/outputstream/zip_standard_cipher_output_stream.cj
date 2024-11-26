@@ -3,25 +3,10 @@
  */
 package zip4cj.io.outputstream
 
-class ZipStandardCipherOutputStream <: CipherOutputStream {
+class ZipStandardCipherOutputStream <: CipherOutputStream<StandardEncrypter> {
     private var pendingBuffer: Array<UInt8> = Array<UInt8>(16, repeat: 0)
 
     private var pendingBufferLength: Int32 = 0
-
-    private var myencrypter: ?StandardEncrypter = None
-
-    protected prop encrypter: Encrypter {
-        get() {
-            if (let Some(v) <- myencrypter) {
-                v
-            } else {
-                let value = initializeEncrypter(this.outputStream, this.zipParameters, this.password,
-                    this.useUtf8ForPassword)
-                this.myencrypter = value
-                value
-            }
-        }
-    }
 
     public init(
         outputStream: ZipEntryOutputStream,
@@ -30,22 +15,17 @@ class ZipStandardCipherOutputStream <: CipherOutputStream {
         useUtf8ForPassword: Bool
     ) {
         super(outputStream, zipParameters, password, useUtf8ForPassword)
+        this.encrypter = initializeEncrypter(outputStream, zipParameters, password, useUtf8ForPassword)
     }
 
-    protected func initializeEncrypter(
-        outputStream: ZipEntryOutputStream,
+    protected override func initializeEncrypter(
+        outputStream: OutputStream,
         zipParameters: ZipParameters,
         password: ?Array<Rune>,
         useUtf8ForPassword: Bool
     ): StandardEncrypter {
         outputStream
-        var key: Int64 = if (zipParameters.isWriteExtendedLocalFileHeader()) {
-            let dosTime = Zip4cjUtil.epochToExtendedDosTime(zipParameters.getLastModifiedFileTime());
-            (dosTime & 0x0000ffff) << 16;
-        } else {
-            zipParameters.getEntryCRC();
-        }
-        // getEncryptionKey(zipParameters)
+        var key: Int64 = getEncryptionKey(zipParameters)
         var encrypter: StandardEncrypter = StandardEncrypter(password, key, useUtf8ForPassword)
         writeHeaders(encrypter.getHeaderBytes())
         return encrypter
@@ -55,7 +35,7 @@ class ZipStandardCipherOutputStream <: CipherOutputStream {
         super.write(b)
     }
 
-    public func getEncryptionKey(): Int64 {
+    public func getEncryptionKey(zipParameters: ZipParameters): Int64 {
         if (zipParameters.isWriteExtendedLocalFileHeader()) {
             var dosTime: Int64 = Zip4cjUtil.epochToExtendedDosTime(zipParameters.getLastModifiedFileTime())
             return (dosTime & 0x0000ffff) << 16

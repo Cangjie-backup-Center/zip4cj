@@ -115,7 +115,7 @@ public class FileUtils {
 
     public static func getFileNameWithoutExtension(fileName: String): String {
         if (let Some(pos) <- fileName.lastIndexOf(".")) {
-            return unsafe {String.fromUtf8Unchecked(fileName.toArray()[0..pos])}
+            return String(fileName.toRuneArray()[0..pos])
         }
         return fileName
     }
@@ -124,15 +124,11 @@ public class FileUtils {
         if (!Zip4cjUtil.isStringNotNullAndNotEmpty(zipFile)) {
             throw ZipException("zip file name is empty or null, cannot determine zip file name")
         }
-        var tmpFileName = zipFile
-        if (zipFile.contains(Path.Separator)) {
-            tmpFileName = unsafe{String.fromUtf8Unchecked(zipFile.toArray()[zipFile.lastIndexOf(Path.Separator).getOrThrow() + 1..])}
+        return if (zipFile.endsWith(".zip")) {
+            zipFile[0..zipFile.size - 4]
+        } else {
+            zipFile
         }
-
-        if (tmpFileName.endsWith(".zip")) {
-            tmpFileName = unsafe{String.fromUtf8Unchecked(zipFile.toArray()[0..tmpFileName.lastIndexOf(".").getOrThrow()])}
-        }
-        return tmpFileName
     }
 
     public static func getSplitZipFiles(zipModel: ZipModel): ArrayList<Path> {
@@ -196,12 +192,11 @@ public class FileUtils {
                 var rootFolderFile = Path(defaultFolderPath)
                 var rootFolderFileRef = canonicalize(rootFolderFile).toString()
 
-                if (!rootFolderFileRef.toString().endsWith(InternalZipConstants.FILE_SEPARATOR)) {
-                    rootFolderFileRef += InternalZipConstants.FILE_SEPARATOR
+                if (!rootFolderFileRef.endsWith(Path.Separator)) {
+                    rootFolderFileRef = "${rootFolderFileRef}${Path.Separator}"
                 }
                 var tmpFileName: String = if (FileInfo(fileToAdd).isSymbolicLink()) {
                     var rootPath = "${canonicalize(fileToAdd.parent)}${Path.Separator}${canonicalize(fileToAdd).fileName}"
-                        // canonicalize(fileToAdd.parent).toString() + InternalZipConstants.FILE_SEPARATOR + canonicalize(fileToAdd).fileName)
                     unsafe { String.fromUtf8Unchecked(rootPath.toArray()[rootFolderFileRef.size..])}
                 } else {
                     let canonicalizeFileToAdd = canonicalize(fileToAdd)
@@ -212,7 +207,7 @@ public class FileUtils {
                     }
                 }
                     
-                if (tmpFileName.startsWith(InternalZipConstants.FILE_SEPARATOR)) {
+                if (tmpFileName.startsWith(Path.Separator)) {
                     tmpFileName = unsafe { String.fromUtf8Unchecked(tmpFileName.toArray()[1..]) }
                 }
 
@@ -243,7 +238,7 @@ public class FileUtils {
         if (let Some(v) <- zipParameters.getRootFolderNameInZip()) {
             var rootFolderNameInZip = v
             if (!rootFolderNameInZip.endsWith("\\") && !rootFolderNameInZip.endsWith("/")) {
-                rootFolderNameInZip = "${rootFolderNameInZip}${InternalZipConstants.FILE_SEPARATOR}"
+                rootFolderNameInZip = "${rootFolderNameInZip}${Path.Separator}"
             }
             fileName = "${rootFolderNameInZip.replace("\\\\", InternalZipConstants.ZIP_FILE_SEPARATOR)}${fileName}"
         }

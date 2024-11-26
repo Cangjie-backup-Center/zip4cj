@@ -3,14 +3,19 @@
  */
 package zip4cj.io.inputstream
 
-abstract class CipherInputStream <: InputStream & Resource {
+abstract class ICipherInputStream <: InputStream & Resource {
+    protected open func endOfEntryReached(inputStream: InputStream, numberOfBytesPushedBack: Int64): Unit
+    public func getLastReadRawDataCache(): Array<Byte>
+}
+
+abstract class CipherInputStream<T> <: ICipherInputStream where T <: Decrypter {
     protected var zipEntryInputStream: ZipEntryInputStream
-    protected var lastReadRawDataCache: Array<Byte> = Array<Byte>()
+    protected var lastReadRawDataCache: Array<Byte> = InternalZipConstants.NULL_BYTE_ARRAY
     protected var singleByteBuffer: Array<Byte> = Array<Byte>(1, repeat: 0)
     protected var localFileHeader: LocalFileHeader
     protected var password: ?Array<Rune>
     protected var useUtf8ForPassword: Bool
-    protected open prop decrypter: Decrypter
+    protected var decrypter: T = unsafe { zeroValue<T>() }
     var closed = false
     public init(
         zipEntryInputStream: ZipEntryInputStream,
@@ -28,7 +33,9 @@ abstract class CipherInputStream <: InputStream & Resource {
         }
     }
 
-    public func read(b: Array<Byte>): Int64 {
+    protected func initializeDecrypter(localFileHeader: LocalFileHeader, password: ?Array<Rune>, useUtf8ForPassword: Bool): T
+
+    public open func read(b: Array<Byte>): Int64 {
         return this.read(b, 0, b.size)
     }
 
@@ -68,7 +75,7 @@ abstract class CipherInputStream <: InputStream & Resource {
         }
     }
 
-    public func getDecrypter(): Decrypter {
+    public func getDecrypter(): T {
         return decrypter
     }
 

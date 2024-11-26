@@ -3,12 +3,27 @@
  */
 package zip4cj.io.outputstream
 
-abstract class CipherOutputStream <: OutputStream & Resource {
+abstract class ICipherOutputStream <: OutputStream & Resource {
+
+    public func write(b: Array<UInt8>): Unit
+
+    public func writeHeaders(b: Array<UInt8>): Unit
+
+    public func closeEntry(): Unit
+    
+    public func close(): Unit
+
+    public func isClosed(): Bool
+
+    public func getNumberOfBytesWrittenForThisEntry(): Int64 
+}
+
+abstract class CipherOutputStream<T> <: ICipherOutputStream where T <: Encrypter {
     protected var outputStream: ZipEntryOutputStream
     protected var zipParameters: ZipParameters
     protected var password: ?Array<Rune>
     protected var useUtf8ForPassword: Bool
-    protected open prop encrypter: Encrypter
+    protected var encrypter: T = unsafe { zeroValue<T>() }
     var closed = false
     public init(
         zipEntryOutputStream: ZipEntryOutputStream,
@@ -21,6 +36,13 @@ abstract class CipherOutputStream <: OutputStream & Resource {
         this.password = password
         this.useUtf8ForPassword = useUtf8ForPassword
     }
+
+    protected func initializeEncrypter(
+        outputStream: OutputStream,
+        zipParameters: ZipParameters,
+        password: ?Array<Rune>,
+        useUtf8ForPassword: Bool
+    ): T 
 
     public open func write(b: Array<UInt8>): Unit {
         encrypter.encryptData(b)
@@ -52,7 +74,7 @@ abstract class CipherOutputStream <: OutputStream & Resource {
         return this.outputStream.getNumberOfBytesWrittenForThisEntry()
     }
 
-    protected open func getEncrypter(): Encrypter {
+    protected open func getEncrypter(): T {
         return encrypter
     }
 
