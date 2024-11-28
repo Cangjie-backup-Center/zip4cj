@@ -45,18 +45,30 @@ public class CRC32 {
     }
 
     static func crc32(value: UInt32, buf: Array<UInt8>): UInt32 {
-        if (buf.size <= 0) {
-            return UInt32(0)
+        var len: Int64 = buf.size
+        if (len <= 0) {
+            return 0
         }
         var crc: UInt32 = value ^ 0xFFFFFFFF
         var startpos: Int64 = 0
-        var len: Int64 = buf.size
         while (len >= 8) {
             len -= 8
-            for (_ in 0..8) {
-                crc = (crc >> 8) ^ CRC_TABLE[Int64((UInt8(crc & 0xFF) ^ buf[startpos]))]
-                startpos++
-            }
+            crc = (crc >> 8) ^ CRC_TABLE[Int64((UInt8(crc & 0xFF) ^ buf[startpos]))]
+            startpos++
+            crc = (crc >> 8) ^ CRC_TABLE[Int64((UInt8(crc & 0xFF) ^ buf[startpos]))]
+            startpos++
+            crc = (crc >> 8) ^ CRC_TABLE[Int64((UInt8(crc & 0xFF) ^ buf[startpos]))]
+            startpos++
+            crc = (crc >> 8) ^ CRC_TABLE[Int64((UInt8(crc & 0xFF) ^ buf[startpos]))]
+            startpos++
+            crc = (crc >> 8) ^ CRC_TABLE[Int64((UInt8(crc & 0xFF) ^ buf[startpos]))]
+            startpos++
+            crc = (crc >> 8) ^ CRC_TABLE[Int64((UInt8(crc & 0xFF) ^ buf[startpos]))]
+            startpos++
+            crc = (crc >> 8) ^ CRC_TABLE[Int64((UInt8(crc & 0xFF) ^ buf[startpos]))]
+            startpos++
+            crc = (crc >> 8) ^ CRC_TABLE[Int64((UInt8(crc & 0xFF) ^ buf[startpos]))]
+            startpos++
         }
         while (len > 0) {
             len--
@@ -85,27 +97,24 @@ public class CRC32 {
 
 public class CrcUtil {
     private static let BUF_SIZE: Int64 = 1 << 14 //16384
+    private static let crc32 = CRC32()
+    private static let buff = Array<Byte>(BUF_SIZE, repeat: 0)
     private init(){}
-    public static func computeFileCrc(inputFile: Path, progressMonitor: ?ProgressMonitor): UInt32 {
-        let fileInfo = FileInfo(inputFile)
-        if (!exists(inputFile) || !fileInfo.canRead()) {
+    public static func computeFileCrc(fileInfo: FileInfo, progressMonitor: ProgressMonitor): UInt32 {
+        if (!exists(fileInfo.path) || !fileInfo.canRead()) {
             throw ZipException(
                 "input file is null or does not exist or cannot read.  Cannot calculate CRC for the file")
         }
-
-        let buff = Array<Byte>(BUF_SIZE, repeat: 0)
-        let crc32 = CRC32()
-        try (inputStream = File(inputFile, Open(true, false))){
+        crc32.reset()
+        try (inputStream = File(fileInfo.path, Open(true, false))){
             var readLen = inputStream.read(buff)
             while (readLen != 0) {
                 crc32.update(buff[0..readLen])
-                if (let Some(v) <- progressMonitor) {
-                    v.updateWorkCompleted(readLen)
-                    if (v.isCancelAllTasks()) {
-                        v.setResult(ProgressMonitorResult.CANCELLED)
-                        v.setState(ProgressMonitorState.READY)
-                        return 0
-                    }
+                progressMonitor.updateWorkCompleted(readLen)
+                if (progressMonitor.isCancelAllTasks()) {
+                    progressMonitor.setResult(ProgressMonitorResult.CANCELLED)
+                    progressMonitor.setState(ProgressMonitorState.READY)
+                    return 0
                 }
                 readLen = inputStream.read(buff)
             }

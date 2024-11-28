@@ -658,7 +658,8 @@ let decode_map = HashMap<Rune, Rune>(
 
 public func decodeCp437(arr: Array<Byte>): String {
     var sb = StringBuilder()
-    for (a in arr) {
+    for (i in 0..arr.size) {
+        let a = arr[i]
         if (a <= 127) {
             sb.append(encode_arr[Int64(a)])
         } else if (encode_map.contains(Int64(a))) {

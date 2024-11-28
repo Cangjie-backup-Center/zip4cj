@@ -15,8 +15,7 @@ public class HeaderWriter {
     public func writeLocalFileHeader(
         zipModel: ZipModel,
         localFileHeader: LocalFileHeader,
-        outputStream: OutputStream,
-        charset: ?Charset
+        outputStream: OutputStream
     ) {
         let byteArrayOutputStream = ByteBuffer()
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(localFileHeader.getSignature().getOrThrow().getValue()))
@@ -61,7 +60,7 @@ public class HeaderWriter {
 
         var fileNameBytes = InternalZipConstants.NULL_BYTE_ARRAY
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(localFileHeader.getFileName())) {
-            fileNameBytes = HeaderUtil.getBytesFromString(localFileHeader.getFileName().getOrThrow(), charset)
+            fileNameBytes = HeaderUtil.getBytesFromString(localFileHeader.getFileName().getOrThrow())
         }
         rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(fileNameBytes.size))
 
@@ -99,7 +98,7 @@ public class HeaderWriter {
             )
             rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(aesExtraDataRecord.getDataSize()))
             rawIO.writeShortLittleEndian(byteArrayOutputStream, aesExtraDataRecord.getAesVersion().getVersionNumber())
-            byteArrayOutputStream.write(HeaderUtil.getBytesFromString(aesExtraDataRecord.getVendorID(), charset))
+            byteArrayOutputStream.write(HeaderUtil.getBytesFromString(aesExtraDataRecord.getVendorID()))
 
             var aesStrengthBytes = Array<Byte>(1, repeat: 0)
             aesStrengthBytes[0] = UInt8(aesExtraDataRecord.getAesKeyStrength().getRawCode())
@@ -135,11 +134,11 @@ public class HeaderWriter {
         outputStream.write(byteArrayOutputStream.bytes())
     }
 
-    public func finalizeZipFile(zipModel: ZipModel, outputStream: OutputStream, charset: ?Charset): Unit {
+    public func finalizeZipFile(zipModel: ZipModel, outputStream: OutputStream): Unit {
         let byteArrayOutputStream = ByteBuffer()
         processHeaderData(zipModel, outputStream)
         let offsetCentralDir = getOffsetOfCentralDirectory(zipModel)
-        writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO, charset)
+        writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO)
         let sizeOfCentralDir = byteArrayOutputStream.length
 
         if (zipModel.isZip64Format() || offsetCentralDir >= InternalZipConstants.ZIP_64_SIZE_LIMIT ||
@@ -172,14 +171,14 @@ public class HeaderWriter {
         }
 
         writeEndOfCentralDirectoryRecord(zipModel, Int32(sizeOfCentralDir), offsetCentralDir, byteArrayOutputStream,
-            rawIO, charset)
-        writeZipHeaderBytes(zipModel, outputStream, byteArrayOutputStream.bytes(), charset)
+            rawIO)
+        writeZipHeaderBytes(zipModel, outputStream, byteArrayOutputStream.bytes())
     }
 
-    public func finalizeZipFileWithoutValidations(zipModel: ZipModel, outputStream: OutputStream, charset: ?Charset) {
+    public func finalizeZipFileWithoutValidations(zipModel: ZipModel, outputStream: OutputStream) {
         let byteArrayOutputStream: ByteBuffer = ByteBuffer()
         let offsetCentralDir = getOffsetOfCentralDirectory(zipModel)
-        writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO, charset)
+        writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO)
         let sizeOfCentralDir = byteArrayOutputStream.length
 
         if (zipModel.isZip64Format() || offsetCentralDir >= InternalZipConstants.ZIP_64_SIZE_LIMIT ||
@@ -197,8 +196,8 @@ public class HeaderWriter {
         }
 
         writeEndOfCentralDirectoryRecord(zipModel, Int32(sizeOfCentralDir), offsetCentralDir, byteArrayOutputStream,
-            rawIO, charset)
-        writeZipHeaderBytes(zipModel, outputStream, byteArrayOutputStream.bytes(), charset)
+            rawIO)
+        writeZipHeaderBytes(zipModel, outputStream, byteArrayOutputStream.bytes())
     }
 
     public func updateLocalFileHeader(fileHeader: FileHeader, zipModel: ZipModel, outputStream: SplitOutputStream) {
@@ -206,9 +205,9 @@ public class HeaderWriter {
         var currOutputStream: SplitOutputStream
 
         if (fileHeader.getDiskNumberStart() != Int64(outputStream.getCurrentSplitFileCounter())) {
-            var parentFile = zipModel.getZipFile().getOrThrow().parent
+            var parentFile = zipModel.getZipFile().parent
             var fileNameWithoutExt = FileUtils.getZipFileNameWithoutExtension(
-                zipModel.getZipFile().getOrThrow().fileName)
+                zipModel.getZipFile().fileName)
             var fileName = parentFile.toString() + Path.Separator
             if (fileHeader.getDiskNumberStart() < 9) {
                 fileName += fileNameWithoutExt + ".z0${(fileHeader.getDiskNumberStart() + 1)}"
@@ -281,12 +280,11 @@ public class HeaderWriter {
     private func writeZipHeaderBytes(
         zipModel: ZipModel,
         outputStream: OutputStream,
-        buff: Array<Byte>,
-        charset: ?Charset
+        buff: Array<Byte>
     ) {
         if (let Some(output) <- (outputStream as CountingOutputStream)) {
             if (output.checkBuffSizeAndStartNextSplitFile(Int32(buff.size))) {
-                finalizeZipFile(zipModel, output, charset)
+                finalizeZipFile(zipModel, output)
                 return
             }
         }
@@ -315,15 +313,15 @@ public class HeaderWriter {
     private func writeCentralDirectory(
         zipModel: ZipModel,
         byteArrayOutputStream: ByteBuffer,
-        rawIO: RawIO,
-        charset: ?Charset
+        rawIO: RawIO
     ) {
         if (zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size <= 0) {
             return
         }
 
-        for (fileHeader in zipModel.getCentralDirectory().getOrThrow().getFileHeaders()) {
-            writeFileHeader(zipModel, fileHeader, byteArrayOutputStream, rawIO, charset)
+        let fileHeaders = zipModel.getCentralDirectory().getOrThrow().getFileHeaders()
+        for (i in 0..fileHeaders.size) {
+            writeFileHeader(zipModel, fileHeaders[i], byteArrayOutputStream, rawIO)
         }
     }
 
@@ -331,8 +329,7 @@ public class HeaderWriter {
         zipModel: ZipModel,
         fileHeader: FileHeader,
         byteArrayOutputStream: ByteBuffer,
-        rawIO: RawIO,
-        charset: ?Charset
+        rawIO: RawIO
     ) {
 
         let emptyShortByte = Array<Byte>(2, repeat: 0)
@@ -364,7 +361,7 @@ public class HeaderWriter {
 
         var fileNameBytes = Array<Byte>(1, repeat: 0)
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(fileHeader.getFileName())) {
-            fileNameBytes = HeaderUtil.getBytesFromString(fileHeader.getFileName().getOrThrow(), charset)
+            fileNameBytes = HeaderUtil.getBytesFromString(fileHeader.getFileName().getOrThrow())
         }
         rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(fileNameBytes.size))
         //Compute offset bytes before extra field is written for Zip64 compatibility
@@ -384,7 +381,7 @@ public class HeaderWriter {
         var fileComment = fileHeader.getFileComment()
         var fileCommentBytes = InternalZipConstants.NULL_BYTE_ARRAY
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(fileComment)) {
-            fileCommentBytes = HeaderUtil.getBytesFromString(fileComment.getOrThrow(), charset)
+            fileCommentBytes = HeaderUtil.getBytesFromString(fileComment.getOrThrow())
         }
         rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(fileCommentBytes.size))
 
@@ -431,7 +428,7 @@ public class HeaderWriter {
             )
             rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(aesExtraDataRecord.getDataSize()))
             rawIO.writeShortLittleEndian(byteArrayOutputStream, aesExtraDataRecord.getAesVersion().getVersionNumber())
-            byteArrayOutputStream.write(HeaderUtil.getBytesFromString(aesExtraDataRecord.getVendorID(), charset))
+            byteArrayOutputStream.write(HeaderUtil.getBytesFromString(aesExtraDataRecord.getVendorID()))
 
             let aesStrengthBytes = Array<Byte>(1, repeat: 0)
             aesStrengthBytes[0] = UInt8(aesExtraDataRecord.getAesKeyStrength().getRawCode())
@@ -459,7 +456,8 @@ public class HeaderWriter {
         }
 
         if (let Some(extraDataRecords) <- fileHeader.getExtraDataRecords()) {
-            for (extraDataRecord in extraDataRecords) {
+            for (i in 0..extraDataRecords.size) {
+                let extraDataRecord = extraDataRecords[i]
                 if (extraDataRecord.getHeader() == HeaderSignature.AES_EXTRA_DATA_RECORD.getValue() ||
                     extraDataRecord.getHeader() == HeaderSignature.ZIP64_EXTRA_FIELD_SIGNATURE.getValue()) {
                     continue
@@ -477,7 +475,9 @@ public class HeaderWriter {
             return
         }
 
-        for (extraDataRecord in fileHeader.getExtraDataRecords().getOrThrow()) {
+        let extraDataRecords = fileHeader.getExtraDataRecords().getOrThrow()
+        for (i in 0..extraDataRecords.size) {
+            let extraDataRecord = extraDataRecords[i]
             if (extraDataRecord.getHeader() == HeaderSignature.AES_EXTRA_DATA_RECORD.getValue() ||
                 extraDataRecord.getHeader() == HeaderSignature.ZIP64_EXTRA_FIELD_SIGNATURE.getValue()) {
                 continue
@@ -556,8 +556,7 @@ public class HeaderWriter {
         sizeOfCentralDir: Int32,
         offsetCentralDir: Int64,
         byteArrayOutputStream: ByteBuffer,
-        rawIO: RawIO,
-        charset: ?Charset
+        rawIO: RawIO
     ) {
         let longByte = Array<Byte>(8, repeat: 0)
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(HeaderSignature.END_OF_CENTRAL_DIRECTORY.getValue()))
@@ -600,7 +599,7 @@ public class HeaderWriter {
 
         var comment = zipModel.getEndOfCentralDirectoryRecord().getComment()
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(comment)) {
-            let commentBytes = HeaderUtil.getBytesFromString(comment, charset)
+            let commentBytes = HeaderUtil.getBytesFromString(comment)
             rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(commentBytes.size))
             byteArrayOutputStream.write(commentBytes)
         } else {
@@ -610,8 +609,8 @@ public class HeaderWriter {
 
     private func countNumberOfFileHeaderEntriesOnDisk(fileHeaders: ArrayList<FileHeader>, numOfDisk: Int64): Int64 {
         var noEntries = 0
-        for (fileHeader in fileHeaders) {
-            if (fileHeader.getDiskNumberStart() == numOfDisk) {
+        for (i in 0..fileHeaders.size) {
+            if (fileHeaders[i].getDiskNumberStart() == numOfDisk) {
                 noEntries++
             }
         }

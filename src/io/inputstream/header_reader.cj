@@ -46,7 +46,7 @@ public class HeaderReader {
                 myzipModel.setSplitArchive(false)
             }
         }
-        myzipModel.setCentralDirectory(readCentralDirectory(zip4cjRaf, rawIO, zip4cjConfig.getCharset()))
+        myzipModel.setCentralDirectory(readCentralDirectory(zip4cjRaf, rawIO))
 
         return zipModel.getOrThrow()
     }
@@ -74,13 +74,13 @@ public class HeaderReader {
         endOfCentralDirectoryRecord.setOffsetOfStartOfCentralDirectory(rawIO.readLongLittleEndian(intBuff, 0))
 
         var commentLength = Int64(rawIO.readShortLittleEndian(zip4cjRaf))
-        endOfCentralDirectoryRecord.setComment(readZipComment(zip4cjRaf, commentLength, zip4cjConfig.getCharset()))
+        endOfCentralDirectoryRecord.setComment(readZipComment(zip4cjRaf, commentLength))
 
         zipModel.getOrThrow().setSplitArchive(endOfCentralDirectoryRecord.getNumberOfThisDisk() > 0)
         return endOfCentralDirectoryRecord
     }
 
-    private func readCentralDirectory(zip4cjRaf: RandomAccessFile, rawIO: RawIO, charset: ?Charset): CentralDirectory {
+    private func readCentralDirectory(zip4cjRaf: RandomAccessFile, rawIO: RawIO): CentralDirectory {
         var centralDirectory = CentralDirectory()
         var fileHeaders = ArrayList<FileHeader>()
 
@@ -137,8 +137,7 @@ public class HeaderReader {
             if (fileNameLength > 0) {
                 var fileNameBuff = Array<Byte>(fileNameLength, repeat: 0)
                 zip4cjRaf.readFully(fileNameBuff)
-                var fileName = HeaderUtil.decodeStringWithCharset(fileNameBuff, fileHeader.isFileNameUTF8Encoded(),
-                    charset)
+                var fileName = HeaderUtil.decodeStringWithCharset(fileNameBuff, fileHeader.isFileNameUTF8Encoded())
                 fileHeader.setFileName(fileName)
             } else {
                 throw ZipException("Invalid entry name in file header")
@@ -152,13 +151,13 @@ public class HeaderReader {
                 let fileCommentBuff = Array<Byte>(Int64(fileCommentLength), repeat: 0)
                 zip4cjRaf.readFully(fileCommentBuff)
                 fileHeader.setFileComment(
-                    HeaderUtil.decodeStringWithCharset(fileCommentBuff, fileHeader.isFileNameUTF8Encoded(), charset))
+                    HeaderUtil.decodeStringWithCharset(fileCommentBuff, fileHeader.isFileNameUTF8Encoded()))
             }
             if (fileHeader.isEncrypted()) {
                 if (let Some(_) <- fileHeader.getAesExtraDataRecord()) {
-                    fileHeader.setEncryptionMethod(EncryptionMethod.AES)
-                } else {
                     fileHeader.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD)
+                } else {
+                    fileHeader.setEncryptionMethod(EncryptionMethod.AES)
                 }
             }
             fileHeaders.append(fileHeader)
@@ -406,7 +405,8 @@ public class HeaderReader {
         offsetLocalHeader: Int64,
         diskNumberStart: Int64
     ): ?Zip64ExtendedInfo {
-        for (extraDataRecord in extraDataRecords) {
+        for (i in 0..extraDataRecords.size) {
+            let extraDataRecord = extraDataRecords[i]
             if (HeaderSignature.ZIP64_EXTRA_FIELD_SIGNATURE.getValue() == extraDataRecord.getHeader()) {
                 var zip64ExtendedInfo = Zip64ExtendedInfo()
                 var extraData = extraDataRecord.getData().getOrThrow()
@@ -459,7 +459,7 @@ public class HeaderReader {
         seekInCurrentPart(zip4cjRaf, offsetEndOfCentralDirectoryRecord - 4 - 8 - 4 - 4)
     }
 
-    public func readLocalFileHeader(inputStream: InputStream, charset: ?Charset): ?LocalFileHeader {
+    public func readLocalFileHeader(inputStream: InputStream): ?LocalFileHeader {
         var localFileHeader = LocalFileHeader()
         let intBuff = Array<Byte>(4, repeat: 0)
 
@@ -501,8 +501,7 @@ public class HeaderReader {
             let fileNameBuf = Array<Byte>(Int64(fileNameLength), repeat: 0)
             Zip4cjUtil.readFully(inputStream, fileNameBuf)
 
-            var fileName = HeaderUtil.decodeStringWithCharset(fileNameBuf, localFileHeader.isFileNameUTF8Encoded(),
-                charset)
+            var fileName = HeaderUtil.decodeStringWithCharset(fileNameBuf, localFileHeader.isFileNameUTF8Encoded())
             localFileHeader.setFileName(fileName)
             localFileHeader.setDirectory(fileName.endsWith("/") || fileName.endsWith("\\"))
         } else {
@@ -559,23 +558,26 @@ public class HeaderReader {
                 return
             }
 
-            var aesExtraDataRecord: AESExtraDataRecord = readAesExtraDataRecord(fileHead, rawIO)
-            fileHeader.setAesExtraDataRecord(aesExtraDataRecord)
-            fileHeader.setEncryptionMethod(EncryptionMethod.AES)
+            let aesExtraDataRecord: ?AESExtraDataRecord = readAesExtraDataRecord(fileHead, rawIO)
+            if (let Some(v) <- aesExtraDataRecord) {
+                fileHeader.setAesExtraDataRecord(v)
+                fileHeader.setEncryptionMethod(EncryptionMethod.AES)
+            }
         } else {
             return
         }
     }
 
-    private func readAesExtraDataRecord(extraDataRecords: ArrayList<ExtraDataRecord>, rawIO: RawIO): AESExtraDataRecord {
-        var aesExtraDataRecord = AESExtraDataRecord()
-        for (extraDataRecord in extraDataRecords) {
+    private func readAesExtraDataRecord(extraDataRecords: ArrayList<ExtraDataRecord>, rawIO: RawIO): ?AESExtraDataRecord {
+        
+        for (i in 0..extraDataRecords.size) {
+            let extraDataRecord = extraDataRecords[i]
             if (extraDataRecord.getHeader() == HeaderSignature.AES_EXTRA_DATA_RECORD.getValue()) {
                 var aesExtraDataRecordBytes = extraDataRecord.getData()
                 if (aesExtraDataRecordBytes == None || aesExtraDataRecordBytes.getOrThrow().size != 7) {
                     throw ZipException("corrupt AES extra data records")
                 }
-
+                let aesExtraDataRecord = AESExtraDataRecord()
                 aesExtraDataRecord.setSignature(HeaderSignature.AES_EXTRA_DATA_RECORD)
                 aesExtraDataRecord.setDataSize(extraDataRecord.getSizeOfData())
 
@@ -589,10 +591,11 @@ public class HeaderReader {
                     AesKeyStrength.getAesKeyStrengthFromRawCode(Int32(aesData[4] & 0xFF)).getOrThrow())
                 aesExtraDataRecord.setCompressionMethod(
                     CompressionMethod.getCompressionMethodFromCode(rawIO.readShortLittleEndian(aesData, 5)))
+                return aesExtraDataRecord
             }
         }
 
-        return aesExtraDataRecord
+        return None
     }
 
     private func getNumberOfEntriesInCentralDirectory(zipModel: ZipModel): Int64 {
@@ -643,7 +646,7 @@ public class HeaderReader {
         }
     }
 
-    private func readZipComment(raf: RandomAccessFile, commentLength: Int64, charset: ?Charset): ?String {
+    private func readZipComment(raf: RandomAccessFile, commentLength: Int64): ?String {
         if (commentLength <= 0) {
             return None
         }
@@ -651,8 +654,7 @@ public class HeaderReader {
         try {
             let commentBuf = Array<Byte>(commentLength, repeat: 0)
             raf.readFully(commentBuf)
-            return HeaderUtil.decodeStringWithCharset(commentBuf, false,
-                charset.getOrDefault({=> return InternalZipConstants.ZIP4J_DEFAULT_CHARSET}))
+            return HeaderUtil.decodeStringWithCharset(commentBuf, false)
         } catch (e: Exception) {
             // Ignore any exception and set comment to null if comment cannot be read
             return None

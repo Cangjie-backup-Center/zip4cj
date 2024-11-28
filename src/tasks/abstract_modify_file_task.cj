@@ -20,7 +20,7 @@ public abstract class AbstractModifyFileTask<T> <: AsyncZipTask<T> {
     }
 
     func updateOffsetsForAllSubsequentFileHeaders(
-        sortedFileHeaders: ArrayList<FileHeader>,
+        sortedFileHeaders: Array<FileHeader>,
         zipModel: ZipModel,
         fileHeaderModified: FileHeader,
         offsetToAdd: Int64
@@ -68,13 +68,23 @@ public abstract class AbstractModifyFileTask<T> <: AsyncZipTask<T> {
         return length
     }
 
-    // TODO
-    func cloneAndSortFileHeadersByOffset(allFileHeaders: ArrayList<FileHeader>): ArrayList<FileHeader> {
-        var clonedFileHeaders: ArrayList<FileHeader> = ArrayList<FileHeader>(allFileHeaders)
+    func cloneAndSortFileHeadersByOffset(allFileHeaders: ArrayList<FileHeader>): Array<FileHeader> {
+        let clonedFileHeaders: Array<FileHeader> = allFileHeaders.toArray()
+        stableSort<FileHeader>(clonedFileHeaders, {a,b => 
+            if (a.getFileName() == b.getFileName()) {
+                return Ordering.EQ
+            } else if (a.getOffsetLocalHeader() < b.getOffsetLocalHeader()) {
+                return Ordering.LT
+            } else if (a.getOffsetLocalHeader() > b.getOffsetLocalHeader()) {
+                return Ordering.GT
+            } else {
+                return Ordering.EQ
+            }
+        })
         return clonedFileHeaders
     }
 
-    func getOffsetOfNextEntry(sortedFileHeaders: ArrayList<FileHeader>, fileHeader: FileHeader, zipModel: ZipModel): Int64 {
+    func getOffsetOfNextEntry(sortedFileHeaders: Array<FileHeader>, fileHeader: FileHeader, zipModel: ZipModel): Int64 {
         var indexOfFileHeader: Int32 = getIndexOfFileHeader(sortedFileHeaders, fileHeader)
 
         if (Int64(indexOfFileHeader) == sortedFileHeaders.size - 1) {
@@ -98,7 +108,7 @@ public abstract class AbstractModifyFileTask<T> <: AsyncZipTask<T> {
         }
     }
 
-    private func getIndexOfFileHeader(allFileHeaders: ArrayList<FileHeader>, fileHeaderForIndex: FileHeader): Int32 {
+    private func getIndexOfFileHeader(allFileHeaders: Array<FileHeader>, fileHeaderForIndex: FileHeader): Int32 {
         for (i in 0..allFileHeaders.size) {
             var fileHeader: FileHeader = allFileHeaders.get(i).getOrThrow()
             if (fileHeader.equals(fileHeaderForIndex)) {

@@ -414,7 +414,7 @@ public class ZipParameters {
 /*
  * Indicates the action to take when a symbolic link is added to the ZIP file
  */
-public enum SymbolicLinkAction <: Equal<SymbolicLinkAction> {
+public enum SymbolicLinkAction <: Equatable<SymbolicLinkAction> {
     /*
      * Add only the symbolic link itself, not the target file or its contents
      */
@@ -435,5 +435,9 @@ public enum SymbolicLinkAction <: Equal<SymbolicLinkAction> {
             case (INCLUDE_LINK_AND_LINKED_FILE, INCLUDE_LINK_AND_LINKED_FILE) => true
             case _ => false
         }
+    }
+
+    public operator func !=(that: SymbolicLinkAction): Bool {
+        return !(this == that)
     }
 }

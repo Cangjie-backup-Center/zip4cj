@@ -135,7 +135,7 @@ public class Zip4cjUtil {
 
     private static func convertCharArrayToByteArrayUsingUtf8(charArray: Array<Rune>): Array<Byte> {
         try {
-            return InternalZipConstants.CHARSET_UTF_8.newEncoder().encode(String(charArray))
+            return String(charArray).toArray()
         } catch (e: Exception) {
             return convertCharArrayToByteArrayUsingDefaultCharset(charArray)
         }

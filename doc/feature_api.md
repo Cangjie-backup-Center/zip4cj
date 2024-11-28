@@ -26,22 +26,38 @@ API测试范围：public 接口
 
 ```
 public class ZipFile <: Resource {
+
     /*
      * 构造 
      * 
      * 参数 zipFile - 文件路径字符串
-     * 参数 password - 密码, 暂时不支持为None
+     * 参数 password - 密码
      */
-    public init (zipFile: String, password!: ?Array<Char> = None)
+    public init (zipFile: String, password: Array<Rune>)
+    
+    /*
+     * 构造 
+     * 
+     * 参数 zipFile - 文件路径字符串
+     */
+    public init (zipFile: String)
+
+
+    /*
+     * 构造 
+     * 
+     * 参数 zipFile - 文件路径对象
+     */
+    public init (zipFile: Path)
     
     /*
      * 构造 
      * 
      * 参数 zipFile - 文件路径对象
-     * 参数 password - 密码, 暂时不支持为None
+     * 参数 password - 密码
      */
-    public init (zipFile: Path, password!: ?Array<Char> = None)
-    
+    public init (zipFile: Path, password: Array<Rune>)
+
     /*
      * 是否在子线程中执行
      * 
@@ -58,31 +74,73 @@ public class ZipFile <: Resource {
     public func setRunInThread(runInThread: Bool) : Unit
     
     /*
-     * 添加压缩文件
+     * 使用默认zip参数将输入源文件添加到zip文件中。如果zip文件不存在，此方法将创建一个新的zip文件。
      * 
      * 参数 fileToAdd - 文件字符串
-     * 参数 parameters - 参数, 默认为初始类
      * 返回值 Unit - Unit
      */
-    public func addFile(fileToAdd: String, parameters!: ZipParameters = ZipParameters())
+    public func addFile(fileToAdd: String)
 
     /*
-     * 添加压缩文件
+     * 使用默认zip参数将输入源文件添加到zip文件中。如果zip文件不存在，此方法将创建一个新的zip文件。
+     * 
+     * 参数 fileToAdd - 文件字符串
+     * 参数 parameters - 压缩参数
+     * 返回值 Unit - Unit
+     */
+    public func addFile(fileToAdd: String, parameters: ZipParameters)
+
+    /*
+     * 使用默认zip参数将输入源文件添加到zip文件中。如果zip文件不存在，此方法将创建一个新的zip文件。
      * 
      * 参数 fileToAdd - 文件路径
      * 参数 parameters - 参数, 默认为初始类
      * 返回值 Unit - Unit
      */
-    public func addFile(fileToAdd: Path, parameters!: ZipParameters = ZipParameters())
-    
+    public func addFile(fileToAdd: Path)
+
     /*
-     * 添加多个压缩文件
+     * 使用默认zip参数将输入源文件添加到zip文件中。如果zip文件不存在，此方法将创建一个新的zip文件。
      * 
-     * 参数 filesToAdd - 文件路径集合
-     * 参数 parameters - 参数, 默认为初始类
+     * 参数 fileToAdd - 文件路径
+     * 参数 parameters - 压缩参数
      * 返回值 Unit - Unit
      */
-    public func addFiles(filesToAdd: Collection<Path>, parameters!: ZipParameters = ZipParameters()) 
+    public func addFile(fileToAdd: Path, parameters: ZipParameters)
+    
+    /*
+     * 使用默认zip参数将输入文件列表添加到zip文件中。如果zip文件不存在，此方法将创建一个新的zip文件。
+     * 
+     * 参数 filesToAdd - 文件路径集合
+     * 返回值 Unit - Unit
+     */
+    public func addFiles(filesToAdd: Collection<Path>) 
+
+    /*
+     * 使用默认zip参数将输入文件列表添加到zip文件中。如果zip文件不存在，此方法将创建一个新的zip文件。
+     * 
+     * 参数 filesToAdd - 文件路径集合
+     * 参数 parameters - 压缩参数
+     * 返回值 Unit - Unit
+     */
+    public func addFiles(filesToAdd: Collection<Path>, parameters: ZipParameters) 
+
+    /*
+     * 使用默认zip参数将输入文件列表添加到zip文件中。如果zip文件不存在，此方法将创建一个新的zip文件。
+     * 
+     * 参数 filesToAdd - 文件路径数组
+     * 返回值 Unit - Unit
+     */
+    public func addFiles(filesToAdd: Array<Path>) 
+
+    /*
+     * 使用默认zip参数将输入文件列表添加到zip文件中。如果zip文件不存在，此方法将创建一个新的zip文件。
+     * 
+     * 参数 filesToAdd - 文件路径数组
+     * 参数 parameters - 压缩参数
+     * 返回值 Unit - Unit
+     */
+    public func addFiles(filesToAdd: Array<Path>, parameters: ZipParameters) 
 
     /*
      * 创建分卷压缩文件，并将指定的文件添加到压缩文件中
@@ -92,7 +150,17 @@ public class ZipFile <: Resource {
      * 参数 splitArchive - 是否分卷
      * 参数 splitLength - 分卷大小, 若选择需要分卷, 分卷大小需要大于等于65536
      */
-    public func createSplitZipFile (filesToAdd: Array<Path>, parameters: ZipParameters, splitArchive: Bool, splitLength: Int64)
+    public func createSplitZipFile(filesToAdd: Collection<Path>, parameters: ZipParameters, splitArchive: Bool, splitLength: Int64)
+
+     /*
+     * 创建分卷压缩文件，并将指定的文件添加到压缩文件中
+     * 
+     * 参数 filesToAdd - 压缩文件列表, 如果路径不存在, 则抛 zipException
+     * 参数 parameters - 压缩参数
+     * 参数 splitArchive - 是否分卷
+     * 参数 splitLength - 分卷大小, 若选择需要分卷, 分卷大小需要大于等于65536
+     */
+    public func createSplitZipFile(filesToAdd: Array<Path>, parameters: ZipParameters, splitArchive: Bool, splitLength: Int64)
     
     /*
      * 创建压缩文件，并将指定输入流中的文件添加到压缩文件中, 使用此接口时需要先通过parameters设置fileName, 否则会抛ZipException
@@ -102,7 +170,7 @@ public class ZipFile <: Resource {
      * 参数 splitArchive - 是否分卷
      * 参数 splitLength - 分卷大小, 若选择需要分卷, 分卷大小需要大于等于65536
      */
-    public func createSplitZipFile (inputStream: InputStream, parameters: ZipParameters, splitArchive: Bool, splitLength: Int64)
+    public func createSplitZipFile(inputStream: InputStream, parameters: ZipParameters, splitArchive: Bool, splitLength: Int64)
     
     /*
      * 创建压缩文件，并将指定文件夹中的文件添加到压缩文件中
@@ -112,17 +180,17 @@ public class ZipFile <: Resource {
      * 参数 splitArchive - 是否分卷
      * 参数 splitLength - 分卷大小, 若选择需要分卷, 分卷大小需要大于等于65536
      */
-    public func createSplitZipFileFromFolder (folderToAdd: Path, parameters: ZipParameters, splitArchive: Bool, splitLength: Int64)
+    public func createSplitZipFileFromFolder(folderToAdd: Path, parameters: ZipParameters, splitArchive: Bool, splitLength: Int64)
     
     /*
-     * 解压
+     * 将给定zip文件中的所有文件提取到输入目标路径。如果zip文件不存在或目标路径无效，则抛出异常
      * 
      * 参数 destinationPath - 解压路径, 如果需要解压的zip文件无效的, 则抛 zipException
      */
     public func extractAll (destinationPath: String)
     
     /*
-     * 解压
+     * 将给定zip文件中的所有文件提取到输入目标路径。如果zip文件不存在或目标路径无效，则抛出异常
      * 
      * 参数 destinationPath - 解压路径
      * 参数 unzipParameters - 解压参数, 如果需要解压的zip文件无效的, 则抛 zipException
@@ -130,23 +198,52 @@ public class ZipFile <: Resource {
     public func extractAll(destinationPath: String, unzipParameters: UnzipParameters)
 
     /*
-     * 添加 文件夹
+     * 将给定文件对象中的文件夹添加到具有默认zip参数的zip文件中。如果zip文件不存在，则创建一个新的zip文件。如果输入文件夹无效，则抛出异常。
+     * 
+     * 参数 folderToAdd - Path路径
+     */
+    public func addFolder(folderToAdd: Path)
+
+    /*
+     * 将给定文件对象中的文件夹添加到zip文件中。如果zip文件不存在，则创建一个新的zip文件。如果输入文件夹无效，则抛出异常。可以在输入参数中设置要添加的文件夹中文件的Zip参数
      * 
      * 参数 folderToAdd - Path路径
      * 参数 zipParameters - zipParameters压缩参数
      * 参数 checkSplitArchive - 是否选中拆分存档, 默认为true
      */
-    public func addFolder(folderToAdd: Path, zipParameters!: ZipParameters = ZipParameters(), checkSplitArchive!: Bool = true)
+    public func addFolder(folderToAdd: Path, zipParameters: ZipParameters, checkSplitArchive: Bool)
 
     /*
-     * 删除文件
+     * 从zip文件中删除输入文件头中提供的文件。如果zip文件是拆分的zip文件，则此方法会抛出异常，因为zip规范不允许更新拆分的zip存档。
+     * 如果此文件头是一个目录，则此目录下的所有文件和目录也将被删除。
+     * 
+     * 参数 fileName - FileHeader
+     */
+    public func removeFile (fileName: FileHeader)
+
+    /*
+     * 从zip文件中删除输入文件头中提供的文件。如果zip文件是拆分的zip文件，则此方法会抛出异常，因为zip规范不允许更新拆分的zip存档。
+     * 如果此文件头是一个目录，则此目录下的所有文件和目录也将被删除。
      * 
      * 参数 fileName - fileName
      */
     public func removeFile (fileName: String)
 
+
     /*
-     * 重命名文件
+     * 重命名由文件头表示的条目的文件名。如果输入文件头中的文件名与zip文件中的任何条目都不匹配，则不会修改zip文件。
+     * 如果文件头是zip文件中的文件夹，则zip文件中所有的子文件和子文件夹也将被重命名。Zip文件格式不允许修改拆分的Zip文件。
+     * 因此，如果处理的zip文件是拆分的zip文件，则此方法会抛出异常
+     * 
+     * 参数 fileNameToRename - 旧文件名的FileHeader
+     * 参数 newFileName - 新文件名
+     */
+    public func renameFile (fileNameToRename: FileHeader, newFileName: String): Unit
+
+    /*
+     * 重命名由文件头表示的条目的文件名。如果输入文件头中的文件名与zip文件中的任何条目都不匹配，则不会修改zip文件。
+     * 如果文件头是zip文件中的文件夹，则zip文件中所有的子文件和子文件夹也将被重命名。Zip文件格式不允许修改拆分的Zip文件。
+     * 因此，如果处理的zip文件是拆分的zip文件，则此方法会抛出异常
      * 
      * 参数 fileNameToRename - 旧文件名
      * 参数 newFileName - 新文件名
@@ -154,7 +251,8 @@ public class ZipFile <: Resource {
     public func renameFile (fileNameToRename: String, newFileName: String): Unit
 
     /*
-     * 添加 输入流
+     * 在zip文件中创建一个新条目，并将输入流的内容添加到zip文件中。必须在输入参数中设置ZipParameters.isSourceExternalStream和ZipParameters.fileNameInZip。
+     * 如果文件名以/或\结尾，则此方法将内容视为目录。将ProgressMonitor.setRunInThread标志设置为true对此方法无效，因此此方法不能用于在线程模式下向zip添加内容
      * 
      * 参数 inputStream - 输入流
      * 参数 parameters - 参数
@@ -162,43 +260,32 @@ public class ZipFile <: Resource {
     public func addStream (inputStream: InputStream, parameters: ZipParameters): Unit
 
     /*
-     * 删除文件
-     * 
-     * 参数 fileHeader - 文件头
-     */
-    public func removeFile (fileHeader: FileHeader): Unit
-
-    /*
-     * 删除多个文件
+     * 从zip文件中删除与输入列表中的名称匹配的所有文件。如果任何文件是目录，则此目录下的所有文件和目录也将被删除。
+     * 如果zip文件是拆分的zip文件，则此方法会抛出异常，因为zip规范不允许更新拆分的zip存档。
      * 
      * 参数 fileNames - 文件名集合
      */
     public func removeFiles (fileNames: Collection<String>): Unit
 
     /*
-     * 重命名文件
-     * 
-     * 参数 fileHeader - 文件头
-     * 参数 newFileName - 新文件名
-     */
-    public func renameFile (fileHeader: FileHeader, newFileName: String): Unit
-    
-    /*
-     * 重命名多个映射的文件
+     * 将zip文件中与映射中的键匹配的所有条目重命名为映射中的相应值。
+     * 如果没有与映射中的任何键匹配的条目，则不会修改zip文件。
+     * 如果映射中的任何条目表示一个文件夹，则所有文件和文件夹都将被重命名，以便它们的父级表示重命名的文件夹。
+     * Zip文件格式不允许修改拆分的Zip文件。因此，如果处理的zip文件是拆分的zip文件，则此方法会抛出异常
      * 
      * 参数 fileNamesMap - 映射文件名<旧文件名, 新文件名>
      */
     public func renameFiles (fileNamesMap: Map<String,String>): Unit
 
     /*
-     * 合并分包的文件
+     * 将拆分的zip文件合并为一个zip文件，而无需提取存档中的文件
      * 
      * 参数 outputZipFile - 输出zipfile
      */
     public func mergeSplitFiles (outputZipFile: Path): Unit
     
     /*
-     * 设置 Comment 注释
+     * 为Zip文件设置注释
      * 
      * 参数 comment - 注释
      * 返回值 Unit - Unit
@@ -206,14 +293,14 @@ public class ZipFile <: Resource {
     public func setComment (comment: String): Unit
     
     /*
-     * 获取 注释
+     * 返回Zip文件的注释集
      * 
      * 返回值 String - 注释
      */
     public func getComment (): String
     
     /*
-     * 获取 输入流
+     * 返回一个输入流，用于读取与输入FileHeader对应的Zip文件的内容。如果ZipFile中不存在FileHeader，则抛出异常
      * 
      * 参数 fileHeader - 文件头
      * 返回值 ZipInputStream - 输入流
@@ -221,33 +308,37 @@ public class ZipFile <: Resource {
     public func getInputStream (fileHeader: FileHeader): ZipInputStream
     
     /*
-     * 判断 是否有效的zip文件
+     * 检查输入的zip文件是否是有效的zip文件。此方法将尝试读取zip标头。
+     * 如果成功读取了标头，则此方法返回true，否则返回false。
+     * 如果zip文件是拆分的zip文件，此方法还会检查zip的所有拆分文件是否存在。
      * 
      * 返回值 Bool - 判断 是否有效的zip文件
      */
     public func isValidZipFile (): Bool
     
     /*
-     * 获取 SplitZipFiles 拆分的zip文件集合
+     * 返回ArrayList中所有拆分zip文件的完整文件路径和名称。
+     * 例如：如果一个分割的zip文件（abc.zip）有10个分割部分，则此方法返回一个数组列表，其中包含路径+“abc.z01”、路径+“abc.z02”等。
+     * 如果zip文件不存在，则返回空集合
      * 
      * 返回值 ArrayList<Path> - zip文件集合
      */
     public func getSplitZipFiles (): ArrayList<Path>
     
     /*
-     * 关闭zipfile类
+     * 关闭此类实例打开的所有开放流, 当底层输入流在尝试关闭时抛出异常
      * 
      * 返回值 Unit - Unit
      */
     public func close (): Unit
     
     /*
-     * 设置 密码 暂时不支持
+     * 设置用于zip文件的密码。如果通过ZipFile构造函数提供密码且password不为None，将覆盖
      * 
      * 参数 password - 密码
      * 返回值 Unit - Unit
      */
-    public func setPassword (password: ?Array<Char>)
+    public func setPassword (password: ?Array<Rune>)
     
     /*
      * 获取 缓存大小
@@ -278,23 +369,9 @@ public class ZipFile <: Resource {
     public func getFile (): Path
     
     /*
-     * 获取 编码集合
+     * 获取 ExecutorService 执行组件
      * 
-     * 返回值 Charset - 编码集合
-     */
-    public func getCharset (): Charset
-    
-    /*
-     * 设置 编码集合
-     * 
-     * 参数 charset - 编码集合
-     */
-    public func setCharset (charset: Charset): Unit
-    
-    /*
-     * 获取 ExecutorService 线程池
-     * 
-     * 返回值 ExecutorService - 线程池
+     * 返回值 ExecutorService - 执行组件
      */
     public func getExecutorService (): ExecutorService
     
@@ -392,7 +469,7 @@ public class CipherInputStream<T> <: InputStream {
      * 参数 useUtf8ForPassword - 使用utf8编码密码
      * 参数 decrypter - 解密器
      */
-    public init (zipEntryInputStream: ZipEntryInputStream, localFileHeader: LocalFileHeader, password: ?Array<Char>, bufferSize: Int64, useUtf8ForPassword: Bool, decrypter: initDecrypter<T>)
+    public init (zipEntryInputStream: ZipEntryInputStream, localFileHeader: LocalFileHeader, password: ?Array<Rune>, bufferSize: Int64, useUtf8ForPassword: Bool, decrypter: initDecrypter<T>)
     
     /*
      * 读取数据
@@ -456,7 +533,7 @@ public class UnzipUtil {
      * 参数 password - 密码
      * 返回值 ZipInputStream - 创建的ZipInputStream
      */
-    public static func createZipInputStream (zipModel: ZipModel, fileHeader: FileHeader, password: ?Array<Char>): ZipInputStream
+    public static func createZipInputStream (zipModel: ZipModel, fileHeader: FileHeader, password: ?Array<Rune>): ZipInputStream
     
     /*
      * 应用文件属性
@@ -693,14 +770,14 @@ public abstract class SplitFileInputStream<: InputStream {
 public class ZipInputStream<: InputStream {
 
     /*
-     * 构造 
+     * 构造 ZipInputStream类. 
      * 
      * 参数 inputStream - 输入流
      * 参数 password - 密码, 暂时不支持, 默认为None
      * 参数 passwordCallback - 密码回调, 默认为None
      * 参数 zip4jConfig - zip配置对象
      */
-    public init (inputStream: InputStream, password!: ?Array<Char> = None, passwordCallback!: ?PasswordCallback = None, zip4jConfig!: Zip4cjConfig = Zip4cjConfig(Option<Charset>.None, InternalZipConstants.BUFF_SIZE, InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING))
+    public init (inputStream: InputStream, password!: ?Array<Rune> = None, passwordCallback!: ?PasswordCallback = None, zip4jConfig!: Zip4cjConfig = Zip4cjConfig(Option<Charset>.None, InternalZipConstants.BUFF_SIZE, InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING))
 
     /*
      * 获取 下一个条目
@@ -753,7 +830,7 @@ public class ZipInputStream<: InputStream {
      * 
      * 参数 password - 密码
      */
-    public func setPassword (password: ?Array<Char>): Unit
+    public func setPassword (password: ?Array<Rune>): Unit
 }
 
 public class InflaterInputStream<: DecompressedInputStream {
@@ -1121,7 +1198,7 @@ public abstract class CipherOutputStream<: OutputStream {
      * 参数 password - 密码
      * 参数 useUtf8ForPassword - 是否使用utf编码密码
      */
-    public init (zipEntryOutputStream: ZipEntryOutputStream, zipParameters: ZipParameters, password: ?Array<Char>, useUtf8ForPassword: Bool)
+    public init (zipEntryOutputStream: ZipEntryOutputStream, zipParameters: ZipParameters, password: ?Array<Rune>, useUtf8ForPassword: Bool)
     
     /*
      * 写数据
@@ -1384,7 +1461,7 @@ public class ZipOutputStream<: OutputStream {
      * 参数 zip4cjConfig - 配置对象
      * 参数 zipModel - zip模型 , 如果 zip4cjConfig.getBufferSize()小于512, 则抛 IllegalArgumentException
      */
-    public init (outputStream: OutputStream, password!: ?Array<Char>, zip4cjConfig!: Zip4cjConfig, zipModel!: ZipModel)
+    public init (outputStream: OutputStream, password!: ?Array<Rune>, zip4cjConfig!: Zip4cjConfig, zipModel!: ZipModel)
     
     /*
      * 存入压缩参数
@@ -2423,7 +2500,7 @@ public class Zip4cjUtil {
      * 参数 useUtf8Charset - utf8数组
      * 返回值 Array<Byte> - 转换数组
      */
-    public static func convertCharArrayToByteArray (charArray: Array<Char>, useUtf8Charset: Bool): Array<Byte>
+    public static func convertCharArrayToByteArray (charArray: Array<Rune>, useUtf8Charset: Bool): Array<Byte>
     
     /*
      * 获取 CompressionMet
@@ -4368,9 +4445,9 @@ public class ExtraDataRecord<: ZipHeader {
 
 public enum CompressionMethod<: Equal<CompressionMethod> {
 
-    | STORE
-    | DEFLATE
-    | AES_INTERNAL_ONLY
+    | STORE                 // 存储方式, 不进行文件压缩
+    | DEFLATE               // 使用deflate算法压缩
+    | AES_INTERNAL_ONLY     // 不支持
 
     /*
      * 获取代码编号
@@ -4490,10 +4567,10 @@ public enum AesKeyStrength<: Equal<AesKeyStrength> {
 
 public enum EncryptionMethod<: Equal<EncryptionMethod> {
 
-    | NONE
-    | ZIP_STANDARD
-    | ZIP_STANDARD_VARIANT_STRONG
-    | AES
+    | NONE                           // 设置None, 抛异常
+    | ZIP_STANDARD                   // zip自带加密算法
+    | ZIP_STANDARD_VARIANT_STRONG    // 不支持, 抛异常
+    | AES                            // AES-256加密算法
 
     /*
      * 判断两个 EncryptionMethod 对象是否相等
@@ -4538,11 +4615,11 @@ public class ExtractAllFilesTask<: AbstractExtractFileTask<ExtractAllFilesTaskPa
      * 构造 
      * 
      * 参数 zipModel - ZipModel对象
-     * 参数 password - 密码Array<Char>类型
+     * 参数 password - 密码Array<Rune>类型
      * 参数 unzipParameters - UnzipParameters对象
      * 参数 asyncTaskParameters - AsyncTaskParameters对象
      */
-    public init (zipModel: ZipModel, password: ?Array<Char>, unzipParameters: UnzipParameters, asyncTaskParameters: AsyncTaskParameters)
+    public init (zipModel: ZipModel, password: ?Array<Rune>, unzipParameters: UnzipParameters, asyncTaskParameters: AsyncTaskParameters)
 }
 
 public class AddStreamToZipTask<: AbstractAddFileToZipTask<AddStreamToZipTaskParameters> {
@@ -4551,11 +4628,11 @@ public class AddStreamToZipTask<: AbstractAddFileToZipTask<AddStreamToZipTaskPar
      * 构造 
      * 
      * 参数 zipModel - ZipModel对象
-     * 参数 password - 密码Array<Char>类型
+     * 参数 password - 密码Array<Rune>类型
      * 参数 headerWriter - HeaderWriter对象
      * 参数 asyncTaskParameters - AsyncTaskParameters对象
      */
-    public init(zipModel: ZipModel, password: ?Array<Char>, headerWriter: HeaderWriter, asyncTaskParameters: AsyncTaskParameters )
+    public init(zipModel: ZipModel, password: ?Array<Rune>, headerWriter: HeaderWriter, asyncTaskParameters: AsyncTaskParameters )
 }
 
 public open class ExecutorService {
@@ -4647,11 +4724,11 @@ public class AddFilesToZipTask<: AbstractAddFileToZipTask<AddFilesToZipTaskParam
      * 构造 
      * 
      * 参数 zipModel - ZipModel 对象
-     * 参数 password - Array<Char>类型
+     * 参数 password - Array<Rune>类型
      * 参数 headerWriter - HeaderWriter 对象 
      * 参数 asyncTaskParameters - AsyncTaskParameters 对象 
      */
-    public init(zipModel: ZipModel, password: ?Array<Char>, headerWriter: HeaderWriter,
+    public init(zipModel: ZipModel, password: ?Array<Rune>, headerWriter: HeaderWriter,
                            asyncTaskParameters: AsyncTaskParameters )
 }
 
@@ -4673,11 +4750,11 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
      * 构造 
      * 
      * 参数 zipModel - ZipModel 对象
-     * 参数 password - Array<Char>类型
+     * 参数 password - Array<Rune>类型
      * 参数 headerWriter - HeaderWriter 对象
      * 参数 asyncTaskParameters - AsyncTaskParameters 对象 
      */
-    public init (zipModel: ZipModel, password: ?Array<Char>, headerWriter: HeaderWriter, asyncTaskParameters: AsyncTaskParameters)
+    public init (zipModel: ZipModel, password: ?Array<Rune>, headerWriter: HeaderWriter, asyncTaskParameters: AsyncTaskParameters)
 }
 
 public class ExtractAllFilesTaskParameters<: AbstractZipTaskParameters {
@@ -4791,11 +4868,11 @@ public class AddFolderToZipTask<: AbstractAddFileToZipTask<AddFolderToZipTaskPar
      * 构造 
      * 
      * 参数 zipModel - ZipModel 对象
-     * 参数 password - ?Array<Char> 类型
+     * 参数 password - ?Array<Rune> 类型
      * 参数 headerWriter - HeaderWriter 对象
      * 参数 asyncTaskParameters - AsyncTaskParameters 对象
      */
-    public init(zipModel: ZipModel, password: ?Array<Char>, headerWriter: HeaderWriter, asyncTaskParameters: AsyncTaskParameters )
+    public init(zipModel: ZipModel, password: ?Array<Rune>, headerWriter: HeaderWriter, asyncTaskParameters: AsyncTaskParameters )
 
 }
 
@@ -4805,11 +4882,11 @@ public class ExtractFileTask<: AbstractExtractFileTask<ExtractFileTaskParameters
      * 构造 
      * 
      * 参数 zipModel - ZipModel 对象
-     * 参数 password - ?Array<Char> 类型
+     * 参数 password - ?Array<Rune> 类型
      * 参数 unzipParameters - UnzipParameters 对象
      * 参数 asyncTaskParameters - AsyncTaskParameters 对象
      */
-    public init(zipModel: ZipModel, password: ?Array<Char>, unzipParameters: UnzipParameters,
+    public init(zipModel: ZipModel, password: ?Array<Rune>, unzipParameters: UnzipParameters,
                          asyncTaskParameters: AsyncTaskParameters )
 }
 
@@ -4917,7 +4994,7 @@ public class ZipCryptoEngine {
      * 参数 password - 密钥内容
      * 参数 useUtf8ForPassword - 是否使用utf8格式
      */
-    public func initKeys(password: Array<Char>, useUtf8ForPassword: Bool)
+    public func initKeys(password: Array<Rune>, useUtf8ForPassword: Bool)
 
     /*
      * 更新密钥数据
@@ -4961,7 +5038,7 @@ public class PBKDF2Engine {
      * 参数 useUtf8ForPassword - 是否使用utf8格式
      * 返回值 Array<Byte> - 衍生密钥
      */
-    public func deriveKey(inputPassword: Array<Char>, dkLen: Int32, useUtf8ForPassword: Bool): Array<Byte>
+    public func deriveKey(inputPassword: Array<Rune>, dkLen: Int32, useUtf8ForPassword: Bool): Array<Byte>
 }
  
 public class PBKDF2Parameters {
@@ -5080,7 +5157,7 @@ public class StandardDecrypter <: Decrypter {
      * 参数 headerBytes - 标头字节
      * 参数 useUtf8ForPassword - 是否使用uf8格式
      */
-    public init(password: ?Array<Char>, crc: Int64, lastModifiedFileTime: Int64,
+    public init(password: ?Array<Rune>, crc: Int64, lastModifiedFileTime: Int64,
                             headerBytes: Array<Byte>, useUtf8ForPassword: Bool)
 
     /*
@@ -5104,7 +5181,7 @@ public class StandardEncrypter <: Encrypter {
      * 参数 key - 密钥
      * 参数 useUtf8ForPassword - 是否使用uf8格式
      */
-    public StandardEncrypter(password: ?Array<Char>, key: Int64, useUtf8ForPassword: Bool)
+    public StandardEncrypter(password: ?Array<Rune>, key: Int64, useUtf8ForPassword: Bool)
 
     /*
      * 加密数据
@@ -5197,9 +5274,9 @@ public interface PasswordCallback {
     /*
      * 获取密码数据
      * 
-     * 返回值 Array<Char> - 数据
+     * 返回值 Array<Rune> - 数据
      */
-    func getPassword(): Array<Char>
+    func getPassword(): Array<Rune>
 }
 
 ```

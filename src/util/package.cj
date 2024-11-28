@@ -26,6 +26,4 @@ internal import zip4cj.exception.*
 internal import zip4cj.model.*
 internal import zip4cj.model.enums.*
 internal import zip4cj.util.internals.*
-internal import charset4cj.charset.Charsets
-internal import charset4cj.charset.encoding.Charset
 internal import crypto.digest.HashType

@@ -34,15 +34,13 @@ public class UnzipUtil {
     }
 
     public static func createSplitInputStream(zipModel: ZipModel): SplitFileInputStream {
-        if (let Some(zipFile) <- zipModel.getZipFile()) {
-            if (zipFile.fileName.endsWith(InternalZipConstants.SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN)) {
-                return NumberedSplitFileInputStream(zipFile)
-            }
-
-            return ZipStandardSplitFileInputStream(zipFile, zipModel.isSplitArchive(),
-                Int64(zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDisk()))
-        } else {
-            throw NoneValueException("zipFile is null")
+        let zipFile = zipModel.getZipFile()
+        if (zipFile.fileName.endsWith(InternalZipConstants.SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN)) {
+            return NumberedSplitFileInputStream(zipFile)
         }
+
+        return ZipStandardSplitFileInputStream(zipFile, zipModel.isSplitArchive(),
+            Int64(zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDisk()))
+        
     }
 }

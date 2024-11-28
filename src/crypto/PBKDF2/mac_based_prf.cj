@@ -74,7 +74,7 @@ public class MacBasedPRF <: PRF {
     }
 
     private func doMacUpdate(numberOfBytesToPushBack: Int64): Unit {
-        var macBytes = this.macCache.toArray()
+        var macBytes = unsafe{this.macCache.getRawArray()[0..this.macCache.size]}
         let numberOfBytesToRead = macBytes.size - numberOfBytesToPushBack
         var updateLength: Int64
 
