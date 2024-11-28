@@ -28,17 +28,18 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
             return
         }
 
-        var temporaryZipFile: Path = getTemporaryFile(zipModel.getZipFile().getOrThrow().toString())
+        var temporaryZipFile: Path = getTemporaryFile(zipModel.getZipFile().toString())
         var successFlag: Bool = false
 
         let outputStream: SplitOutputStream = SplitOutputStream(temporaryZipFile)
-        let inputStream: RandomAccessFile = RandomAccessFile(zipModel.getZipFile().getOrThrow().toString(), OpenOption.Open(true, false))
+        let inputStream: RandomAccessFile = RandomAccessFile(zipModel.getZipFile().toString(), OpenOption.Open(true, false))
         try {
             var currentFileCopyPointer: Int64 = 0
-            var sortedFileHeaders: ArrayList<FileHeader> = cloneAndSortFileHeadersByOffset(
+            var sortedFileHeaders: Array<FileHeader> = cloneAndSortFileHeadersByOffset(
                 zipModel.getCentralDirectory().getOrThrow().getFileHeaders())
 
-            for (fileHeader in sortedFileHeaders) {
+            for (i in 0..sortedFileHeaders.size) {
+                let fileHeader: FileHeader = sortedFileHeaders[i]
                 var lengthOfCurrentEntry: Int64 = getOffsetOfNextEntry(sortedFileHeaders, fileHeader, zipModel) -
                     outputStream.getFilePointer()
                 if (shouldEntryBeRemoved(fileHeader, entriesToRemove)) {
@@ -56,20 +57,20 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
             headerWriter.finalizeZipFile(zipModel, outputStream, taskParameters.zip4cjConfig.getCharset())
             successFlag = true
         } finally {
-            this.cleanupFile(successFlag, zipModel.getZipFile().getOrThrow(), temporaryZipFile)
+            this.cleanupFile(successFlag, zipModel.getZipFile(), temporaryZipFile)
             inputStream.close()
             outputStream.close()
         }
     }
 
     protected func calculateTotalWork(taskParameters: RemoveFilesFromZipTaskParameters): Int64 {
-        return FileInfo(zipModel.getZipFile().getOrThrow()).size
+        return FileInfo(zipModel.getZipFile()).size
     }
 
-    private func filterNonExistingEntries(filesToRemove: Collection<String>): ArrayList<String> {
+    private func filterNonExistingEntries(filesToRemove: Array<String>): ArrayList<String> {
         var filteredFilesToRemove = ArrayList<String>()
-
-        for (fileToRemove in filesToRemove) {
+        for (i in 0..filesToRemove.size) {
+            let fileToRemove = filesToRemove[i]
             if (HeaderUtil.getFileHeader(zipModel, fileToRemove).isSome()) {
                 filteredFilesToRemove.append(fileToRemove)
             }
@@ -79,7 +80,8 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
     }
 
     private func shouldEntryBeRemoved(fileHeaderToBeChecked: FileHeader, fileNamesToBeRemoved: ArrayList<String>): Bool {
-        for (fileNameToBeRemoved in fileNamesToBeRemoved) {
+        for (i in 0..fileNamesToBeRemoved.size) {
+            let fileNameToBeRemoved = fileNamesToBeRemoved[i]
             // If any of the files to be removed is a directory, check if the fileHeaderToBeChecked is a sub-file or
             // a sub-directory of that directory
             if (fileNameToBeRemoved.endsWith(InternalZipConstants.ZIP_FILE_SEPARATOR) &&
@@ -94,7 +96,7 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
     }
 
     private func updateHeaders(
-        sortedFileHeaders: ArrayList<FileHeader>,
+        sortedFileHeaders: Array<FileHeader>,
         fileHeaderThatWasRemoved: FileHeader,
         offsetToSubtract: Int64
     ) {

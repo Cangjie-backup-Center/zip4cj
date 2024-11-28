@@ -206,9 +206,9 @@ public class HeaderWriter {
         var currOutputStream: SplitOutputStream
 
         if (fileHeader.getDiskNumberStart() != Int64(outputStream.getCurrentSplitFileCounter())) {
-            var parentFile = zipModel.getZipFile().getOrThrow().parent
+            var parentFile = zipModel.getZipFile().parent
             var fileNameWithoutExt = FileUtils.getZipFileNameWithoutExtension(
-                zipModel.getZipFile().getOrThrow().fileName)
+                zipModel.getZipFile().fileName)
             var fileName = parentFile.toString() + Path.Separator
             if (fileHeader.getDiskNumberStart() < 9) {
                 fileName += fileNameWithoutExt + ".z0${(fileHeader.getDiskNumberStart() + 1)}"
@@ -322,8 +322,9 @@ public class HeaderWriter {
             return
         }
 
-        for (fileHeader in zipModel.getCentralDirectory().getOrThrow().getFileHeaders()) {
-            writeFileHeader(zipModel, fileHeader, byteArrayOutputStream, rawIO, charset)
+        let fileHeaders = zipModel.getCentralDirectory().getOrThrow().getFileHeaders()
+        for (i in 0..fileHeaders.size) {
+            writeFileHeader(zipModel, fileHeaders[i], byteArrayOutputStream, rawIO, charset)
         }
     }
 
@@ -459,7 +460,8 @@ public class HeaderWriter {
         }
 
         if (let Some(extraDataRecords) <- fileHeader.getExtraDataRecords()) {
-            for (extraDataRecord in extraDataRecords) {
+            for (i in 0..extraDataRecords.size) {
+                let extraDataRecord = extraDataRecords[i]
                 if (extraDataRecord.getHeader() == HeaderSignature.AES_EXTRA_DATA_RECORD.getValue() ||
                     extraDataRecord.getHeader() == HeaderSignature.ZIP64_EXTRA_FIELD_SIGNATURE.getValue()) {
                     continue
@@ -477,7 +479,9 @@ public class HeaderWriter {
             return
         }
 
-        for (extraDataRecord in fileHeader.getExtraDataRecords().getOrThrow()) {
+        let extraDataRecords = fileHeader.getExtraDataRecords().getOrThrow()
+        for (i in 0..extraDataRecords.size) {
+            let extraDataRecord = extraDataRecords[i]
             if (extraDataRecord.getHeader() == HeaderSignature.AES_EXTRA_DATA_RECORD.getValue() ||
                 extraDataRecord.getHeader() == HeaderSignature.ZIP64_EXTRA_FIELD_SIGNATURE.getValue()) {
                 continue
@@ -610,8 +614,8 @@ public class HeaderWriter {
 
     private func countNumberOfFileHeaderEntriesOnDisk(fileHeaders: ArrayList<FileHeader>, numOfDisk: Int64): Int64 {
         var noEntries = 0
-        for (fileHeader in fileHeaders) {
-            if (fileHeader.getDiskNumberStart() == numOfDisk) {
+        for (i in 0..fileHeaders.size) {
+            if (fileHeaders[i].getDiskNumberStart() == numOfDisk) {
                 noEntries++
             }
         }

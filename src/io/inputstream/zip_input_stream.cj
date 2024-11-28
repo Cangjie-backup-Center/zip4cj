@@ -208,8 +208,8 @@ public class ZipInputStream <: InputStream & Resource {
             if (extraDataRecords.isEmpty()) {
                 return false
             }
-            for (extraDataRecord in extraDataRecords) {
-                if (extraDataRecord.getHeader() == HeaderSignature.ZIP64_EXTRA_FIELD_SIGNATURE.getValue()) {
+            for (i in 0..extraDataRecords.size) {
+                if (extraDataRecords[i].getHeader() == HeaderSignature.ZIP64_EXTRA_FIELD_SIGNATURE.getValue()) {
                     return true
                 }
             }

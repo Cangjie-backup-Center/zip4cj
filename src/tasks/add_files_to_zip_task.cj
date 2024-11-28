@@ -24,11 +24,12 @@ public class AddFilesToZipTask <: AbstractAddFileToZipTask<AddFilesToZipTaskPara
     }
 
     private func determineActualFilesToAdd(taskParameters: AddFilesToZipTaskParameters): ArrayList<Path> {
-        var filesToAdd = ArrayList<Path>()
+        let filesToAdd = ArrayList<Path>()
 
-        for (inputFile in taskParameters.filesToAdd) {
+        for (i in 0..taskParameters.filesToAdd.size) {
+            let inputFile = taskParameters.filesToAdd[i]
             filesToAdd.append(inputFile)
-            var isSymLink = FileUtils.isSymbolicLink(inputFile)
+            var isSymLink = FileInfo(inputFile).isSymbolicLink()
             var symbolicLinkAction = taskParameters.zipParameters.getSymbolicLinkAction()
             if (isSymLink && !(SymbolicLinkAction.INCLUDE_LINK_ONLY == (symbolicLinkAction))) {
                 filesToAdd.appendAll(FileUtils.getFilesInDirectoryRecursive(inputFile, taskParameters.zipParameters))

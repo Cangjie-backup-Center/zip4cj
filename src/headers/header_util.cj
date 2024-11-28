@@ -56,7 +56,8 @@ public class HeaderUtil {
 
     public static func getFileHeadersUnderDirectory(allFileHeaders: ArrayList<FileHeader>, fileName: String): ArrayList<FileHeader> {
         let fileHeadersUnderDirectory = ArrayList<FileHeader>()
-        for (fileHeader in allFileHeaders) {
+        for (i in 0..allFileHeaders.size) {
+            let fileHeader = allFileHeaders[i]
             if (let Some(v) <- fileHeader.getFileName()) {
                 if (v.startsWith(fileName)) {
                     fileHeadersUnderDirectory.append(fileHeader)
@@ -70,7 +71,8 @@ public class HeaderUtil {
 
     public static func getTotalUncompressedSizeOfAllFileHeaders(fileHeaders: ArrayList<FileHeader>): Int64 {
         var totalUncompressedSize = 0
-        for (fileHeader in fileHeaders) {
+        for (i in 0..fileHeaders.size) {
+            let fileHeader = fileHeaders[i]
             if (fileHeader.getZip64ExtendedInfo().isSome() &&
                 fileHeader.getZip64ExtendedInfo().getOrThrow().getUncompressedSize() > 0) {
                 totalUncompressedSize += fileHeader.getZip64ExtendedInfo().getOrThrow().getUncompressedSize()
@@ -89,7 +91,9 @@ public class HeaderUtil {
         if (zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size == 0) {
             return None
         }
-        for (fileHeader in zipModel.getCentralDirectory().getOrThrow().getFileHeaders()) {
+        let fileHeaders = zipModel.getCentralDirectory().getOrThrow().getFileHeaders()
+        for (i in 0..fileHeaders.size) {
+            let fileHeader = fileHeaders[i]
             var fileNameForHdr = fileHeader.getFileName()
             if (!Zip4cjUtil.isStringNotNullAndNotEmpty(fileNameForHdr)) {
                 continue

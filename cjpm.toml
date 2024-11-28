@@ -18,7 +18,7 @@
 
 [package]
   cjc-version = "0.56.4"
-  compile-option = "-Woff all"
+  compile-option = "-O2 -Woff all"
   description = "nothing here"
   link-option = ""
   name = "zip4cj"

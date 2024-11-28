@@ -26,7 +26,9 @@ public class AddFolderToZipTask <: AbstractAddFileToZipTask<AddFolderToZipTaskPa
             filesToAdd.append(taskParameters.folderToAdd)
         }
 
-        return calculateWorkForFiles(filesToAdd, taskParameters.zipParameters)
+        return calculateWorkForFiles(
+            unsafe {filesToAdd.getRawArray()[0..filesToAdd.size]},
+            taskParameters.zipParameters)
     }
 
     private func setDefaultFolderPath(taskParameters: AddFolderToZipTaskParameters) {

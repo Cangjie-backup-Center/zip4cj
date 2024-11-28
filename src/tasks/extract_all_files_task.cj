@@ -21,7 +21,9 @@ public class ExtractAllFilesTask <: AbstractExtractFileTask<ExtractAllFilesTaskP
     protected func executeTask(taskParameters: ExtractAllFilesTaskParameters, progressMonitor: ProgressMonitor) {
         let zipInputStream = prepareZipInputStream(taskParameters.zip4cjConfig)
         try {
-            for (fileHeader in getZipModel().getCentralDirectory().getOrThrow().getFileHeaders()) {
+            let fileHeaders = getZipModel().getCentralDirectory().getOrThrow().getFileHeaders()
+            for (i in 0..fileHeaders.size) {
+                let fileHeader = fileHeaders[i]
                 if (fileHeader.getFileName().getOrThrow().startsWith("__MACOSX")) {
                     progressMonitor.updateWorkCompleted(fileHeader.getUncompressedSize())
                     continue

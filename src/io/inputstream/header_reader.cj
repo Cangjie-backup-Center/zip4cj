@@ -156,9 +156,9 @@ public class HeaderReader {
             }
             if (fileHeader.isEncrypted()) {
                 if (let Some(_) <- fileHeader.getAesExtraDataRecord()) {
-                    fileHeader.setEncryptionMethod(EncryptionMethod.AES)
-                } else {
                     fileHeader.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD)
+                } else {
+                    fileHeader.setEncryptionMethod(EncryptionMethod.AES)
                 }
             }
             fileHeaders.append(fileHeader)
@@ -406,7 +406,8 @@ public class HeaderReader {
         offsetLocalHeader: Int64,
         diskNumberStart: Int64
     ): ?Zip64ExtendedInfo {
-        for (extraDataRecord in extraDataRecords) {
+        for (i in 0..extraDataRecords.size) {
+            let extraDataRecord = extraDataRecords[i]
             if (HeaderSignature.ZIP64_EXTRA_FIELD_SIGNATURE.getValue() == extraDataRecord.getHeader()) {
                 var zip64ExtendedInfo = Zip64ExtendedInfo()
                 var extraData = extraDataRecord.getData().getOrThrow()
@@ -559,23 +560,26 @@ public class HeaderReader {
                 return
             }
 
-            var aesExtraDataRecord: AESExtraDataRecord = readAesExtraDataRecord(fileHead, rawIO)
-            fileHeader.setAesExtraDataRecord(aesExtraDataRecord)
-            fileHeader.setEncryptionMethod(EncryptionMethod.AES)
+            let aesExtraDataRecord: ?AESExtraDataRecord = readAesExtraDataRecord(fileHead, rawIO)
+            if (let Some(v) <- aesExtraDataRecord) {
+                fileHeader.setAesExtraDataRecord(v)
+                fileHeader.setEncryptionMethod(EncryptionMethod.AES)
+            }
         } else {
             return
         }
     }
 
-    private func readAesExtraDataRecord(extraDataRecords: ArrayList<ExtraDataRecord>, rawIO: RawIO): AESExtraDataRecord {
-        var aesExtraDataRecord = AESExtraDataRecord()
-        for (extraDataRecord in extraDataRecords) {
+    private func readAesExtraDataRecord(extraDataRecords: ArrayList<ExtraDataRecord>, rawIO: RawIO): ?AESExtraDataRecord {
+        
+        for (i in 0..extraDataRecords.size) {
+            let extraDataRecord = extraDataRecords[i]
             if (extraDataRecord.getHeader() == HeaderSignature.AES_EXTRA_DATA_RECORD.getValue()) {
                 var aesExtraDataRecordBytes = extraDataRecord.getData()
                 if (aesExtraDataRecordBytes == None || aesExtraDataRecordBytes.getOrThrow().size != 7) {
                     throw ZipException("corrupt AES extra data records")
                 }
-
+                let aesExtraDataRecord = AESExtraDataRecord()
                 aesExtraDataRecord.setSignature(HeaderSignature.AES_EXTRA_DATA_RECORD)
                 aesExtraDataRecord.setDataSize(extraDataRecord.getSizeOfData())
 
@@ -589,10 +593,11 @@ public class HeaderReader {
                     AesKeyStrength.getAesKeyStrengthFromRawCode(Int32(aesData[4] & 0xFF)).getOrThrow())
                 aesExtraDataRecord.setCompressionMethod(
                     CompressionMethod.getCompressionMethodFromCode(rawIO.readShortLittleEndian(aesData, 5)))
+                return aesExtraDataRecord
             }
         }
 
-        return aesExtraDataRecord
+        return None
     }
 
     private func getNumberOfEntriesInCentralDirectory(zipModel: ZipModel): Int64 {

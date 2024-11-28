@@ -22,7 +22,8 @@ public class ZipModel {
 
     private var splitLength: Int64
 
-    private var zipFile: ?Path = None
+    private var zipFile: Path = unsafe { zeroValue<Path>() }
+    private var hasZipFile: Bool = false
 
     private var isZip64FormatBool: Bool = false
 
@@ -84,11 +85,16 @@ public class ZipModel {
         this.splitArchive = splitArchive
     }
 
-    public func getZipFile(): ?Path {
-        return zipFile
+    public func getZipFile(): Path {
+        return if (hasZipFile) {
+            zipFile
+        } else {
+            throw NoneValueException("zipFile is null")
+        }
     }
 
     public func setZipFile(zipFile: Path): Unit {
+        this.hasZipFile = true
         this.zipFile = zipFile
     }
 
@@ -157,9 +163,8 @@ public class ZipModel {
         zipModel.setEndOfCentralDirectoryRecord(this.getEndOfCentralDirectoryRecord())
         zipModel.setArchiveExtraDataRecord(this.getArchiveExtraDataRecord())
         zipModel.setSplitArchive(this.isSplitArchive())
-        match (this.getZipFile()) {
-            case Some(v) => zipModel.setZipFile(v)
-            case None => ()
+        if (this.hasZipFile) {
+            zipModel.setZipFile(this.zipFile)
         }
         zipModel.setZip64EndOfCentralDirectoryLocator(this.getZip64EndOfCentralDirectoryLocator())
         zipModel.setZip64EndOfCentralDirectoryRecord(this.getZip64EndOfCentralDirectoryRecord())

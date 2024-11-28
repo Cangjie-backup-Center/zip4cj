@@ -26,9 +26,9 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
             return
         }
 
-        let temporaryFile = getTemporaryFile(zipModel.getZipFile().getOrThrow().toString())
+        let temporaryFile = getTemporaryFile(zipModel.getZipFile().toString())
         var successFlag = false
-        let inputStream = RandomAccessFile(zipModel.getZipFile().getOrThrow(), OpenOption.Open(true, true))
+        let inputStream = RandomAccessFile(zipModel.getZipFile(), OpenOption.Open(true, true))
         let outputStream = SplitOutputStream(temporaryFile)
         try {
             var currentFileCopyPointer = 0
@@ -39,9 +39,10 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
             // it might be that a file name has changed because of other file name, ex: if a directory name has to be changed
             // and the file is part of that directory, by the time the file has to be changed, its name might have changed
             // when changing the name of the directory. There is some overhead with this approach, but is safer.
-            var sortedFileHeaders = cloneAndSortFileHeadersByOffset(zipModel.getCentralDirectory().getOrThrow().getFileHeaders())
+            var sortedFileHeaders: Array<FileHeader> = cloneAndSortFileHeadersByOffset(zipModel.getCentralDirectory().getOrThrow().getFileHeaders())
 
-            for (fileHeader in sortedFileHeaders) {
+            for (i in 0..sortedFileHeaders.size) {
+                let fileHeader = sortedFileHeaders[i]
                 var fileNameMapForThisEntry: Option<(String, String)> = getCorrespondingEntryFromMap(
                     fileHeader,
                     fileNamesMap
@@ -72,7 +73,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
             headerWriter.finalizeZipFile(zipModel, outputStream, charset)
             successFlag = true
         } finally {
-            cleanupFile(successFlag, zipModel.getZipFile().getOrThrow(), temporaryFile)
+            cleanupFile(successFlag, zipModel.getZipFile(), temporaryFile)
             outputStream.close()
             inputStream.close()
         }
@@ -80,7 +81,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
 
     protected func calculateTotalWork(taskParameters: RenameFilesTaskParameters): Int64 {
         taskParameters
-        return FileInfo(zipModel.getZipFile().getOrThrow()).size
+        return FileInfo(zipModel.getZipFile()).size
     }
 
     protected func getTask(): ProgressMonitorTask {
@@ -119,8 +120,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
         return currentFileCopyPointer
     }
 
-    private func getCorrespondingEntryFromMap(fileHeaderToBeChecked: FileHeader, fileNamesMap: Map<String, String>): ?(String, 
-        String) {
+    private func getCorrespondingEntryFromMap(fileHeaderToBeChecked: FileHeader, fileNamesMap: Map<String, String>): ?(String, String) {
         for (entry in fileNamesMap) {
             if (fileHeaderToBeChecked.getFileName().getOrThrow().startsWith(entry[0])) {
                 return entry
@@ -130,7 +130,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
     }
 
     private func updateHeadersInZipModel(
-        sortedFileHeaders: ArrayList<FileHeader>,
+        sortedFileHeaders: Array<FileHeader>,
         fileHeader: FileHeader,
         newFileName: String,
         newFileNameBytes: Array<Byte>,
@@ -176,7 +176,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
 
             if (let Some(fileHeaderToBeChanged) <- HeaderUtil.getFileHeader(zipModel, key)) {
                 if (fileHeaderToBeChanged.isDirectory() && !value.endsWith(InternalZipConstants.ZIP_FILE_SEPARATOR)) {
-                    fileNamesMapToBeChanged.put(key, value + InternalZipConstants.ZIP_FILE_SEPARATOR)
+                    fileNamesMapToBeChanged.put(key, "${value}${InternalZipConstants.ZIP_FILE_SEPARATOR}")
                 } else {
                     fileNamesMapToBeChanged.put(key, value)
                 }

@@ -21,9 +21,9 @@ public class ExtractAllFilesTaskParameters <: AbstractZipTaskParameters {
 }
 
 public class RemoveFilesFromZipTaskParameters <: AbstractZipTaskParameters {
-    let filesToRemove: Collection<String>
+    let filesToRemove: Array<String>
 
-    public init(filesToRemove: Collection<String>, zip4cjConfig: Zip4cjConfig) {
+    public init(filesToRemove: Array<String>, zip4cjConfig: Zip4cjConfig) {
         super(zip4cjConfig)
         this.filesToRemove = filesToRemove
     }
@@ -101,10 +101,10 @@ public class SetCommentTaskTaskParameters <: AbstractZipTaskParameters {
 }
 
 public class AddFilesToZipTaskParameters <: AbstractZipTaskParameters {
-    let filesToAdd: Collection<Path>
+    let filesToAdd: Array<Path>
     let zipParameters: ZipParameters
 
-    public init(filesToAdd: Collection<Path>, zipParameters: ZipParameters, zip4cjConfig: Zip4cjConfig) {
+    public init(filesToAdd: Array<Path>, zipParameters: ZipParameters, zip4cjConfig: Zip4cjConfig) {
         super(zip4cjConfig)
         this.filesToAdd = filesToAdd
         this.zipParameters = zipParameters

@@ -76,6 +76,20 @@ public class ZipFile <: Resource {
         filesToAdd: Collection<Path>,
         parameters: ZipParameters,
         splitArchive: Bool,
+        splitLength: Int64) {
+        if (let Some(v) <- (filesToAdd as ArrayList<Path>)) {
+            createSplitZipFile(unsafe{v.getRawArray()[0..v.size]}, parameters, splitArchive, splitLength)
+        } else if (let Some(v) <- (filesToAdd as Array<Path>)) {
+            createSplitZipFile(v, parameters, splitArchive, splitLength)
+        } else {
+            createSplitZipFile(filesToAdd.toArray(), parameters, splitArchive, splitLength)
+        }
+    }
+
+    public func createSplitZipFile(
+        filesToAdd: Array<Path>,
+        parameters: ZipParameters,
+        splitArchive: Bool,
         splitLength: Int64
     ) {
         if (exists(zipFile)) {
@@ -143,6 +157,16 @@ public class ZipFile <: Resource {
     }
 
     public func addFiles(filesToAdd: Collection<Path>, parameters!: ZipParameters = ZipParameters()) {
+        if (let Some(v) <- (filesToAdd as ArrayList<Path>)) {
+            addFiles(unsafe{v.getRawArray()[0..v.size]}, parameters: parameters)
+        } else if (let Some(v) <- (filesToAdd as Array<Path>)) {
+            addFiles(v, parameters: parameters)
+        } else {
+            addFiles(filesToAdd.toArray(), parameters: parameters)
+        }
+    }
+
+    public func addFiles(filesToAdd: Array<Path>, parameters!: ZipParameters = ZipParameters()) {
         if (filesToAdd.size == 0) {
             throw ZipException("input file List is None or empty")
         }
@@ -252,7 +276,8 @@ public class ZipFile <: Resource {
         }
         match (zipModel.getCentralDirectory()) {
             case Some(v) => 
-                for (fileHeader in v.getFileHeaders() where fileHeader.isEncrypted()) {
+                let fileHeaders = v.getFileHeaders()
+                for (i in 0..fileHeaders.size where fileHeaders[i].isEncrypted()) {
                     isEncrypte = true
                     break
                 }
@@ -283,6 +308,15 @@ public class ZipFile <: Resource {
     }
 
     public func removeFiles(fileNames: Collection<String>) {
+        if (let Some(v) <- (fileNames as ArrayList<String>)) {
+            removeFiles(unsafe {v.getRawArray()[0..v.size]})
+        } else if (let Some(v) <- (fileNames as Array<String>)) {
+            removeFiles(v)
+        } else {
+            removeFiles(fileNames.toArray())
+        }
+    }
+    public func removeFiles(fileNames: Array<String>) {
         if (fileNames.isEmpty()) {
             return
         }
@@ -388,8 +422,8 @@ public class ZipFile <: Resource {
 
     public func close(): Unit {
         func tmp(): Unit {
-            for (input in openInputStreams) {
-                input.close()
+            for (i in 0..openInputStreams.size) {
+                openInputStreams[i].close()
             }
             this.openInputStreams.clear()
         }
@@ -451,10 +485,8 @@ public class ZipFile <: Resource {
     }
 
     private func verifyAllSplitFilesOfZipExists(allSplitFiles: ArrayList<Path>): Bool {
-        for (splitFile in allSplitFiles) {
-            if (!exists(splitFile)) {
-                return false
-            }
+        for (i in 0..allSplitFiles.size where !exists(allSplitFiles[i])) {
+            return false
         }
         return true
     }

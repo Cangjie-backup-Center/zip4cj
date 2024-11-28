@@ -16,7 +16,7 @@ public class SetCommentTask <: AsyncZipTask<SetCommentTaskTaskParameters> {
         var endOfCentralDirectoryRecord: EndOfCentralDirectoryRecord = zipModel.getEndOfCentralDirectoryRecord()
         endOfCentralDirectoryRecord.setComment(taskParameters.comment)
 
-        try (outputStream = SplitOutputStream(zipModel.getZipFile().getOrThrow())) {
+        try (outputStream = SplitOutputStream(zipModel.getZipFile())) {
             if (zipModel.isZip64Format()) {
                 outputStream.seek(
                     zipModel.getZip64EndOfCentralDirectoryRecord().getOffsetStartCentralDirectoryWRTStartDiskNumber())

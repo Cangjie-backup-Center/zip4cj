@@ -21,7 +21,8 @@ public class ExtractFileTask <: AbstractExtractFileTask<ExtractFileTaskParameter
         let fileHeadersUnderDirectory = getFileHeadersToExtract(taskParameters.fileToExtract)
         try (zipInputStream = createZipInputStream(taskParameters.zip4cjConfig)) {
             var readBuff = Array<Byte>(taskParameters.zip4cjConfig.getBufferSize(), repeat: 0)
-            for (fileHeader in fileHeadersUnderDirectory) {
+            for (i in 0..fileHeadersUnderDirectory.size) {
+                let fileHeader = fileHeadersUnderDirectory[i]
                 splitInputStream.getOrThrow().prepareExtractionForFileHeader(fileHeader)
                 var newFileName = determineNewFileName(taskParameters.newFileName.getOrThrow(), taskParameters.fileToExtract,
                     fileHeader)

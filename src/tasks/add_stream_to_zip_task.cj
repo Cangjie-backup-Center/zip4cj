@@ -35,7 +35,7 @@ public class AddStreamToZipTask <: AbstractAddFileToZipTask<AddStreamToZipTaskPa
         }
 
         let splitOutputStream = SplitOutputStream(
-            getZipModel().getZipFile().getOrThrow(),
+            getZipModel().getZipFile(),
             getZipModel().getSplitLength()
         )
         let zipOutputStream = initializeOutputStream(splitOutputStream, taskParameters.zip4cjConfig)

@@ -6,6 +6,7 @@ package zip4cj.tasks
 internal import std.io.InputStream
 internal import std.io.OutputStream
 internal import std.io.BufferedOutputStream
+internal import std.fs.SymbolicLink
 internal import std.fs.Path
 internal import std.fs.FileInfo
 internal import std.fs.File
@@ -20,6 +21,7 @@ internal import std.collection.HashMap
 internal import std.collection.concurrent.ConcurrentHashMap
 internal import std.collection.concurrent.BlockingQueue
 internal import std.sync.Monitor
+internal import std.sort.stableSort
 
 internal import zip4cj.util.*
 internal import zip4cj.model.*
