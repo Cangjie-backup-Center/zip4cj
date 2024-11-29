@@ -673,7 +673,7 @@ public func decodeCp437(arr: Array<Byte>): String {
 
 public func encodeCp437(str: String): Array<Byte> {
     let runs = str.toRuneArray()
-    let ll = Array<Byte>(runs.size, repeat: 0)
+    let ll = Array<Byte>(runs.size, item: 0)
     for (i in 0..runs.size) {
         ll[i] = UInt8(UInt32(decode_map[runs[i]]))
     }

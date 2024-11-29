@@ -35,7 +35,7 @@ public class UnzipUtil {
 
     public static func createSplitInputStream(zipModel: ZipModel): SplitFileInputStream {
         let zipFile = zipModel.getZipFile()
-        if (zipFile.fileName.endsWith(InternalZipConstants.SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN)) {
+        if (zipFile.fileName.getOrThrow().endsWith(InternalZipConstants.SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN)) {
             return NumberedSplitFileInputStream(zipFile)
         }
 

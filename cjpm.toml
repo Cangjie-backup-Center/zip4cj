@@ -14,7 +14,6 @@
       [target.x86_64-unknown-windows-gnu.bin-dependencies.package-option]
 
 [dependencies]
-  charset4cj = {branch = "v0.0.1.B003", git = "https://gitcode.com/Cangjie-TPC/charset4cj.git"}
 
 [package]
   cjc-version = "0.56.4"

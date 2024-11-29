@@ -31,7 +31,7 @@ public class ZipOutputStream <: OutputStream & Resource {
 
     public init(outputStream: OutputStream, 
                 password!: ?Array<Rune> = None, 
-                zip4cjConfig!: Zip4cjConfig = Zip4cjConfig(None, InternalZipConstants.BUFF_SIZE, InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING), 
+                zip4cjConfig!: Zip4cjConfig = Zip4cjConfig(InternalZipConstants.BUFF_SIZE, InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING), 
                 zipModel!: ZipModel = ZipModel()) {
         if (zip4cjConfig.getBufferSize() < InternalZipConstants.MIN_BUFF_SIZE) {
             throw IllegalArgumentException(
@@ -102,7 +102,7 @@ public class ZipOutputStream <: OutputStream & Resource {
         }
         zipModel.getEndOfCentralDirectoryRecord().setOffsetOfStartOfCentralDirectory(
             countingOutputStream.getNumberOfBytesWritten())
-        headerWriter.finalizeZipFile(zipModel, countingOutputStream, this.zip4cjConfig.getCharset())
+        headerWriter.finalizeZipFile(zipModel, countingOutputStream)
         countingOutputStream.close()
         this.streamClosed = true
     }
@@ -116,12 +116,11 @@ public class ZipOutputStream <: OutputStream & Resource {
 
     func initializeAndWriteFileHeader(zipParameters: ZipParameters): Unit {
         fileHeader = fileHeaderFactory.generateFileHeader(zipParameters, countingOutputStream.isSplitZipFile(),
-            Int64(countingOutputStream.getCurrentSplitFileCounter()), zip4cjConfig.getCharset(), rawIO)
+            Int64(countingOutputStream.getCurrentSplitFileCounter()), rawIO)
         fileHeader.getOrThrow().setOffsetLocalHeader(countingOutputStream.getOffsetForNextEntry())
 
         localFileHeader = fileHeaderFactory.generateLocalFileHeader(fileHeader.getOrThrow())
-        headerWriter.writeLocalFileHeader(zipModel, localFileHeader.getOrThrow(), countingOutputStream,
-            zip4cjConfig.getCharset())
+        headerWriter.writeLocalFileHeader(zipModel, localFileHeader.getOrThrow(), countingOutputStream )
     }
 
     func reset(): Unit {

@@ -26,8 +26,8 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
         if (isSymbolicLink && !unzipParameters.isExtractSymbolicLinks()) {
             return
         }
-        if (!outputPath.endsWith(Path.Separator)) {
-            outputPath = "${outputPath}${Path.Separator}"
+        if (!outputPath.endsWith(FileSeparator)) {
+            outputPath = "${outputPath}${FileSeparator}"
         }
         var outputFile: Path = determineOutputFile(fileHeader, outputPath, newFileName)
         // progressMonitor.setFileName(outputFile.toCanonical().toString()) // Fix Run it later, there will be an error when running here
@@ -35,7 +35,7 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
         // TODO assertCanonicalPathsAreSame
         verifyNextEntry(zipInputStream, fileHeader)
         if (fileHeader.isDirectory()) {
-            if (!exists(outputFile)) {
+            if (!Directory.exists(outputFile)) {
                 Directory.create(outputFile, recursive: true)
             }
         } else if (isSymbolicLink) {
@@ -64,8 +64,12 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
         progressMonitor: ProgressMonitor,
         buff: Array<Byte>
     ) {
-        if (!exists(outputFile.parent)) {
-            Directory.create(outputFile.parent, recursive: true)
+        match(outputFile.directoryName) {
+            case Some(v) => 
+                if (!Directory.exists(v)) {
+                    Directory.create(v, recursive: true)
+                }
+            case None => ()
         }
         try (file = File(outputFile, OpenOption.CreateOrTruncate(true))) {
             let outputStream = BufferedOutputStream<File>(file, 8192 * 2)
@@ -78,8 +82,8 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
             }
             outputStream.flush()
         } catch (e: Exception) {
-            if (exists(outputFile)) {
-                remove(outputFile, recursive: true)
+            if (File.exists(outputFile)) {
+                File.delete(outputFile)
             }
             throw e
         }
@@ -113,14 +117,14 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(newFileName)) {
             outputFileName = newFileName.getOrThrow()
         }
-        if (!exists(outputPath)) {
+        if (!Directory.exists(outputPath)) {
             Directory.create(outputPath)
         }
         return Path(outputPath).join(getFileNameWithSystemFileSeparators(outputFileName))
     }
 
     private func getFileNameWithSystemFileSeparators(fileNameToReplace: String): String {
-        return fileNameToReplace.replace(":\\\\", "_").replace("/", Path.Separator).replace("\\\\", Path.Separator)
+        return fileNameToReplace.replace(":\\\\", "_").replace("/", FileSeparator).replace("\\\\", FileSeparator)
     }
 
     protected func getTask(): ProgressMonitorTask {

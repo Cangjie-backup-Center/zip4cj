@@ -8,7 +8,6 @@ public class FileHeaderFactory {
         zipParameters: ZipParameters,
         isSplitZip: Bool,
         currentDiskNumberStart: Int64,
-        charset: ?Charset,
         rawIO: RawIO
     ): FileHeader {
         let fh = FileHeader()
@@ -36,7 +35,7 @@ public class FileHeaderFactory {
 
         var fileName = validateAndGetFileName(zipParameters.getFileNameInZip())
         fh.setFileName(fileName)
-        fh.setFileNameLength(determineFileNameLength(fileName, charset))
+        fh.setFileNameLength(determineFileNameLength(fileName))
         fh.setDiskNumberStart(if (isSplitZip) {
             currentDiskNumberStart
         } else {
@@ -58,8 +57,7 @@ public class FileHeaderFactory {
             fh.setCrc(zipParameters.getEntryCRC())
         }
 
-        fh.setGeneralPurposeFlag(determineGeneralPurposeBitFlag(fh.isEncrypted(), zipParameters, charset
-        ))
+        fh.setGeneralPurposeFlag(determineGeneralPurposeBitFlag(fh.isEncrypted(), zipParameters))
         fh.setDataDescriptorExists(zipParameters.isWriteExtendedLocalFileHeader())
         fh.setFileComment(zipParameters.getFileComment())
         return fh
@@ -85,13 +83,10 @@ public class FileHeaderFactory {
         return localFileHeader
     }
 
-    private func determineGeneralPurposeBitFlag(isEncrypted: Bool, zipParameters: ZipParameters, charset: ?Charset): Array<Byte> {
-        var generalPurposeBitFlag = Array<Byte>(2, repeat: 0)
+    private func determineGeneralPurposeBitFlag(isEncrypted: Bool, zipParameters: ZipParameters): Array<Byte> {
+        var generalPurposeBitFlag = Array<Byte>(2, item: 0)
         generalPurposeBitFlag[0] = generateFirstGeneralPurposeByte(isEncrypted, zipParameters)
-        if (charset == None || InternalZipConstants.CHARSET_UTF_8 == (charset.getOrThrow())) {
-            // set 3rd bit which corresponds to utf-8 file name charset
-            generalPurposeBitFlag[1] = BitUtils.setBit(generalPurposeBitFlag[1], 3)
-        }
+        generalPurposeBitFlag[1] = BitUtils.setBit(generalPurposeBitFlag[1], 3)
         return generalPurposeBitFlag
     }
 
@@ -152,7 +147,7 @@ public class FileHeaderFactory {
         return aesData
     }
 
-    private func determineFileNameLength(fileName: String, charset: ?Charset): Int64 {
-        return HeaderUtil.getBytesFromString(fileName, charset).size
+    private func determineFileNameLength(fileName: String): Int64 {
+        return HeaderUtil.getBytesFromString(fileName).size
     }
 }

@@ -5,7 +5,7 @@ package zip4cj.io.outputstream
 
 class AesCipherOutputStream <: CipherOutputStream<AESEncrypter> {
 
-    private var pendingBuffer = Array<Byte>(InternalZipConstants.AES_BLOCK_SIZE, repeat: 0)
+    private var pendingBuffer = Array<Byte>(InternalZipConstants.AES_BLOCK_SIZE, item: 0)
     private var pendingBufferLength = 0
 
     public init(outputStream: ZipEntryOutputStream,

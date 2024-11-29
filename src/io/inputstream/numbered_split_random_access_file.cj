@@ -21,7 +21,7 @@ public func initializeRandomAccessFileForHeaderReading(zipFile: Path): RandomAcc
         numberedSplitRandomAccessFile.openLastSplitFileForReading()
         return numberedSplitRandomAccessFile
     }
-    if (!exists(zipFile)) {
+    if (!File.exists(zipFile)) {
         File.create(zipFile)
     }
     return RandomAccessFile(zipFile, OpenOption.Open(true, true))
@@ -32,7 +32,7 @@ class NumberedSplitRandomAccessFile <: RandomAccessFile {
     private var splitLength: Int64
     private var allSortedSplitFiles: Array<Path>
     private var randomAccessFile: RandomAccessFile
-    private var singleByteBuffer = Array<Byte>(1, repeat: 0)
+    private var singleByteBuffer = Array<Byte>(1, item: 0)
     private var currentOpenSplitFileCounter: Int64 = 0
     private var rwMode: String
 

@@ -21,7 +21,7 @@ func generateSalt(size: Int64): Array<Byte> {
         rounds = 4
     }
 
-    let salt: Array<Byte> = Array<Byte>(size, repeat: 0)
+    let salt: Array<Byte> = Array<Byte>(size, item: 0)
     for (j in 0..rounds) {
         let i = random.nextInt32()
         salt[j * 4] =  UInt8((i >> 24) & 0xff)
@@ -58,8 +58,8 @@ public class AESEncrypter <: Encrypter {
         }
 
         this.finished = false
-        this.counterBlock = Array<Byte>(InternalZipConstants.AES_BLOCK_SIZE, repeat: 0)
-        this.iv = Array<Byte>(InternalZipConstants.AES_BLOCK_SIZE, repeat: 0)
+        this.counterBlock = Array<Byte>(InternalZipConstants.AES_BLOCK_SIZE, item: 0)
+        this.iv = Array<Byte>(InternalZipConstants.AES_BLOCK_SIZE, item: 0)
         this.saltBytes = generateSalt(aesKeyStrength.getSaltLength())
         let derivedKey: Array<Byte> = AesCipherUtil.derivePasswordBasedKey(saltBytes, password, aesKeyStrength, useUtf8ForPassword)
         this.derivedPasswordVerifier = AesCipherUtil.derivePasswordVerifier(derivedKey, aesKeyStrength)

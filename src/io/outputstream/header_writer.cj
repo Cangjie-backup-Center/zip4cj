@@ -9,16 +9,15 @@ public class HeaderWriter {
     private static let AES_EXTRA_DATA_RECORD_SIZE: Int32 = 11
 
     private let rawIO = RawIO()
-    private let longBuff = Array<Byte>(8, repeat: 0)
-    private let intBuff = Array<Byte>(4, repeat: 0)
+    private let longBuff = Array<Byte>(8, item: 0)
+    private let intBuff = Array<Byte>(4, item: 0)
 
     public func writeLocalFileHeader(
         zipModel: ZipModel,
         localFileHeader: LocalFileHeader,
-        outputStream: OutputStream,
-        charset: ?Charset
+        outputStream: OutputStream
     ) {
-        let byteArrayOutputStream = ByteBuffer()
+        let byteArrayOutputStream = ByteArrayStream()
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(localFileHeader.getSignature().getOrThrow().getValue()))
         rawIO.writeShortLittleEndian(byteArrayOutputStream, localFileHeader.getVersionNeededToExtract())
         if (let Some(v) <- localFileHeader.getGeneralPurposeFlag()) {
@@ -61,7 +60,7 @@ public class HeaderWriter {
 
         var fileNameBytes = InternalZipConstants.NULL_BYTE_ARRAY
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(localFileHeader.getFileName())) {
-            fileNameBytes = HeaderUtil.getBytesFromString(localFileHeader.getFileName().getOrThrow(), charset)
+            fileNameBytes = HeaderUtil.getBytesFromString(localFileHeader.getFileName().getOrThrow())
         }
         rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(fileNameBytes.size))
 
@@ -99,9 +98,9 @@ public class HeaderWriter {
             )
             rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(aesExtraDataRecord.getDataSize()))
             rawIO.writeShortLittleEndian(byteArrayOutputStream, aesExtraDataRecord.getAesVersion().getVersionNumber())
-            byteArrayOutputStream.write(HeaderUtil.getBytesFromString(aesExtraDataRecord.getVendorID(), charset))
+            byteArrayOutputStream.write(HeaderUtil.getBytesFromString(aesExtraDataRecord.getVendorID()))
 
-            var aesStrengthBytes = Array<Byte>(1, repeat: 0)
+            var aesStrengthBytes = Array<Byte>(1, item: 0)
             aesStrengthBytes[0] = UInt8(aesExtraDataRecord.getAesKeyStrength().getRawCode())
             byteArrayOutputStream.write(aesStrengthBytes)
 
@@ -116,7 +115,7 @@ public class HeaderWriter {
         if (localFileHeader.isNone()) {
             throw ZipException("input parameters is None, cannot write extended local header")
         }
-        let byteArrayOutputStream = ByteBuffer()
+        let byteArrayOutputStream = ByteArrayStream()
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(HeaderSignature.EXTRA_DATA_RECORD.getValue()))
 
         rawIO.writeLongLittleEndian(longBuff, 0, localFileHeader.getOrThrow().getCrc())
@@ -135,11 +134,11 @@ public class HeaderWriter {
         outputStream.write(byteArrayOutputStream.bytes())
     }
 
-    public func finalizeZipFile(zipModel: ZipModel, outputStream: OutputStream, charset: ?Charset): Unit {
-        let byteArrayOutputStream = ByteBuffer()
+    public func finalizeZipFile(zipModel: ZipModel, outputStream: OutputStream): Unit {
+        let byteArrayOutputStream = ByteArrayStream()
         processHeaderData(zipModel, outputStream)
         let offsetCentralDir = getOffsetOfCentralDirectory(zipModel)
-        writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO, charset)
+        writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO)
         let sizeOfCentralDir = byteArrayOutputStream.length
 
         if (zipModel.isZip64Format() || offsetCentralDir >= InternalZipConstants.ZIP_64_SIZE_LIMIT ||
@@ -172,14 +171,14 @@ public class HeaderWriter {
         }
 
         writeEndOfCentralDirectoryRecord(zipModel, Int32(sizeOfCentralDir), offsetCentralDir, byteArrayOutputStream,
-            rawIO, charset)
-        writeZipHeaderBytes(zipModel, outputStream, byteArrayOutputStream.bytes(), charset)
+            rawIO)
+        writeZipHeaderBytes(zipModel, outputStream, byteArrayOutputStream.bytes())
     }
 
-    public func finalizeZipFileWithoutValidations(zipModel: ZipModel, outputStream: OutputStream, charset: ?Charset) {
-        let byteArrayOutputStream: ByteBuffer = ByteBuffer()
+    public func finalizeZipFileWithoutValidations(zipModel: ZipModel, outputStream: OutputStream) {
+        let byteArrayOutputStream: ByteArrayStream = ByteArrayStream()
         let offsetCentralDir = getOffsetOfCentralDirectory(zipModel)
-        writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO, charset)
+        writeCentralDirectory(zipModel, byteArrayOutputStream, rawIO)
         let sizeOfCentralDir = byteArrayOutputStream.length
 
         if (zipModel.isZip64Format() || offsetCentralDir >= InternalZipConstants.ZIP_64_SIZE_LIMIT ||
@@ -196,9 +195,8 @@ public class HeaderWriter {
                 byteArrayOutputStream, rawIO)
         }
 
-        writeEndOfCentralDirectoryRecord(zipModel, Int32(sizeOfCentralDir), offsetCentralDir, byteArrayOutputStream,
-            rawIO, charset)
-        writeZipHeaderBytes(zipModel, outputStream, byteArrayOutputStream.bytes(), charset)
+        writeEndOfCentralDirectoryRecord(zipModel, Int32(sizeOfCentralDir), offsetCentralDir, byteArrayOutputStream, rawIO)
+        writeZipHeaderBytes(zipModel, outputStream, byteArrayOutputStream.bytes())
     }
 
     public func updateLocalFileHeader(fileHeader: FileHeader, zipModel: ZipModel, outputStream: SplitOutputStream) {
@@ -206,10 +204,10 @@ public class HeaderWriter {
         var currOutputStream: SplitOutputStream
 
         if (fileHeader.getDiskNumberStart() != Int64(outputStream.getCurrentSplitFileCounter())) {
-            var parentFile = zipModel.getZipFile().parent
+            var parentFile = zipModel.getZipFile().directoryName.getOrThrow()
             var fileNameWithoutExt = FileUtils.getZipFileNameWithoutExtension(
-                zipModel.getZipFile().fileName)
-            var fileName = parentFile.toString() + Path.Separator
+                zipModel.getZipFile().fileName.getOrThrow())
+            var fileName = parentFile.toString() + FileSeparator
             if (fileHeader.getDiskNumberStart() < 9) {
                 fileName += fileNameWithoutExt + ".z0${(fileHeader.getDiskNumberStart() + 1)}"
             } else {
@@ -281,12 +279,11 @@ public class HeaderWriter {
     private func writeZipHeaderBytes(
         zipModel: ZipModel,
         outputStream: OutputStream,
-        buff: Array<Byte>,
-        charset: ?Charset
+        buff: Array<Byte>
     ) {
         if (let Some(output) <- (outputStream as CountingOutputStream)) {
             if (output.checkBuffSizeAndStartNextSplitFile(Int32(buff.size))) {
-                finalizeZipFile(zipModel, output, charset)
+                finalizeZipFile(zipModel, output)
                 return
             }
         }
@@ -314,9 +311,8 @@ public class HeaderWriter {
 
     private func writeCentralDirectory(
         zipModel: ZipModel,
-        byteArrayOutputStream: ByteBuffer,
-        rawIO: RawIO,
-        charset: ?Charset
+        byteArrayOutputStream: ByteArrayStream,
+        rawIO: RawIO
     ) {
         if (zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size <= 0) {
             return
@@ -324,19 +320,18 @@ public class HeaderWriter {
 
         let fileHeaders = zipModel.getCentralDirectory().getOrThrow().getFileHeaders()
         for (i in 0..fileHeaders.size) {
-            writeFileHeader(zipModel, fileHeaders[i], byteArrayOutputStream, rawIO, charset)
+            writeFileHeader(zipModel, fileHeaders[i], byteArrayOutputStream, rawIO)
         }
     }
 
     private func writeFileHeader(
         zipModel: ZipModel,
         fileHeader: FileHeader,
-        byteArrayOutputStream: ByteBuffer,
-        rawIO: RawIO,
-        charset: ?Charset
+        byteArrayOutputStream: ByteArrayStream,
+        rawIO: RawIO
     ) {
 
-        let emptyShortByte = Array<Byte>(2, repeat: 0)
+        let emptyShortByte = Array<Byte>(2, item: 0)
         var writeZip64ExtendedInfo = this.isZip64Entry(fileHeader)
 
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(fileHeader.getSignature().getOrThrow().getValue()))
@@ -363,14 +358,14 @@ public class HeaderWriter {
             byteArrayOutputStream.write(longBuff[0..4])
         }
 
-        var fileNameBytes = Array<Byte>(1, repeat: 0)
+        var fileNameBytes = Array<Byte>(1, item: 0)
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(fileHeader.getFileName())) {
-            fileNameBytes = HeaderUtil.getBytesFromString(fileHeader.getFileName().getOrThrow(), charset)
+            fileNameBytes = HeaderUtil.getBytesFromString(fileHeader.getFileName().getOrThrow())
         }
         rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(fileNameBytes.size))
         //Compute offset bytes before extra field is written for Zip64 compatibility
         //NOTE: this data is not written now, but written at a later point
-        var offsetLocalHeaderBytes = Array<Byte>(4, repeat: 0)
+        var offsetLocalHeaderBytes = Array<Byte>(4, item: 0)
         if (writeZip64ExtendedInfo) {
             rawIO.writeLongLittleEndian(longBuff, 0, InternalZipConstants.ZIP_64_SIZE_LIMIT)
             ArrayCopy(longBuff, 0, offsetLocalHeaderBytes, 0, 4)
@@ -385,7 +380,7 @@ public class HeaderWriter {
         var fileComment = fileHeader.getFileComment()
         var fileCommentBytes = InternalZipConstants.NULL_BYTE_ARRAY
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(fileComment)) {
-            fileCommentBytes = HeaderUtil.getBytesFromString(fileComment.getOrThrow(), charset)
+            fileCommentBytes = HeaderUtil.getBytesFromString(fileComment.getOrThrow())
         }
         rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(fileCommentBytes.size))
 
@@ -432,9 +427,9 @@ public class HeaderWriter {
             )
             rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(aesExtraDataRecord.getDataSize()))
             rawIO.writeShortLittleEndian(byteArrayOutputStream, aesExtraDataRecord.getAesVersion().getVersionNumber())
-            byteArrayOutputStream.write(HeaderUtil.getBytesFromString(aesExtraDataRecord.getVendorID(), charset))
+            byteArrayOutputStream.write(HeaderUtil.getBytesFromString(aesExtraDataRecord.getVendorID()))
 
-            let aesStrengthBytes = Array<Byte>(1, repeat: 0)
+            let aesStrengthBytes = Array<Byte>(1, item: 0)
             aesStrengthBytes[0] = UInt8(aesExtraDataRecord.getAesKeyStrength().getRawCode())
             byteArrayOutputStream.write(aesStrengthBytes)
 
@@ -498,7 +493,7 @@ public class HeaderWriter {
 
     private func writeZip64EndOfCentralDirectoryRecord(
         zip64EndOfCentralDirectoryRecord: Zip64EndOfCentralDirectoryRecord,
-        byteArrayOutputStream: ByteBuffer,
+        byteArrayOutputStream: ByteArrayStream,
         rawIO: RawIO
     ) {
         rawIO.writeIntLittleEndian(
@@ -534,7 +529,7 @@ public class HeaderWriter {
 
     private func writeZip64EndOfCentralDirectoryLocator(
         zip64EndOfCentralDirectoryLocator: Zip64EndOfCentralDirectoryLocator,
-        byteArrayOutputStream: ByteBuffer,
+        byteArrayOutputStream: ByteArrayStream,
         rawIO: RawIO
     ) {
         rawIO.writeIntLittleEndian(
@@ -559,11 +554,10 @@ public class HeaderWriter {
         zipModel: ZipModel,
         sizeOfCentralDir: Int32,
         offsetCentralDir: Int64,
-        byteArrayOutputStream: ByteBuffer,
-        rawIO: RawIO,
-        charset: ?Charset
+        byteArrayOutputStream: ByteArrayStream,
+        rawIO: RawIO
     ) {
-        let longByte = Array<Byte>(8, repeat: 0)
+        let longByte = Array<Byte>(8, item: 0)
         rawIO.writeIntLittleEndian(byteArrayOutputStream, Int32(HeaderSignature.END_OF_CENTRAL_DIRECTORY.getValue()))
         rawIO.writeShortLittleEndian(
             byteArrayOutputStream,
@@ -604,7 +598,7 @@ public class HeaderWriter {
 
         var comment = zipModel.getEndOfCentralDirectoryRecord().getComment()
         if (Zip4cjUtil.isStringNotNullAndNotEmpty(comment)) {
-            let commentBytes = HeaderUtil.getBytesFromString(comment, charset)
+            let commentBytes = HeaderUtil.getBytesFromString(comment)
             rawIO.writeShortLittleEndian(byteArrayOutputStream, Int32(commentBytes.size))
             byteArrayOutputStream.write(commentBytes)
         } else {

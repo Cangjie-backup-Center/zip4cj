@@ -22,7 +22,7 @@ class BinTools {
             // Assume leading zero for odd string length
             m = "0${s}".toRuneArray()
         }
-        var r = Array<Byte>(m.size / 2, repeat: 0)
+        var r = Array<Byte>(m.size / 2, item: 0)
         var i = 0
         for (n in 0..m.size) {
             var h = m[i]

@@ -21,7 +21,7 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
             throw ZipException(
                 "split length less than minimum allowed split length of ${InternalZipConstants.MIN_SPLIT_LENGTH} Bytes")
         }
-        this.raf = if (exists(file) && FileInfo(file).isRegular()) {
+        this.raf = if (File.exists(file) && FileInfo(file).isFile()) {
             RandomAccessFile(file, OpenOption.Open(true, true))
         } else {
             RandomAccessFile(file, OpenOption.CreateOrTruncate(true))
@@ -64,9 +64,9 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
     }
 
     private func startNextSplitFile() {
-        var zipFileWithoutExt = zipFile.fileNameWithoutExtension
-        var zipFileName = canonicalize(zipFile)
-        var parentPath = zipFileName.parent
+        var zipFileWithoutExt = zipFile.fileNameWithoutExtension ?? ""
+        var zipFileName = zipFile.toCanonical()
+        var parentPath = zipFileName.directoryName.getOrThrow()
         var fileExtension =  if (currSplitFileCounter >= 9) {
             ".z${currSplitFileCounter + 1}"
         } else {
@@ -77,15 +77,15 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
         raf.flush()
         raf.close()
 
-        if (exists(currSplitFile)) {
+        if (File.exists(currSplitFile)) {
             throw ZipException(
                 "split file: ${currSplitFile} already exists in the current directory, cannot rename this file")
         }
 
-        if (exists(currSplitFile)) {
+        if (File.exists(currSplitFile)) {
             throw ZipException("cannot rename newly created split file")
         }
-        rename(zipFileName, to: currSplitFile, overwrite: true)
+        File.move(zipFileName, currSplitFile, true)
         raf = RandomAccessFile(zipFile, OpenOption.Create(true))
         currSplitFileCounter++
     }
@@ -149,7 +149,7 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
     }
 
     public func skipBytes(n: Int64): Int64 {
-        var temp = Array<Byte>(1, repeat: 0)
+        var temp = Array<Byte>(1, item: 0)
         for (i in 0..n) {
             let read = raf.read(temp)
             if (read <= 0) {

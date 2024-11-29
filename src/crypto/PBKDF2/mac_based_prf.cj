@@ -5,7 +5,7 @@ package zip4cj.crypto.PBKDF2
 
 @OverflowWrapping
 func ccc (arr: Array<UInt8>) : Array<Int8> {
-    let t = Array<Int8>(arr.size, repeat: 0)
+    let t = Array<Int8>(arr.size, item: 0)
     for (i in 0..arr.size) {
         t[i] = Int8(arr[i])
     }

@@ -19,13 +19,9 @@ public class Zip4cjUtil {
 
     public static func createDirectoryIfNotExists(file: Path): Bool {
         /* Temporal and Temporal Implementation */
-        if (exists(file)) {
-            if (!FileInfo(file).isDirectory()) {
-                throw ZipException("${file} output directory is not valid")
-            }
-        } else {
+        if (!Directory.exists(file)) {
             Directory.create(file, recursive: true)
-        }
+        } 
         return true
     }
 
@@ -75,20 +71,38 @@ public class Zip4cjUtil {
     }
 
     public static func readFully(inputStream: InputStream, bufferToReadInto: Array<Byte>): Int64 {
-        if (bufferToReadInto.size == 0) {
+        var numberOfBytesRead = 0
+        var offset = 0
+        var length = bufferToReadInto.size
+        if (length == 0) {
             return 0
         }
-        var readLen: Int64 = inputStream.read(bufferToReadInto)
-        if (readLen == 0) {
-            throw ZipIOException("Unexpected EOF reached when trying to read stream")
+        if (offset + length > bufferToReadInto.size) {
+            throw IllegalArgumentException("Length greater than buffer size");
         }
-        if (Int64(readLen) != bufferToReadInto.size) {
-            readLen = readUntilBufferIsFull(inputStream, bufferToReadInto, readLen)
-            if (Int64(readLen) != bufferToReadInto.size) {
-                throw ZipIOException("Cannot read fully into byte buffer")
+        // var readLen: Int64 = inputStream.read(bufferToReadInto)
+        // if (readLen == 0) {
+        //     throw ZipIOException("Unexpected EOF reached when trying to read stream")
+        // }
+        // if (Int64(readLen) != bufferToReadInto.size) {
+        //     readLen = readUntilBufferIsFull(inputStream, bufferToReadInto, readLen)
+        //     if (Int64(readLen) != bufferToReadInto.size) {
+        //         throw ZipIOException("Cannot read fully into byte buffer")
+        //     }
+        // }
+        // return readLen
+        while (numberOfBytesRead != length) {
+            var currentReadLength = inputStream.read(bufferToReadInto[offset + numberOfBytesRead.. offset + length])
+            if (currentReadLength <= 0) {
+                if (numberOfBytesRead == 0) {
+                    return 0;
+                }
+                return numberOfBytesRead;
             }
+            numberOfBytesRead += currentReadLength;
         }
-        return readLen
+
+        return numberOfBytesRead;
     }
 
     public static func readFully(inputStream: InputStream, b: Array<Byte>, offset: Int64, length: Int64): Int64 {
@@ -135,7 +149,8 @@ public class Zip4cjUtil {
 
     private static func convertCharArrayToByteArrayUsingUtf8(charArray: Array<Rune>): Array<Byte> {
         try {
-            return InternalZipConstants.CHARSET_UTF_8.newEncoder().encode(String(charArray))
+            // return InternalZipConstants.CHARSET_UTF_8.newEncoder().encode(String(charArray))
+            return String(charArray).toArray()
         } catch (e: Exception) {
             return convertCharArrayToByteArrayUsingDefaultCharset(charArray)
         }
@@ -143,7 +158,7 @@ public class Zip4cjUtil {
 
     @OverflowWrapping
     private static func convertCharArrayToByteArrayUsingDefaultCharset(charArray: Array<Rune>): Array<Byte> {
-        var bytes: Array<Byte> = Array<Byte>(charArray.size, repeat: 0)
+        var bytes: Array<Byte> = Array<Byte>(charArray.size, item: 0)
         for (i in 0..charArray.size) {
             bytes[i] = UInt8(UInt32(charArray[i]))
         }

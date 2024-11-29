@@ -53,7 +53,7 @@ public class FileUtils {
 
     // TODO
     public static func setFileLastModifiedTime(file: Path, lastModifiedTime: Int64) {
-        if (lastModifiedTime <= 0 || !exists(file)) {
+        if (lastModifiedTime <= 0 || !File.exists(file)) {
             return
         }
 
@@ -67,8 +67,8 @@ public class FileUtils {
 
     public static func getFileAttributes(file: FileInfo): Array<Byte> {
         try {
-            if ((!file.isSymbolicLink() && !exists(file.path))) {
-                return Array<Byte>(4, repeat: 0)
+            if ((!file.isSymbolicLink() && !File.exists(file.path))) {
+                return Array<Byte>(4, item: 0)
             }
 
             if (isWindows) {
@@ -76,10 +76,10 @@ public class FileUtils {
             } else if (isMac || isUnix) {
                 return getPosixFileAttributes(file.path)
             } else {
-                return Array<Byte>(4, repeat: 0)
+                return Array<Byte>(4, item: 0)
             }
         } catch (e: Exception) {
-            return Array<Byte>(4, repeat: 0)
+            return Array<Byte>(4, item: 0)
         }
     }
 
@@ -89,8 +89,8 @@ public class FileUtils {
         zipParameters: ZipParameters,
         paths!: ArrayList<Path> = ArrayList<Path>()
     ): ArrayList<Path> {
-        if (path.isEmpty() || !exists(path)) {
-            return ArrayList<Path>()
+        if (!Directory.exists(path) && !File.exists(path)) {
+            return paths
         }
         let fileInfo = FileInfo(path)
         if (!fileInfo.isDirectory() || !fileInfo.canRead()) {
@@ -106,8 +106,8 @@ public class FileUtils {
             if (isSymLink) {
                 paths.append(subPath.path)
                 if (zipParameters.getSymbolicLinkAction() != SymbolicLinkAction.INCLUDE_LINK_ONLY) {
-                    let linkPath = SymbolicLink.readFrom(subPath.path)
-                    getFilesInDirectoryRecursive(linkPath, zipParameters, paths: paths)
+                    let symLinkPath = subPath.symbolicLinkTarget.getOrThrow()
+                    getFilesInDirectoryRecursive(symLinkPath, zipParameters, paths: paths)
                 }
                 continue
             } 
@@ -118,7 +118,7 @@ public class FileUtils {
             paths.append(subPath.path)
             
             
-            if (!isSymLink && subPath.isDirectory()) {
+            if (subPath.isDirectory()) {
                 getFilesInDirectoryRecursive(subPath.path, zipParameters, paths: paths)
             }
         }
@@ -144,7 +144,7 @@ public class FileUtils {
     }
 
     public static func getSplitZipFiles(zipModel: ZipModel): ArrayList<Path> {
-        if (!exists(zipModel.getZipFile())) {
+        if (!File.exists(zipModel.getZipFile())) {
             throw ZipException("zip file does not exist")
         }
         var splitZipFiles = ArrayList<Path>()
@@ -170,7 +170,7 @@ public class FileUtils {
                     if (i >= 9) {
                         fileExt = ".z"
                     }
-                    partFile = if (currZipFile.fileName.contains(".")) {
+                    partFile = if (currZipFile.fileName.getOrThrow().contains(".")) {
                         unsafe{
                             String.fromUtf8Unchecked(
                             currZipFile.toString().toArray()[0..currZipFile.toString().
@@ -188,10 +188,13 @@ public class FileUtils {
     }
 
     public static func getRelativeFileName(fileToAdd: Path, zipParameters: ZipParameters): String {
-        if (fileToAdd.isEmpty()) {
-            return ""  
-        } else if (!exists(fileToAdd)) {
-            return fileToAdd.fileName
+        try {
+            fileToAdd.toCanonical()
+        } catch (e: IllegalArgumentException) {
+            return ""
+        }
+        if (!File.exists(fileToAdd)) {
+            return fileToAdd.fileName.getOrThrow()
         }
         var fileName: String
         try {
@@ -202,29 +205,29 @@ public class FileUtils {
             if (defaultFolderPath.size != 0) {
                 var fileCanonicalPath: Path
                 try {
-                    fileCanonicalPath = canonicalize(fileToAdd)
+                    fileCanonicalPath = fileToAdd.toCanonical()
                 } catch(_: Exception) {
-                    return fileToAdd.fileName
+                    return fileToAdd.fileName.getOrThrow()
                 }
                 var rootFolderFile = Path(defaultFolderPath)
-                var rootFolderFileRef = canonicalize(rootFolderFile).toString()
+                var rootFolderFileRef = rootFolderFile.toCanonical().toString()
 
-                if (!rootFolderFileRef.endsWith(Path.Separator)) {
-                    rootFolderFileRef = "${rootFolderFileRef}${Path.Separator}"
+                if (!rootFolderFileRef.endsWith(FileSeparator)) {
+                    rootFolderFileRef = "${rootFolderFileRef}${FileSeparator}"
                 }
                 var tmpFileName: String = if (FileInfo(fileToAdd).isSymbolicLink()) {
-                    var rootPath = "${canonicalize(fileToAdd.parent)}${Path.Separator}${canonicalize(fileToAdd).fileName}"
+                    var rootPath = "${fileToAdd.directoryName.getOrThrow().toCanonical()}${FileSeparator}${fileToAdd.toCanonical().fileName ?? ""}"
                     unsafe { String.fromUtf8Unchecked(rootPath.toArray()[rootFolderFileRef.size..])}
                 } else {
-                    let canonicalizeFileToAdd = canonicalize(fileToAdd)
+                    let canonicalizeFileToAdd = fileToAdd.toCanonical()
                     if (!canonicalizeFileToAdd.toString().startsWith(rootFolderFileRef)) {
-                        "${canonicalizeFileToAdd.parent}${Path.Separator}${canonicalizeFileToAdd}"
+                        "${canonicalizeFileToAdd.directoryName.getOrThrow()}${FileSeparator}${canonicalizeFileToAdd}"
                     } else {
                         unsafe { String.fromUtf8Unchecked(fileCanonicalPath.toString().toArray()[rootFolderFileRef.size..]) }
                     }
                 }
                     
-                if (tmpFileName.startsWith(Path.Separator)) {
+                if (tmpFileName.startsWith(FileSeparator)) {
                     tmpFileName = unsafe { String.fromUtf8Unchecked(tmpFileName.toArray()[1..]) }
                 }
 
@@ -235,7 +238,7 @@ public class FileUtils {
                 } else {
                     let bkFileName = unsafe {
                         String.fromUtf8Unchecked(
-                            tmpFileName.toArray()[0..tmpFileName.lastIndexOf(tmpFile.fileName).getOrThrow()]
+                            tmpFileName.toArray()[0..tmpFileName.lastIndexOf(tmpFile.fileName ?? "").getOrThrow()]
                     )}
                     tmpFileName = "${bkFileName.replace("\\\\", InternalZipConstants.ZIP_FILE_SEPARATOR)}${getNameOfFileInZip(tmpFile, zipParameters.getFileNameInZip())}"
                 }
@@ -256,7 +259,7 @@ public class FileUtils {
         if (let Some(v) <- zipParameters.getRootFolderNameInZip()) {
             var rootFolderNameInZip = v
             if (!rootFolderNameInZip.endsWith("\\") && !rootFolderNameInZip.endsWith("/")) {
-                rootFolderNameInZip = "${rootFolderNameInZip}${Path.Separator}"
+                rootFolderNameInZip = "${rootFolderNameInZip}${FileSeparator}"
             }
             fileName = "${rootFolderNameInZip.replace("\\\\", InternalZipConstants.ZIP_FILE_SEPARATOR)}${fileName}"
         }
@@ -282,7 +285,7 @@ public class FileUtils {
             return fileNameInZip.getOrThrow()
         }
         // TODO 设置链接文件
-        return fileToAdd.fileName
+        return fileToAdd.fileName ?? ""
     }
 
     public static func isZipEntryDirectory(fileNameInZip: String): Bool {
@@ -313,9 +316,9 @@ public class FileUtils {
             var bytesToRead: Int64 = end - start
 
             if ((end - start) < bufferSize) {
-                buff = Array<Byte>(bytesToRead, repeat: 0)
+                buff = Array<Byte>(bytesToRead, item: 0)
             } else {
-                buff = Array<Byte>(bufferSize, repeat: 0)
+                buff = Array<Byte>(bufferSize, item: 0)
             }
             readLen = randomAccessFile.read(buff)
 
@@ -333,7 +336,7 @@ public class FileUtils {
                 if (bytesRead == bytesToRead) {
                     break
                 } else if (bytesRead + buff.size > bytesToRead) {
-                    buff = Array<Byte>(bytesToRead - bytesRead, repeat: 0)
+                    buff = Array<Byte>(bytesToRead - bytesRead, item: 0)
                 }
                 readLen = randomAccessFile.read(buff)
             }
@@ -343,11 +346,11 @@ public class FileUtils {
     }
 
     public static func isNumberedSplitFile(file: Path): Bool {
-        return file.fileName.endsWith(InternalZipConstants.SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN)
+        return file.fileName.getOrThrow().endsWith(InternalZipConstants.SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN)
     }
 
     public static func getFileExtension(path: Path): String {
-        return path.extensionName
+        return path.extensionName.getOrThrow()
     }
 
     /**
@@ -357,10 +360,14 @@ public class FileUtils {
      * @return sorted list of split files. Returns an empty list if no files of that pattern are found in the current directory
      */
     public static func getAllSortedNumberedSplitFiles(firstNumberedFile: Path): Array<Path> {
-        var zipFileNameWithoutExtension = FileUtils.getFileNameWithoutExtension(firstNumberedFile.fileName)
+        var zipFileNameWithoutExtension = if (let Some(v) <- firstNumberedFile.fileName) {
+            FileUtils.getFileNameWithoutExtension(v)
+        } else {
+            ""
+        }
         let listFiles = ArrayList<Path>()
-        for (file in Directory(firstNumberedFile.parent) where file.isRegular()) {
-            if (file.path.fileName.startsWith(zipFileNameWithoutExtension)) {
+        for (file in Directory(firstNumberedFile.directoryName.getOrThrow()) where file.isFile()) {
+            if (file.path.fileName.getOrThrow().startsWith(zipFileNameWithoutExtension)) {
                 listFiles.append(file.path)
             }
         }
@@ -368,15 +375,15 @@ public class FileUtils {
     }
 
     public static func readSymbolicLink(file: Path): String {
-        return try {
-            SymbolicLink.readFrom(file).toString()
-        } catch (_) {
-            return ""
+        if (let Some(v) <- FileInfo(file).symbolicLinkTarget) {
+            v.toString()
+        } else {
+            ""
         }
     }
 
     public static func getDefaultFileAttributes(isDirectory: Bool): Array<Byte> {
-        var permissions = Array<Byte>(4, repeat: 0)
+        var permissions = Array<Byte>(4, item: 0)
         if (isUnix || isMac) {
             if (isDirectory) {
                 ArrayCopy(DEFAULT_POSIX_FOLDER_ATTRIBUTES, 0, permissions, 0, permissions.size)
@@ -418,7 +425,7 @@ public class FileUtils {
     }
 
     private static func getWindowsFileAttributes(file: Path): Array<Byte>  {
-        var fileAttributes = Array<Byte>(4, repeat:0)
+        var fileAttributes = Array<Byte>(4, item:0)
         try {
             let dosFileAttributes = FileInfo(file)
             var windowsAttribute: Byte = 0
@@ -435,19 +442,19 @@ public class FileUtils {
     }
 
     private static func assertFileExists(path: Path) {
-        if (!exists(path)) {
+        if (!File.exists(path)) {
             throw ZipException("File does not exist ${path}")
         }
     }
 
     private static func assertSymbolicLinkTargetExists(path: Path) {
-        if (!exists(path)) {
+        if (!File.exists(path)) {
             throw ZipException("Symlink target '" + readSymbolicLink(path) + "' does not exist for link '${path}'")
         }
     }
 
     private static func getPosixFileAttributes(file: Path): Array<Byte> {
-        var fileAttributes = Array<Byte>(4, repeat: 0)
+        var fileAttributes = Array<Byte>(4, item: 0)
 
         try {
             let fileInfo = FileInfo(file)
@@ -457,7 +464,7 @@ public class FileUtils {
                 fileAttributes[3] = BitUtils.setBit(fileAttributes[3], 7)
                 fileAttributes[3] = BitUtils.unsetBit(fileAttributes[3], 6)
             } else {
-                fileAttributes[3] = setBitIfApplicable(fileInfo.isRegular(), fileAttributes[3], 7)
+                fileAttributes[3] = setBitIfApplicable(fileInfo.isFile(), fileAttributes[3], 7)
                 fileAttributes[3] = setBitIfApplicable(fileInfo.isDirectory(), fileAttributes[3], 6)
             }
             fileAttributes[3] = setBitIfApplicable(isSymlink, fileAttributes[3], 5)

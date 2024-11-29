@@ -30,7 +30,7 @@ let CRC_TABLE: Array<Int32> = [0, 1996959894, -301047508, -1727442502, 124634137
 -558129467, 1202900863, 817233897, -1111625188, -893730166, 1404277552, 615818150, -1160759803, -841546093, 1423857449,
 601450431, -1285129682, -1000256840, 1567103746, 711928724, -1274298825, -1022587231, 1510334235, 755167117]
 public class ZipCryptoEngine {
-    private let keys = Array<Int32>(3, repeat: 0)
+    private let keys = Array<Int32>(3, item: 0)
 
     public func initKeys(password: Array<Rune>, useUtf8ForPassword: Bool) {
         keys[0] = 305419896

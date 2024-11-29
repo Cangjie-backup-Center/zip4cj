@@ -21,11 +21,7 @@ public class HeaderUtil {
         return fileHeader
     }
 
-    public static func decodeStringWithCharset(data: Array<Byte>, isUtf8Encoded: Bool, charset: ?Charset) {
-        if (let Some(v) <- charset) {
-            return v.newDecoder().decode(data)
-        }
-
+    public static func decodeStringWithCharset(data: Array<Byte>, isUtf8Encoded: Bool) {
         if (isUtf8Encoded) {
             return String.fromUtf8(data)
         }
@@ -39,12 +35,8 @@ public class HeaderUtil {
         }
     }
 
-    public static func getBytesFromString(string: String, charset: ?Charset): Array<Byte> {
-        return if (let Some(v) <- charset) {
-            v.newEncoder().encode(string)
-        } else {
-            string.toArray()
-        }
+    public static func getBytesFromString(string: String): Array<Byte> {
+        return string.toArray()
     }
 
     public static func getOffsetStartOfCentralDirectory(zipModel: ZipModel): Int64 {
@@ -91,9 +83,7 @@ public class HeaderUtil {
         if (zipModel.getCentralDirectory().getOrThrow().getFileHeaders().size == 0) {
             return None
         }
-        let fileHeaders = zipModel.getCentralDirectory().getOrThrow().getFileHeaders()
-        for (i in 0..fileHeaders.size) {
-            let fileHeader = fileHeaders[i]
+        for (fileHeader in zipModel.getCentralDirectory().getOrThrow().getFileHeaders()) {
             var fileNameForHdr = fileHeader.getFileName()
             if (!Zip4cjUtil.isStringNotNullAndNotEmpty(fileNameForHdr)) {
                 continue

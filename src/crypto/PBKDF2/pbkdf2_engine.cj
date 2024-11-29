@@ -39,7 +39,7 @@ public class PBKDF2Engine {
         var hLen = prf.getHLen()
         var l = ceil(dkLen, hLen)
         var r = dkLen - (l - 1) * hLen
-        var T = Array<Byte>(Int64(l * hLen), repeat: 0)
+        var T = Array<Byte>(Int64(l * hLen), item: 0)
         var ti_offset: Int64 = 0
         for (i in 1..=l) {
             _F(T, ti_offset, prf, S, c, i)
@@ -47,7 +47,7 @@ public class PBKDF2Engine {
         }
         if (r < hLen) {
             // Incomplete last block
-            let DK = Array<Byte>(dkLen, repeat: 0)
+            let DK = Array<Byte>(dkLen, item: 0)
             T.copyTo(DK, 0, 0, dkLen)
             return DK
         }
@@ -64,10 +64,10 @@ public class PBKDF2Engine {
 
     private func _F(dest: Array<Byte>, offset: Int64, prf: PRF, S: Array<Byte>, c: Int32, blockIndex: Int64): Unit {
         var hLen = prf.getHLen()
-        var U_r = Array<Byte> (Int64(hLen), repeat: 0)
+        var U_r = Array<Byte> (Int64(hLen), item: 0)
 
         // U0 = S || INT (i)
-        var U_i = Array<Byte>(S.size + 4, repeat: 0)
+        var U_i = Array<Byte>(S.size + 4, item: 0)
         S.copyTo(U_i, 0, 0, S.size)
         
         INT(U_i, S.size, blockIndex)

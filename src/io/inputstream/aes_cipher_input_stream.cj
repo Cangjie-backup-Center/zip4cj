@@ -6,7 +6,7 @@ package zip4cj.io.inputstream
 
 class AesCipherInputStream <: CipherInputStream<AESDecrypter> {
 
-    private var aes16ByteBlock = Array<Byte>(16, repeat: 0)
+    private var aes16ByteBlock = Array<Byte>(16, item: 0)
     private var aes16ByteBlockPointer = 0
     private var remainingAes16ByteBlockLength = 0
     private var lengthToRead = 0
@@ -101,7 +101,7 @@ class AesCipherInputStream <: CipherInputStream<AESDecrypter> {
 
     private func verifyContent(storedMac: Array<Byte>, numberOfBytesPushedBack: Int64): Unit {
        let calculatedMac: Array<Byte> = getDecrypter().getCalculatedAuthenticationBytes(numberOfBytesPushedBack)
-        let first10BytesOfCalculatedMac: Array<Byte> = Array<Byte>(InternalZipConstants.AES_AUTH_LENGTH, repeat: 0)
+        let first10BytesOfCalculatedMac: Array<Byte> = Array<Byte>(InternalZipConstants.AES_AUTH_LENGTH, item: 0)
         calculatedMac.copyTo(first10BytesOfCalculatedMac, 0, 0, InternalZipConstants.AES_AUTH_LENGTH)
 
         if (storedMac != first10BytesOfCalculatedMac) {
@@ -110,7 +110,7 @@ class AesCipherInputStream <: CipherInputStream<AESDecrypter> {
     }
 
     protected func readStoredMac(inputStream: InputStream ): Array<Byte> {
-        let storedMac: Array<Byte> = Array<Byte>(InternalZipConstants.AES_AUTH_LENGTH, repeat: 0)
+        let storedMac: Array<Byte> = Array<Byte>(InternalZipConstants.AES_AUTH_LENGTH, item: 0)
         var readLen = Zip4cjUtil.readFully(inputStream, storedMac)
 
         if (readLen != InternalZipConstants.AES_AUTH_LENGTH) {
@@ -127,13 +127,13 @@ class AesCipherInputStream <: CipherInputStream<AESDecrypter> {
 
         let aesExtraDataRecord = localFileHeader.getAesExtraDataRecord().getOrThrow()
 
-        let saltBytes = Array<Byte> (aesExtraDataRecord.getAesKeyStrength().getSaltLength(), repeat: 0)
+        let saltBytes = Array<Byte> (aesExtraDataRecord.getAesKeyStrength().getSaltLength(), item: 0)
         readRaw(saltBytes)
         return saltBytes
     }
 
     private func getPasswordVerifier(): Array<Byte> {
-        let pvBytes: Array<Byte> = Array<Byte>(2, repeat: 0)
+        let pvBytes: Array<Byte> = Array<Byte>(2, item: 0)
         readRaw(pvBytes)
         return pvBytes
     }

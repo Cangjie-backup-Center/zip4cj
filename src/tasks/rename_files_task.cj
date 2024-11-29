@@ -32,8 +32,6 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
         let outputStream = SplitOutputStream(temporaryFile)
         try {
             var currentFileCopyPointer = 0
-            var charset = taskParameters.zip4cjConfig.getCharset()
-
             // Maintain a different list to iterate, so that when the file name is changed in the central directory
             // we still have access to the original file names. If iterating on the original list from central directory,
             // it might be that a file name has changed because of other file name, ex: if a directory name has to be changed
@@ -53,7 +51,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
                     outputStream.getFilePointer()
                 if (let Some(entry) <- fileNameMapForThisEntry) {
                     var newFileName: String = getNewFileName(entry[1], entry[0], fileHeader.getFileName().getOrThrow())
-                    var newFileNameBytes = HeaderUtil.getBytesFromString(newFileName, charset)
+                    var newFileNameBytes = HeaderUtil.getBytesFromString(newFileName)
                     var headersOffset = newFileNameBytes.size - fileHeader.getFileNameLength()
 
                     currentFileCopyPointer = copyEntryAndChangeFileName(newFileNameBytes, fileHeader,
@@ -70,7 +68,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
                 verifyIfTaskIsCancelled()
             }
 
-            headerWriter.finalizeZipFile(zipModel, outputStream, charset)
+            headerWriter.finalizeZipFile(zipModel, outputStream)
             successFlag = true
         } finally {
             cleanupFile(successFlag, zipModel.getZipFile(), temporaryFile)
@@ -81,7 +79,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
 
     protected func calculateTotalWork(taskParameters: RenameFilesTaskParameters): Int64 {
         taskParameters
-        return FileInfo(zipModel.getZipFile()).size
+        return FileInfo(zipModel.getZipFile()).length
     }
 
     protected func getTask(): ProgressMonitorTask {

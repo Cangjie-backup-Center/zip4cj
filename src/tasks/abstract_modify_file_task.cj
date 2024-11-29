@@ -12,7 +12,7 @@ public abstract class AbstractModifyFileTask<T> <: AsyncZipTask<T> {
         var random: SecureRandom = SecureRandom()
         var tmpFile: Path = Path(zipPathWithName + "${random.nextInt32(10000)}")
 
-        while (exists(tmpFile)) {
+        while (File.exists(tmpFile)) {
             tmpFile = Path(zipPathWithName + "${random.nextInt32(10000)}")
         }
 
@@ -49,7 +49,7 @@ public abstract class AbstractModifyFileTask<T> <: AsyncZipTask<T> {
             ()
         } else {
             try {
-                remove(temporaryZipFile, recursive: true)
+                File.delete(temporaryZipFile)
             } catch (e: Exception) {
                 throw ZipException("Could not delete temporary file")
             }
@@ -97,9 +97,9 @@ public abstract class AbstractModifyFileTask<T> <: AsyncZipTask<T> {
     // TODO restore FileName
     private func restoreFileName(zipFile: Path, temporaryZipFile: Path) {
         try {
-            remove(zipFile, recursive: true)
+            File.delete(zipFile)
             try {
-                rename(temporaryZipFile, to: zipFile, overwrite: true)
+                File.move(temporaryZipFile, zipFile, true)
             } catch (e: Exception) {
                 throw ZipException("cannot rename modified zip file")
             }

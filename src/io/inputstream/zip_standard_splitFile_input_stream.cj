@@ -9,7 +9,7 @@ class ZipStandardSplitFileInputStream <: SplitFileInputStream {
     private var lastSplitZipFileNumber: Int64
     private var isSplitZipArchive: Bool
     private var currentSplitFileCounter: Int64 = 0
-    private var singleByteArray = Array<Byte>(1, repeat: 0)
+    private var singleByteArray = Array<Byte>(1, item: 0)
 
     public init(zipFile: Path, isSplitZipArchive: Bool, lastSplitZipFileNumber: Int64) {
         this.randomAccessFile = RandomAccessFile(zipFile, OpenOption.Open(true, true))
@@ -65,7 +65,7 @@ class ZipStandardSplitFileInputStream <: SplitFileInputStream {
 
     protected func openRandomAccessFileForIndex(zipFileIndex: Int64): Unit {
         var nextSplitFile: Path = getNextSplitFile(zipFileIndex)
-        if (!exists(nextSplitFile)) {
+        if (!File.exists(nextSplitFile)) {
             throw Exception("zip split file does not exist: ${nextSplitFile}")
         }
         randomAccessFile.close()

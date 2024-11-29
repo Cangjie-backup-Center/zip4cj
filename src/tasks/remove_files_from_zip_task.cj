@@ -54,7 +54,7 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
                 }
                 this.verifyIfTaskIsCancelled()
             }
-            headerWriter.finalizeZipFile(zipModel, outputStream, taskParameters.zip4cjConfig.getCharset())
+            headerWriter.finalizeZipFile(zipModel, outputStream)
             successFlag = true
         } finally {
             this.cleanupFile(successFlag, zipModel.getZipFile(), temporaryZipFile)
@@ -64,7 +64,7 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
     }
 
     protected func calculateTotalWork(taskParameters: RemoveFilesFromZipTaskParameters): Int64 {
-        return FileInfo(zipModel.getZipFile()).size
+        return FileInfo(zipModel.getZipFile()).length
     }
 
     private func filterNonExistingEntries(filesToRemove: Array<String>): ArrayList<String> {

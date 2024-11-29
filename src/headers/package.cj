@@ -8,6 +8,6 @@ protected import zip4cj.util.internals.*
 protected import zip4cj.exception.*
 protected import zip4cj.model.*
 protected import zip4cj.model.enums.*
-protected import charset4cj.charset.encoding.Charset
+// protected import charset4cj.charset.encoding.Charset
 protected import std.collection.ArrayList
 protected import std.collection.HashMap

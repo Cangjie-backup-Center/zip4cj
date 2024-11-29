@@ -17,8 +17,8 @@ public class AESDecrypter <: Decrypter {
 
     public AESDecrypter(aesExtraDataRecord: AESExtraDataRecord, password: Array<Rune>, salt: Array<Byte>,
                         passwordVerifier: Array<Byte>, useUtf8ForPassword: Bool) {
-        this.iv = Array<Byte>(InternalZipConstants.AES_BLOCK_SIZE, repeat: 0)
-        this.counterBlock = Array<Byte>(InternalZipConstants.AES_BLOCK_SIZE, repeat: 0)
+        this.iv = Array<Byte>(InternalZipConstants.AES_BLOCK_SIZE, item: 0)
+        this.counterBlock = Array<Byte>(InternalZipConstants.AES_BLOCK_SIZE, item: 0)
         if (password.size <= 0) {
             throw ZipException("empty or null password provided for AES decryption", WRONG_PASSWORD)
         }

@@ -6,13 +6,13 @@ package zip4cj.io.inputstream
 class InflaterInputStream <: DecompressedInputStream {
     private var inflater: DecompressInputStream
     private var buff: Array<Byte>
-    private var singleByteBuffer = Array<Byte>(1, repeat: 0)
+    private var singleByteBuffer = Array<Byte>(1, item: 0)
     private var len: Int64 = 0
 
     public init(cipherInputStream: ICipherInputStream, bufferSize: Int64) {
         super(cipherInputStream)
         this.inflater = DecompressInputStream(cipherInputStream, bufLen: bufferSize)
-        buff = Array<Byte>(bufferSize, repeat: 0)
+        buff = Array<Byte>(bufferSize, item: 0)
     }
 
     public func read(b: Array<Byte>): Int64 {

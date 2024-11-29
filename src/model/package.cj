@@ -6,4 +6,4 @@ package zip4cj.model
 internal import std.collection.ArrayList
 internal import std.fs.Path
 internal import zip4cj.model.enums.*
-internal import charset4cj.charset.encoding.Charset
+// internal import charset4cj.charset.encoding.Charset

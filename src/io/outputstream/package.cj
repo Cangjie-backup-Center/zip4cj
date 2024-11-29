@@ -6,13 +6,14 @@ package zip4cj.io.outputstream
 internal import std.io.InputStream
 internal import std.io.OutputStream
 internal import std.io.BufferedOutputStream
-internal import std.io.ByteBuffer
+internal import std.io.ByteArrayStream
 internal import std.fs.Path
+internal import std.fs.File
 internal import std.fs.FileInfo
-internal import std.fs.exists
+// internal import std.fs.exists
 internal import std.fs.OpenOption
-internal import std.fs.canonicalize
-internal import std.fs.rename
+// internal import std.fs.canonicalize
+// internal import std.fs.rename
 internal import std.time.DateTime
 internal import compress.zlib.CompressOutputStream
 internal import compress.zlib.CompressLevel 
@@ -24,6 +25,5 @@ internal import zip4cj.headers.*
 internal import zip4cj.progress.*
 internal import zip4cj.exception.*
 internal import zip4cj.model.enums.*
-internal import zip4cj.util.internals.*
 // internal import charset4cj.charset.*
 // internal import charset4cj.charset.encoding.*

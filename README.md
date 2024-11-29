@@ -5,7 +5,7 @@
 <p align="center">
 <img alt="" src="https://img.shields.io/badge/release-v0.0.1-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/build-pass-brightgreen" style="display: inline-block;" />
-<img alt="" src="https://img.shields.io/badge/cjc-v0.56.4-brightgreen" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/cjc-v0.53.13-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/cjcov-92%25-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/project-open-brightgreen" style="display: inline-block;" />
 </p>
@@ -18,8 +18,16 @@ zip4cj 是基于仓颉语言实现的文件压缩和解压缩，目前基本实�
 
 ### 特性
 
-- 🚀 zip 压缩和解压缩。
-
+- 🚀 文件夹级别解压和压缩
+- 🚀 支持Zip64大文件压缩和解压
+- 🚀 支持zip文件中重命名
+- 🚀 支持zip文件中删除文件
+- 🚀 支持zip文件中添加文件
+- 🚀 支持子线程解压和压缩
+- 🚀 支持分包压缩和解压
+- 🚀 支持AES解密和加密
+- 🚀 支持ZIP标准解密和加密
+- 🚀 支持压缩和解压进度监控
 
 ##    <img alt="" src="./doc/assets/readme-icon-framework.png" style="display: inline-block;" width=3%/> 架构
 
@@ -139,14 +147,14 @@ main() {
     let zipFile = ZipFile("output.zip")         // 创建ZipFile类, 并指定文件为 output.zip
     zipFile.removeFile("a.txt")                               // 删除文件
     zipFile.renameFile("old_file", "new_file")                // 重命名文件
-    zipFile.addFile(Path("a.txt"), parameters: zipParameters) // 添加文件
+    zipFile.addFile(Path("a.txt"), zipParameters) // 添加文件
     var paths=[
         Path("1.mp3")
         Path("12.mp3")
         Path("123.mp3")
         Path("1234.mp3")
     ]
-    zipFile.addFiles(paths, parameters: zipParameters)        // 添加文件集合
+    zipFile.addFiles(paths, zipParameters)        // 添加文件集合
     zipFile.close()                                           // 资源关闭
     return 0
 }
@@ -173,6 +181,63 @@ main() {
     println(progress.getState())
     zipFile.close()                                                             // 资源关闭
     0
+}
+```
+
+#### 加密压缩, 密码方式AES-256, 压缩方式 STORE
+```cangjie
+import zip4cj.*
+import std.fs.*
+main () {
+    let zipParameters = ZipParameters()                          // 创建压缩参数类
+    zipParameters.setEncryptFiles(true)                          // 加密时必须要设置为true
+    zipParameters.setEncryptionMethod(EncryptionMethod.AES)      // 设置密码方式为AES-256
+    zipParameters.setCompressionMethod(CompressionMethod.STORE)  // 设置压缩方式为SOTRE, 不进行压缩文件
+    let zipFile = ZipFile("66666.zip", "123456".toRuneArray())   // 设置输出文件名和密码
+    zipFile.addFile("fields.c", zipParameters)                   // 添加文件和压缩参数
+    zipFile.close()
+}
+```
+
+#### 加密压缩, 密码方式ZIP_STANDARD(zip自带加密算法), 压缩方式 STORE
+```cangjie
+import zip4cj.*
+import std.fs.*
+main () {
+    let zipParameters = ZipParameters()                          // 创建压缩参数类
+    zipParameters.setEncryptFiles(true)                          // 加密时必须要设置为true
+    zipParameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD)      // 设置密码方式为ZIP_STANDARD
+    zipParameters.setCompressionMethod(CompressionMethod.STORE)  // 设置压缩方式为SOTRE, 不进行压缩文件
+    let zipFile = ZipFile("66666.zip", "123456".toRuneArray())   // 设置输出文件名和密码
+    zipFile.addFile("fields.c", zipParameters)                   // 添加文件和压缩参数
+    zipFile.close()
+}
+```
+
+#### 加密压缩, 密码方式ZIP_STANDARD(zip自带加密算法), 压缩方式 DEFLATE
+```cangjie
+import zip4cj.*
+import std.fs.*
+main () {
+    let zipParameters = ZipParameters()                          // 创建压缩参数类
+    zipParameters.setEncryptFiles(true)                          // 加密时必须要设置为true
+    zipParameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD)      // 设置密码方式为ZIP_STANDARD
+    zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)  // 设置压缩方式为DEFLATE, 使用deflate算法压缩文件
+    let zipFile = ZipFile("66666.zip", "123456".toRuneArray())   // 设置输出文件名和密码
+    zipFile.addFile("fields.c", zipParameters)                   // 添加文件和压缩参数
+    zipFile.close()
+}
+```
+
+#### 解密解压, 无需设置解压密码方式和压缩方式
+```cangjie
+import  zip4cj.*
+
+main() { 
+    try (file = ZipFile("Animal_world.zip", "123".toRuneArray())) {  // 设置输入的zip文件名和解压密码
+        file.extractAll("./")                                         // 解压到当前目录
+        file.close()
+    }    
 }
 ```
 

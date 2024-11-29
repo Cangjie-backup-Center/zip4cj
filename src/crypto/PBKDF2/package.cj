@@ -3,7 +3,7 @@
  */
 package zip4cj.crypto.PBKDF2
 
-// internal import std.io.ByteBuffer
+// internal import std.io.ByteArrayStream
 internal import std.collection.ArrayList
 internal import crypto.digest.HashType
 internal import crypto.digest.HMAC

@@ -20,7 +20,7 @@ public class ExtractFileTask <: AbstractExtractFileTask<ExtractFileTaskParameter
     protected func executeTask(taskParameters: ExtractFileTaskParameters, progressMonitor: ProgressMonitor) {
         let fileHeadersUnderDirectory = getFileHeadersToExtract(taskParameters.fileToExtract)
         try (zipInputStream = createZipInputStream(taskParameters.zip4cjConfig)) {
-            var readBuff = Array<Byte>(taskParameters.zip4cjConfig.getBufferSize(), repeat: 0)
+            var readBuff = Array<Byte>(taskParameters.zip4cjConfig.getBufferSize(), item: 0)
             for (i in 0..fileHeadersUnderDirectory.size) {
                 let fileHeader = fileHeadersUnderDirectory[i]
                 splitInputStream.getOrThrow().prepareExtractionForFileHeader(fileHeader)

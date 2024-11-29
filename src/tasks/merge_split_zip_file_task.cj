@@ -56,8 +56,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
                     verifyIfTaskIsCancelled()
                 }
             }
-            updateHeadersForMergeSplitFileAction(zipModel, totalBytesWritten, outputStream,
-                taskParameters.zip4cjConfig.getCharset().getOrThrow())
+            updateHeadersForMergeSplitFileAction(zipModel, totalBytesWritten, outputStream )
             progressMonitor.endProgressMonitor()
         } catch (e: Exception) {
             throw ZipException(e.message)
@@ -72,7 +71,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
 
         var totalSize = 0
         for (i in 0..zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDisk()) {
-            totalSize += FileInfo(getNextSplitZipFile(zipModel, Int64(i))).size
+            totalSize += FileInfo(getNextSplitZipFile(zipModel, Int64(i))).length
         }
         return totalSize
     }
@@ -117,8 +116,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
     private func updateHeadersForMergeSplitFileAction(
         zipModel: ZipModel,
         totalBytesWritten: Int64,
-        outputStream: OutputStream,
-        charset: Charset
+        outputStream: OutputStream
     ) {
         var newZipModel = zipModel.clone()
         newZipModel.getEndOfCentralDirectoryRecord().setOffsetOfStartOfCentralDirectory(totalBytesWritten)
@@ -126,7 +124,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
         updateSplitZipModel(newZipModel, totalBytesWritten)
 
         var headerWriter: HeaderWriter = HeaderWriter()
-        headerWriter.finalizeZipFileWithoutValidations(newZipModel, outputStream, charset)
+        headerWriter.finalizeZipFileWithoutValidations(newZipModel, outputStream)
     }
 
     private func updateSplitZipModel(zipModel: ZipModel, totalFileSize: Int64) {

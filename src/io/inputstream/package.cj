@@ -6,7 +6,7 @@ package zip4cj.io.inputstream
 internal import std.fs.OpenOption
 internal import std.fs.File
 internal import std.fs.Path
-internal import std.fs.exists
+// internal import std.fs.exists
 internal import std.io.InputStream
 internal import std.io.OutputStream
 internal import std.io.IOException

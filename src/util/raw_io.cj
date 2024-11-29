@@ -4,9 +4,9 @@
 package zip4cj.util
 
 public class RawIO {
-    public let shortBuff = Array<Byte>(2, repeat: 0)
-    public let intBuff = Array<Byte>(4, repeat: 0)
-    public let longBuff = Array<Byte>(8, repeat: 0)
+    public let shortBuff = Array<Byte>(2, item: 0)
+    public let intBuff = Array<Byte>(4, item: 0)
+    public let longBuff = Array<Byte>(8, item: 0)
 
     public func readLongLittleEndian(randomAccessFile: RandomAccessFile): Int64 {
         randomAccessFile.readFully(longBuff)

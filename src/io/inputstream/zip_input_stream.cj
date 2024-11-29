@@ -21,8 +21,7 @@ public class ZipInputStream <: InputStream & Resource {
         inputStream: InputStream,
         password!: ?Array<Rune> = None, 
         passwordCallback!: ?PasswordCallback = None ,
-        config!: Zip4cjConfig = Zip4cjConfig(None, InternalZipConstants.BUFF_SIZE,
-            InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING)
+        config!: Zip4cjConfig = Zip4cjConfig(InternalZipConstants.BUFF_SIZE, InternalZipConstants.USE_UTF8_FOR_PASSWORD_ENCODING_DECODING)
     ) {
         if (config.getBufferSize() < InternalZipConstants.MIN_BUFF_SIZE) {
             throw IllegalArgumentException(
@@ -40,7 +39,7 @@ public class ZipInputStream <: InputStream & Resource {
             readUntilEndOfEntry()
         }
 
-        localFileHeader = headerReader.readLocalFileHeader(inputStream, zip4cjConfig.getCharset())
+        localFileHeader = headerReader.readLocalFileHeader(inputStream)
 
         if (localFileHeader.isNone()) {
             return None
@@ -172,8 +171,7 @@ public class ZipInputStream <: InputStream & Resource {
         cipherInputStream: ICipherInputStream,
         localFileHeader: LocalFileHeader
     ): DecompressedInputStream {
-        var compressionMethod = localFileHeader.getCompressionMethod().getOrThrow()
-
+        let compressionMethod = Zip4cjUtil.getCompressionMethod(localFileHeader)
         if (compressionMethod == CompressionMethod.DEFLATE) {
             return InflaterInputStream(cipherInputStream, Int64(zip4cjConfig.getBufferSize()))
         }
@@ -277,7 +275,7 @@ public class ZipInputStream <: InputStream & Resource {
 
     private func readUntilEndOfEntry(): Unit {
         if (endOfEntryBuffer.isEmpty()) {
-            endOfEntryBuffer = Array<Byte>(512, repeat: 0)
+            endOfEntryBuffer = Array<Byte>(512, item: 0)
         }
 
         //noinspection StatementWithEmptyBody

@@ -25,7 +25,7 @@ class ZipStandardCipherInputStream <: CipherInputStream<StandardDecrypter> {
     }
 
     private func getStandardDecrypterHeaderBytes(): Array<Byte> {
-        var headerBytes: Array<Byte> = Array<Byte>(InternalZipConstants.STD_DEC_HDR_SIZE, repeat: 0)
+        var headerBytes: Array<Byte> = Array<Byte>(InternalZipConstants.STD_DEC_HDR_SIZE, item: 0)
         readRaw(headerBytes)
         return headerBytes
     }

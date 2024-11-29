@@ -34,16 +34,11 @@ public class AddFolderToZipTask <: AbstractAddFileToZipTask<AddFolderToZipTaskPa
     private func setDefaultFolderPath(taskParameters: AddFolderToZipTaskParameters) {
         var folderToAdd = taskParameters.folderToAdd
         let rootFolderPath: Path = if (taskParameters.zipParameters.isIncludeRootFolder()) {
-            let parent = folderToAdd.parent
-            if (parent.isEmpty()) {
-                InternalZipConstants.FILE_CURRENT_PATH
-            } else {
-                parent
-            }
+            folderToAdd.directoryName ?? InternalZipConstants.FILE_CURRENT_PATH
         } else {
             folderToAdd
         }
-        taskParameters.zipParameters.setDefaultFolderPath(canonicalize(rootFolderPath).toString())
+        taskParameters.zipParameters.setDefaultFolderPath(rootFolderPath.toCanonical().toString())
     }
 
     private func getFilesToAdd(taskParameters: AddFolderToZipTaskParameters): ArrayList<Path> {

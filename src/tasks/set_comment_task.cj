@@ -25,8 +25,7 @@ public class SetCommentTask <: AsyncZipTask<SetCommentTaskTaskParameters> {
             }
 
             var headerWriter: HeaderWriter = HeaderWriter()
-            headerWriter.finalizeZipFileWithoutValidations(zipModel, outputStream,
-                taskParameters.zip4cjConfig.getCharset())
+            headerWriter.finalizeZipFileWithoutValidations(zipModel, outputStream )
         }
     }
 

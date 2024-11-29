@@ -42,7 +42,7 @@ public class AesCipherUtil {
      * @return Derived Password Verifier
      */
     public static func derivePasswordVerifier(derivedKey: Array<Byte>, aesKeyStrength: AesKeyStrength): Array<Byte> {
-        let derivedPasswordVerifier: Array<Byte> = Array<Byte>(InternalZipConstants.AES_PASSWORD_VERIFIER_LENGTH, repeat: 0)
+        let derivedPasswordVerifier: Array<Byte> = Array<Byte>(InternalZipConstants.AES_PASSWORD_VERIFIER_LENGTH, item: 0)
         let keyMacLength = aesKeyStrength.getKeyLength() + aesKeyStrength.getMacLength()
         derivedKey.copyTo(derivedPasswordVerifier, keyMacLength, START_INDEX, InternalZipConstants.AES_PASSWORD_VERIFIER_LENGTH)
         return derivedPasswordVerifier
@@ -57,7 +57,7 @@ public class AesCipherUtil {
      */
     public static func getMacBasedPRF(derivedKey: Array<Byte>, aesKeyStrength: AesKeyStrength): MacBasedPRF {
         let macLength = aesKeyStrength.getMacLength()
-        let macKey: Array<Byte> = Array<Byte>(macLength, repeat: 0)
+        let macKey: Array<Byte> = Array<Byte>(macLength, item: 0)
         derivedKey.copyTo(macKey, aesKeyStrength.getKeyLength(), START_INDEX, macLength)
         let macBasedPRF: MacBasedPRF = MacBasedPRF(InternalZipConstants.AES_MAC_ALGORITHM)
         macBasedPRF.initialize(macKey)
@@ -74,7 +74,7 @@ public class AesCipherUtil {
      */
     public static func getAESEngine(derivedKey: Array<Byte>, aesKeyStrength: AesKeyStrength): AESEngine {
         let keyLength: Int64 = aesKeyStrength.getKeyLength()
-        let aesKey: Array<Byte> = Array<Byte>(keyLength, repeat: 0)
+        let aesKey: Array<Byte> = Array<Byte>(keyLength, item: 0)
         derivedKey.copyTo(aesKey, START_INDEX, START_INDEX, keyLength)
         return AESEngine(aesKey)
     }
