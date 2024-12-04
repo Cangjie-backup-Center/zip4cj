@@ -92,9 +92,10 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
 
     private func isHeaderData(buff: Array<Byte>): Bool {
         var signature = Int64(rawIO.readIntLittleEndian(buff))
-        for (headerSignature in HeaderSignature.values()) {
+        let values = HeaderSignature.values()
+        for (i in 0..values.size) {
             //Ignore split signature
-            if (headerSignature != HeaderSignature.SPLIT_ZIP && headerSignature.getValue() == signature) {
+            if (values[i] != HeaderSignature.SPLIT_ZIP && values[i].getValue() == signature) {
                 return true
             }
         }

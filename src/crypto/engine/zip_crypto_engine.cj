@@ -37,8 +37,8 @@ public class ZipCryptoEngine {
         keys[1] = 591751049
         keys[2] = 878082192
         var bytes = Zip4cjUtil.convertCharArrayToByteArray(password, useUtf8ForPassword)
-        for (b in bytes) {
-            updateKeys((b & 0xff))
+        for (i in 0..bytes.size) {
+            updateKeys((bytes[i] & 0xff))
         }
     }
 

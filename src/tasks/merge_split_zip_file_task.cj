@@ -56,8 +56,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
                     verifyIfTaskIsCancelled()
                 }
             }
-            updateHeadersForMergeSplitFileAction(zipModel, totalBytesWritten, outputStream,
-                taskParameters.zip4cjConfig.getCharset().getOrThrow())
+            updateHeadersForMergeSplitFileAction(zipModel, totalBytesWritten, outputStream)
             progressMonitor.endProgressMonitor()
         } catch (e: Exception) {
             throw ZipException(e.message)
@@ -83,7 +82,8 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
         index: Int64,
         signatureOverheadSplit: Int64
     ) {
-        for (fileHeader in fileHeaders) {
+        for (i in 0..fileHeaders.size) {
+            let fileHeader = fileHeaders[i]
             if (fileHeader.getDiskNumberStart() == index) {
                 fileHeader.setOffsetLocalHeader(fileHeader.getOffsetLocalHeader() + offsetToAdd - signatureOverheadSplit
                 )
@@ -94,16 +94,16 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
 
     private func getNextSplitZipFile(zipModel: ZipModel, partNumber: Int64): Path {
         if (partNumber == Int64(zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDisk())) {
-            return zipModel.getZipFile().getOrThrow()
+            return zipModel.getZipFile()
         }
 
         var splitZipExtension = ".z0"
         if (partNumber >= 9) {
             splitZipExtension = ".z"
         }
-        var rootZipFile = zipModel.getZipFile().getOrThrow().toString()
+        var rootZipFile = zipModel.getZipFile().toString()
         var nextSplitZipFileName = String(
-            zipModel.getZipFile().getOrThrow().toString().toRuneArray()[0..rootZipFile.lastIndexOf(".").getOrThrow()]) +
+            zipModel.getZipFile().toString().toRuneArray()[0..rootZipFile.lastIndexOf(".").getOrThrow()]) +
             splitZipExtension + "${partNumber + 1}"
         return Path(nextSplitZipFileName)
     }
@@ -116,8 +116,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
     private func updateHeadersForMergeSplitFileAction(
         zipModel: ZipModel,
         totalBytesWritten: Int64,
-        outputStream: OutputStream,
-        charset: Charset
+        outputStream: OutputStream
     ) {
         var newZipModel = zipModel.clone()
         newZipModel.getEndOfCentralDirectoryRecord().setOffsetOfStartOfCentralDirectory(totalBytesWritten)
@@ -125,7 +124,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
         updateSplitZipModel(newZipModel, totalBytesWritten)
 
         var headerWriter: HeaderWriter = HeaderWriter()
-        headerWriter.finalizeZipFileWithoutValidations(newZipModel, outputStream, charset)
+        headerWriter.finalizeZipFileWithoutValidations(newZipModel, outputStream)
     }
 
     private func updateSplitZipModel(zipModel: ZipModel, totalFileSize: Int64) {

@@ -41,10 +41,6 @@ public class InternalZipConstants {
 
     public static let ZIP_STANDARD_CHARSET_NAME = "Cp437"
 
-    public static let CHARSET_UTF_8: Charset = Charsets.forName("UTF-8").getOrThrow()
-
-    public static let ZIP4J_DEFAULT_CHARSET: Charset = CHARSET_UTF_8
-
     public static let SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN = ".zip.001"
 
     public static let USE_UTF8_FOR_PASSWORD_ENCODING_DECODING = true

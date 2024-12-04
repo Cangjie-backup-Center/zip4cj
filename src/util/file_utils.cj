@@ -65,16 +65,16 @@ public class FileUtils {
         return
     }
 
-    public static func getFileAttributes(file: Path): Array<Byte> {
+    public static func getFileAttributes(file: FileInfo): Array<Byte> {
         try {
-            if ((!FileInfo(file).isSymbolicLink() && !exists(file))) {
+            if ((!file.isSymbolicLink() && !exists(file.path))) {
                 return Array<Byte>(4, repeat: 0)
             }
 
             if (isWindows) {
-                return getWindowsFileAttributes(file)
+                return getWindowsFileAttributes(file.path)
             } else if (isMac || isUnix) {
-                return getPosixFileAttributes(file)
+                return getPosixFileAttributes(file.path)
             } else {
                 return Array<Byte>(4, repeat: 0)
             }
@@ -89,28 +89,40 @@ public class FileUtils {
         zipParameters: ZipParameters,
         paths!: ArrayList<Path> = ArrayList<Path>()
     ): ArrayList<Path> {
-        if (path.isEmpty() || !(exists(path))) {
+        if (path.isEmpty() || !exists(path)) {
             return ArrayList<Path>()
         }
         let fileInfo = FileInfo(path)
         if (!fileInfo.isDirectory() || !fileInfo.canRead()) {
             return paths
         }
-        let dir = Directory(path)
-        for (subPath in dir) {
-            if (subPath.isDirectory()) {
-                getFilesInDirectoryRecursive(subPath.path, zipParameters, paths: paths)
+        for (subPath in Directory(path)) {
+            if (let Some(v) <- zipParameters.getExcludeFileFilter()) {
+                if (v.isExcluded(subPath.path)) {
+                    continue
+                }
+            } 
+            let isSymLink = subPath.isSymbolicLink()
+            if (isSymLink) {
+                paths.append(subPath.path)
+                if (zipParameters.getSymbolicLinkAction() != SymbolicLinkAction.INCLUDE_LINK_ONLY) {
+                    let linkPath = SymbolicLink.readFrom(subPath.path)
+                    getFilesInDirectoryRecursive(linkPath, zipParameters, paths: paths)
+                }
+                continue
+            } 
+
+            if (subPath.isHidden() && !zipParameters.isReadHiddenFiles()) {
+                continue
             }
             paths.append(subPath.path)
+            
+            
+            if (!isSymLink && subPath.isDirectory()) {
+                getFilesInDirectoryRecursive(subPath.path, zipParameters, paths: paths)
+            }
         }
         return paths
-    }
-
-    // TODO getFilesInDirectoryRecursive
-    public static func getFilesInDirectoryRecursive(path: File, zipParameters: ZipParameters) {
-        (path, zipParameters)
-        var result = ArrayList<File>()
-        return result
     }
 
     public static func getFileNameWithoutExtension(fileName: String): String {
@@ -132,11 +144,11 @@ public class FileUtils {
     }
 
     public static func getSplitZipFiles(zipModel: ZipModel): ArrayList<Path> {
-        if (!exists(zipModel.getZipFile().getOrThrow())) {
+        if (!exists(zipModel.getZipFile())) {
             throw ZipException("zip file does not exist")
         }
         var splitZipFiles = ArrayList<Path>()
-        var currZipFile = zipModel.getZipFile().getOrThrow()
+        var currZipFile = zipModel.getZipFile()
         var partFile: String
 
         if (!zipModel.isSplitArchive()) {
@@ -152,7 +164,7 @@ public class FileUtils {
         } else {
             for (i in 0..numberOfThisDisk) {
                 if (i == numberOfThisDisk) {
-                    splitZipFiles.append(zipModel.getZipFile().getOrThrow())
+                    splitZipFiles.append(zipModel.getZipFile())
                 } else {
                     var fileExt = ".z0"
                     if (i >= 9) {
@@ -188,7 +200,12 @@ public class FileUtils {
                 case None => ""
             }
             if (defaultFolderPath.size != 0) {
-                var fileCanonicalPath: Path = canonicalize(fileToAdd)
+                var fileCanonicalPath: Path
+                try {
+                    fileCanonicalPath = canonicalize(fileToAdd)
+                } catch(_: Exception) {
+                    return fileToAdd.fileName
+                }
                 var rootFolderFile = Path(defaultFolderPath)
                 var rootFolderFileRef = canonicalize(rootFolderFile).toString()
 
@@ -231,6 +248,7 @@ public class FileUtils {
                 }
             }
         } catch (e: IOException) {
+            e.printStackTrace()
             throw ZipException(e.message)
         }
 
@@ -324,20 +342,6 @@ public class FileUtils {
         }
     }
 
-    public static func assertFilesExist(files: ArrayList<Path>, symLinkAction: SymbolicLinkAction): Unit {
-        for (path in files) {
-            if (isSymbolicLink(path)) {
-                // If symlink is INCLUDE_LINK_ONLY, and if the above condition is true, it means that the link exists and there
-                // will be no need to check for link existence explicitly, check only for target file existence if required
-                if (symLinkAction == (INCLUDE_LINK_AND_LINKED_FILE) || symLinkAction == (INCLUDE_LINKED_FILE_ONLY)) {
-                    assertSymbolicLinkTargetExists(path)
-                }
-            } else {
-                assertFileExists(path)
-            }
-        }
-    }
-
     public static func isNumberedSplitFile(file: Path): Bool {
         return file.fileName.endsWith(InternalZipConstants.SEVEN_ZIP_SPLIT_FILE_EXTENSION_PATTERN)
     }
@@ -361,14 +365,6 @@ public class FileUtils {
             }
         }
         return unsafe { listFiles.getRawArray()[0..listFiles.size] }
-    }
-
-    public static func isSymbolicLink(file: Path): Bool {
-        return try {
-            FileInfo(file).isSymbolicLink()
-        } catch (_) {
-            return false
-        }
     }
 
     public static func readSymbolicLink(file: Path): String {
