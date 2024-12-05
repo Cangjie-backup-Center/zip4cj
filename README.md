@@ -321,9 +321,8 @@ func createZipFile(numberOfEntries: Int64, eachEntrySize: Int64, zipParameters: 
 
 ```
 
-
-
-
+## 约束和限制
+- 流式解压文件, 如果流式zip中的frcompressSize为0时, 可能解压失败[链接](https://gitcode.com/Cangjie-TPC/zip4cj/issues/3) .
 
 ## 开源协议
 
