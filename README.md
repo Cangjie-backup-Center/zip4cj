@@ -167,11 +167,11 @@ import zip4cj.*
 import std.fs.*
 
 main() { 
-    var zipParameters = ZipParameters();
-    zipParameters.setCompressionMethod(CompressionMethod.STORE);                // 设置压缩方式, 存储
+    var zipParameters = ZipParameters()
+    zipParameters.setCompressionMethod(CompressionMethod.STORE)                // 设置压缩方式, 存储
     let zipFile = ZipFile("output.zip")
-    zipFile.setRunInThread(true);                                               // 设置子线程压缩
-    zipFile.createSplitZipFile([Path("FILE_0")],zipParameters, false, 65536);   // 添加 FILE_0(4Gb大小) 文件到zip
+    zipFile.setRunInThread(true)                                               // 设置子线程压缩
+    zipFile.createSplitZipFile([Path("FILE_0")],zipParameters, false, 65536)   // 添加 FILE_0(4Gb大小) 文件到zip
     let progress = zipFile.getProgressMonitor()                                 // 获取压缩进度类
     let state = progress.getState()                                             // 获取 压缩状态
     println(state)
@@ -206,7 +206,7 @@ import std.fs.*
 main () {
     let zipParameters = ZipParameters()                          // 创建压缩参数类
     zipParameters.setEncryptFiles(true)                          // 加密时必须要设置为true
-    zipParameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD)      // 设置密码方式为ZIP_STANDARD
+    zipParameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD)      // 设置密码方式为AES-256
     zipParameters.setCompressionMethod(CompressionMethod.STORE)  // 设置压缩方式为SOTRE, 不进行压缩文件
     let zipFile = ZipFile("66666.zip", "123456".toRuneArray())   // 设置输出文件名和密码
     zipFile.addFile("fields.c", zipParameters)                   // 添加文件和压缩参数
@@ -221,7 +221,7 @@ import std.fs.*
 main () {
     let zipParameters = ZipParameters()                          // 创建压缩参数类
     zipParameters.setEncryptFiles(true)                          // 加密时必须要设置为true
-    zipParameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD)      // 设置密码方式为ZIP_STANDARD
+    zipParameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD)      // 设置密码方式为AES-256
     zipParameters.setCompressionMethod(CompressionMethod.DEFLATE)  // 设置压缩方式为DEFLATE, 使用deflate算法压缩文件
     let zipFile = ZipFile("66666.zip", "123456".toRuneArray())   // 设置输出文件名和密码
     zipFile.addFile("fields.c", zipParameters)                   // 添加文件和压缩参数
@@ -236,10 +236,93 @@ import  zip4cj.*
 main() { 
     try (file = ZipFile("Animal_world.zip", "123".toRuneArray())) {  // 设置输入的zip文件名和解压密码
         file.extractAll("./")                                         // 解压到当前目录
-        file.close()
     }    
 }
 ```
+#### 使用ZipInputStream输入流解压zip文件
+```cangjie
+import zip4cj.*
+import std.fs.*
+import std.io.*
+
+main() { 
+    let input : InputStream = File("666666.zip", Open(true, false))
+    extractAll(input)
+    0
+}
+
+func extractAll(input: InputStream): Unit {
+    let readBuffer = Array<Byte>(4096, item:0)
+    try(zipInPut = ZipInputStream(input)) {
+        while (let Some(localFileHeader) <- zipInPut.getNextEntry(None, true)) {
+            if (let Some(fileName) <- localFileHeader.getFileName()) {
+                if (let Some(extension) <- Path(fileName).extensionName) {
+                    if (extension == "zip") {
+                        extractAll(zipInPut)  // 递归解压
+                    }
+                }
+                let filePath = Path(fileName)
+                println(filePath)
+                if (let Some(dir) <- filePath.directoryName) {
+                    if (!Directory.exists(dir)) {
+                        Directory.create(dir, recursive: true)
+                    }
+                } else if (let Some(name) <- filePath.fileName){
+                    try (outputStream = File(name, OpenOption.Create(true))) {
+                        var readLen = zipInPut.read(readBuffer)
+                        while (readLen > 0) {
+                            outputStream.write(readBuffer[0..readLen])
+                            readLen = zipInPut.read(readBuffer)
+                        }
+                    }
+                }
+            } else {
+                throw Exception() // 自定义异常
+            }
+        }
+    }
+}
+
+```
+
+#### 使用ZipOutputStream输出流压缩zip文件
+```cangjie
+
+main() { 
+    let entrySize = 4294967296
+    let zipParameters = ZipParameters()
+    zipParameters.setCompressionMethod(CompressionMethod.STORE)
+    zipParameters.setEntrySize(entrySize)
+    createZipFile(1, entrySize, zipParameters)
+    0
+}
+
+func createZipFile(numberOfEntries: Int64, eachEntrySize: Int64, zipParameters: ZipParameters): Unit {
+    let readBuffer = Array<Byte>(8192, repeat: 0)
+    var readLen = 0
+    let generatedZipFile = File("output.zip", OpenOption.Create(true))
+    
+    try(zipOutputStream = ZipOutputStream(BufferedOutputStream<File>(generatedZipFile))) {
+        for (i in 0..numberOfEntries) {
+            zipParameters.setFileNameInZip("FILE_${i}")
+            zipOutputStream.putNextEntry(zipParameters)
+            let input = File("data.txt", Open(true, false))
+            var count = input.read(readBuffer)
+            while(count > 0) {
+                zipOutputStream.write(readBuffer[0..count])
+                count = input.read(readBuffer)
+            }
+            zipOutputStream.closeEntry()
+        }
+    }
+    generatedZipFile.close()
+}
+
+
+```
+
+
+
 
 
 ## 开源协议
