@@ -251,7 +251,6 @@ public class FileUtils {
                 }
             }
         } catch (e: IOException) {
-            e.printStackTrace()
             throw ZipException(e.message)
         }
 

@@ -18,6 +18,9 @@ public open class ExecutorService {
         spawn {
             while (true) {
                 let shutdownId = service.shutdownTASK.dequeue()
+                if (shutdownId < 0) {
+                    break
+                }
                 if (let Some(v) <- service.map.get(shutdownId)) {
                     v.cancel()
                     service.map.remove(shutdownId)
@@ -65,6 +68,7 @@ public open class ExecutorService {
             for ((id, _) in this.map) {
                 shutdownTASK.enqueue(id)
             }
+            shutdownTASK.enqueue(-1)
         }
     }
 }

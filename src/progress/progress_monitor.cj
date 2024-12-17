@@ -28,11 +28,25 @@ public enum ProgressMonitorState <: Equatable<ProgressMonitorState> & ToString{
 
 }
 
-public enum ProgressMonitorResult {
+public enum ProgressMonitorResult <: Equatable<ProgressMonitorResult>{
     | SUCCESS
     | WORK_IN_PROGRESS
     | ERROR
     | CANCELLED
+
+    public operator func ==(that: ProgressMonitorResult): Bool {
+        return match ((this, that)) {
+            case (SUCCESS, SUCCESS) => true
+            case (WORK_IN_PROGRESS, WORK_IN_PROGRESS) => true
+            case (ERROR, ERROR) => true
+            case (CANCELLED, CANCELLED) => true
+            case _ => false
+        }
+    }
+
+    public operator func !=(that: ProgressMonitorResult): Bool {
+        !(this == that)
+    }
 }
 
 public enum ProgressMonitorTask {
