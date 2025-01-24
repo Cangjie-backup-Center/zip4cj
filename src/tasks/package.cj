@@ -11,7 +11,6 @@ internal import std.fs.Path
 internal import std.fs.FileInfo
 internal import std.fs.File
 internal import std.fs.exists
-internal import std.fs.OpenOption
 internal import std.fs.Directory
 internal import std.fs.remove
 internal import std.fs.rename

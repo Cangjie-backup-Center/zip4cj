@@ -3,6 +3,8 @@
  */
 package zip4cj.io.inputstream
 
+import std.fs.*
+
 class ZipStandardSplitFileInputStream <: SplitFileInputStream {
     protected var randomAccessFile: RandomAccessFile
     protected var zipFile: Path
@@ -12,7 +14,7 @@ class ZipStandardSplitFileInputStream <: SplitFileInputStream {
     private var singleByteArray = Array<Byte>(1, repeat: 0)
 
     public init(zipFile: Path, isSplitZipArchive: Bool, lastSplitZipFileNumber: Int64) {
-        this.randomAccessFile = RandomAccessFile(zipFile, OpenOption.Open(true, true))
+        this.randomAccessFile = RandomAccessFile(zipFile, OpenMode.ReadWrite)
         this.zipFile = zipFile
         this.isSplitZipArchive = isSplitZipArchive
         this.lastSplitZipFileNumber = lastSplitZipFileNumber
@@ -69,7 +71,7 @@ class ZipStandardSplitFileInputStream <: SplitFileInputStream {
             throw Exception("zip split file does not exist: ${nextSplitFile}")
         }
         randomAccessFile.close()
-        randomAccessFile = RandomAccessFile(nextSplitFile, OpenOption.Open(true, true))
+        randomAccessFile = RandomAccessFile(nextSplitFile, OpenMode.ReadWrite)
     }
 
     protected func getNextSplitFile(zipFileIndex: Int64): Path {

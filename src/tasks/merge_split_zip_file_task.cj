@@ -3,6 +3,8 @@
  */
 package zip4cj.tasks
 
+import std.fs.*
+
 public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParameters> {
     private let zipModel: ZipModel
     private let rawIO = RawIO()
@@ -18,7 +20,10 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
             progressMonitor.endProgressMonitor(e)
             throw e
         }
-        try (outputStream = File(taskParameters.outputZipFile, OpenOption.CreateOrTruncate(true))) {
+        if (exists(taskParameters.outputZipFile)) {
+            remove(taskParameters.outputZipFile, recursive: true)
+        }
+        try (outputStream = File(taskParameters.outputZipFile, OpenMode.ReadWrite)) {
             var totalBytesWritten = 0
             var totalNumberOfSplitFiles = zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDisk()
             if (totalNumberOfSplitFiles <= 0) {
@@ -110,7 +115,7 @@ public class MergeSplitZipFileTask <: AsyncZipTask<MergeSplitZipFileTaskParamete
 
     private func createSplitZipFileStream(zipModel: ZipModel, partNumber: Int64): RandomAccessFile {
         var splitFile = getNextSplitZipFile(zipModel, partNumber)
-        return RandomAccessFile(splitFile, OpenOption.Open(true, false))
+        return RandomAccessFile(splitFile, OpenMode.Read)
     }
 
     private func updateHeadersForMergeSplitFileAction(

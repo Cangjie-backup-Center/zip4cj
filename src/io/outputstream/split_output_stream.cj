@@ -3,6 +3,8 @@
  */
 package zip4cj.io.outputstream
 
+import std.fs.*
+
 public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport & Resource {
     private var raf: RandomAccessFile
     private var splitLength: Int64
@@ -22,9 +24,9 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
                 "split length less than minimum allowed split length of ${InternalZipConstants.MIN_SPLIT_LENGTH} Bytes")
         }
         this.raf = if (exists(file) && FileInfo(file).isRegular()) {
-            RandomAccessFile(file, OpenOption.Open(true, true))
+            RandomAccessFile(file, OpenMode.ReadWrite)
         } else {
-            RandomAccessFile(file, OpenOption.CreateOrTruncate(true))
+            RandomAccessFile(file, OpenMode.ReadWrite)
         }
         this.splitLength = splitLength
         this.zipFile = file
@@ -86,7 +88,7 @@ public class SplitOutputStream <: OutputStream & OutputStreamWithSplitZipSupport
             throw ZipException("cannot rename newly created split file")
         }
         rename(zipFileName, to: currSplitFile, overwrite: true)
-        raf = RandomAccessFile(zipFile, OpenOption.Create(true))
+        raf = RandomAccessFile(zipFile, OpenMode.ReadWrite)
         currSplitFileCounter++
     }
 

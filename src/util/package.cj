@@ -9,13 +9,12 @@ internal import std.io.OutputStream
 internal import std.io.SeekPosition
 internal import std.fs.FileInfo
 internal import std.fs.SymbolicLink
+internal import std.fs.OpenMode
 internal import std.fs.Path
 internal import std.fs.exists
 internal import std.fs.File
-internal import std.fs.OpenOption
 internal import std.fs.Directory
 internal import std.fs.canonicalize
-internal import std.unicode.UnicodeExtension
 internal import std.math.abs
 internal import std.time.DateTime
 internal import std.time.Month
