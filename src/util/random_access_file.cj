@@ -3,8 +3,6 @@
  */
 package zip4cj.util
 
-import std.fs.*
-
 public open class RandomAccessFile <: Resource {
     public var postion_: Int64
     protected var rawFile: File = unsafe { zeroValue<File>() }

@@ -28,11 +28,11 @@ public class AddFilesToZipTask <: AbstractAddFileToZipTask<AddFilesToZipTaskPara
 
         for (i in 0..taskParameters.filesToAdd.size) {
             let inputFile = taskParameters.filesToAdd[i]
-            filesToAdd.append(inputFile)
+            filesToAdd.add(inputFile)
             var isSymLink = FileInfo(inputFile).isSymbolicLink()
             var symbolicLinkAction = taskParameters.zipParameters.getSymbolicLinkAction()
             if (isSymLink && !(SymbolicLinkAction.INCLUDE_LINK_ONLY == (symbolicLinkAction))) {
-                filesToAdd.appendAll(FileUtils.getFilesInDirectoryRecursive(inputFile, taskParameters.zipParameters))
+                filesToAdd.add(all: FileUtils.getFilesInDirectoryRecursive(inputFile, taskParameters.zipParameters))
             }
         }
 

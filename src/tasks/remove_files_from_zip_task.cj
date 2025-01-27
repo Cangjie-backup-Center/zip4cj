@@ -3,8 +3,6 @@
  */
 package zip4cj.tasks
 
-import std.fs.*
-
 public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZipTaskParameters> {
     private let zipModel: ZipModel
     private let headerWriter: HeaderWriter
@@ -74,7 +72,7 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
         for (i in 0..filesToRemove.size) {
             let fileToRemove = filesToRemove[i]
             if (HeaderUtil.getFileHeader(zipModel, fileToRemove).isSome()) {
-                filteredFilesToRemove.append(fileToRemove)
+                filteredFilesToRemove.add(fileToRemove)
             }
         }
 

@@ -52,7 +52,7 @@ public class HeaderUtil {
             let fileHeader = allFileHeaders[i]
             if (let Some(v) <- fileHeader.getFileName()) {
                 if (v.startsWith(fileName)) {
-                    fileHeadersUnderDirectory.append(fileHeader)
+                    fileHeadersUnderDirectory.add(fileHeader)
                 }
             } else {
                 throw NoneValueException("FileHeader.getFileName() is null.")

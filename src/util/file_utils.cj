@@ -3,9 +3,6 @@
  */
 package zip4cj.util
 
-import std.unicode.*
-import std.fs.*
-
 @When[os == "Linux"]
 func isLinuxOS(): Bool {true}
 @When[os != "Linux"]
@@ -107,7 +104,7 @@ public class FileUtils {
             } 
             let isSymLink = subPath.isSymbolicLink()
             if (isSymLink) {
-                paths.append(subPath.path)
+                paths.add(subPath.path)
                 if (zipParameters.getSymbolicLinkAction() != SymbolicLinkAction.INCLUDE_LINK_ONLY) {
                     let linkPath = SymbolicLink.readFrom(subPath.path)
                     getFilesInDirectoryRecursive(linkPath, zipParameters, paths: paths)
@@ -118,7 +115,7 @@ public class FileUtils {
             if (subPath.isHidden() && !zipParameters.isReadHiddenFiles()) {
                 continue
             }
-            paths.append(subPath.path)
+            paths.add(subPath.path)
             
             
             if (!isSymLink && subPath.isDirectory()) {
@@ -155,19 +152,19 @@ public class FileUtils {
         var partFile: String
 
         if (!zipModel.isSplitArchive()) {
-            splitZipFiles.append(currZipFile)
+            splitZipFiles.add(currZipFile)
             return splitZipFiles
         }
 
         var numberOfThisDisk = zipModel.getEndOfCentralDirectoryRecord().getNumberOfThisDisk()
 
         if (numberOfThisDisk == 0) {
-            splitZipFiles.append(currZipFile)
+            splitZipFiles.add(currZipFile)
             return splitZipFiles
         } else {
             for (i in 0..numberOfThisDisk) {
                 if (i == numberOfThisDisk) {
-                    splitZipFiles.append(zipModel.getZipFile())
+                    splitZipFiles.add(zipModel.getZipFile())
                 } else {
                     var fileExt = ".z0"
                     if (i >= 9) {
@@ -183,7 +180,7 @@ public class FileUtils {
                         currZipFile.toString()
                     }
                     partFile = partFile + fileExt + "${(i + 1)}"
-                    splitZipFiles.append(Path(partFile))
+                    splitZipFiles.add(Path(partFile))
                 }
             }
         }
@@ -364,7 +361,7 @@ public class FileUtils {
         let listFiles = ArrayList<Path>()
         for (file in Directory.readFrom(firstNumberedFile.parent) where file.isRegular()) {
             if (file.path.fileName.startsWith(zipFileNameWithoutExtension)) {
-                listFiles.append(file.path)
+                listFiles.add(file.path)
             }
         }
         return unsafe { listFiles.getRawArray()[0..listFiles.size] }
