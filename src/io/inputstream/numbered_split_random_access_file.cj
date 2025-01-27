@@ -3,13 +3,15 @@
  */
 package zip4cj.io.inputstream
 
-func getFileModle(mode: String): OpenOption {
+import std.fs.OpenMode
+
+func getFileModle(mode: String): OpenMode {
     if (mode == "rw") {
-        return OpenOption.Open(true, true)
+        return OpenMode.ReadWrite
     } else if (mode == "r") {
-        return OpenOption.Open(true, false)
+        return OpenMode.Read
     } else {
-        return OpenOption.Open(false, true)
+        return OpenMode.Write
     }
 }
 
@@ -24,7 +26,7 @@ public func initializeRandomAccessFileForHeaderReading(zipFile: Path): RandomAcc
     if (!exists(zipFile)) {
         File.create(zipFile)
     }
-    return RandomAccessFile(zipFile, OpenOption.Open(true, true))
+    return RandomAccessFile(zipFile, OpenMode.ReadWrite)
 }
 
 

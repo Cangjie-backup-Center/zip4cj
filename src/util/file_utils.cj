@@ -3,6 +3,9 @@
  */
 package zip4cj.util
 
+import std.unicode.*
+import std.fs.*
+
 @When[os == "Linux"]
 func isLinuxOS(): Bool {true}
 @When[os != "Linux"]
@@ -96,7 +99,7 @@ public class FileUtils {
         if (!fileInfo.isDirectory() || !fileInfo.canRead()) {
             return paths
         }
-        for (subPath in Directory(path)) {
+        for (subPath in Directory.readFrom(path)) {
             if (let Some(v) <- zipParameters.getExcludeFileFilter()) {
                 if (v.isExcluded(subPath.path)) {
                     continue
@@ -359,7 +362,7 @@ public class FileUtils {
     public static func getAllSortedNumberedSplitFiles(firstNumberedFile: Path): Array<Path> {
         var zipFileNameWithoutExtension = FileUtils.getFileNameWithoutExtension(firstNumberedFile.fileName)
         let listFiles = ArrayList<Path>()
-        for (file in Directory(firstNumberedFile.parent) where file.isRegular()) {
+        for (file in Directory.readFrom(firstNumberedFile.parent) where file.isRegular()) {
             if (file.path.fileName.startsWith(zipFileNameWithoutExtension)) {
                 listFiles.append(file.path)
             }

@@ -3,6 +3,8 @@
  */
 package zip4cj.util
 
+import std.fs.*
+
 public open class RandomAccessFile <: Resource {
     public var postion_: Int64
     protected var rawFile: File = unsafe { zeroValue<File>() }
@@ -19,12 +21,12 @@ public open class RandomAccessFile <: Resource {
         }
     }
 
-    public init(path: String, mode: OpenOption) {
+    public init(path: String, mode: OpenMode) {
         this.postion_ = 0
         this.rawFile = File(path, mode)
     }
 
-    public init(path: Path, mode: OpenOption) {
+    public init(path: Path, mode: OpenMode) {
         this.postion_ = 0
         this.rawFile = File(path, mode)
     }

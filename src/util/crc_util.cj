@@ -3,6 +3,8 @@
  */
 package zip4cj.util
 
+import std.fs.*
+
 /*
  * The class is RarCRC class
  * @since 0.37.2
@@ -106,7 +108,7 @@ public class CrcUtil {
                 "input file is null or does not exist or cannot read.  Cannot calculate CRC for the file")
         }
         crc32.reset()
-        try (inputStream = File(fileInfo.path, Open(true, false))){
+        try (inputStream = File(fileInfo.path, OpenMode.Read)){
             var readLen = inputStream.read(buff)
             while (readLen != 0) {
                 crc32.update(buff[0..readLen])

@@ -3,6 +3,7 @@
  */
 package zip4cj.tasks
 import std.fs.FSException
+import std.fs.*
 
 @When[os == "Windows"] 
 func getPlatformWindows(): Bool {
@@ -101,7 +102,7 @@ public abstract class AbstractAddFileToZipTask<T> <: AsyncZipTask<T> {
             fileToAdd.isDirectory()
         }
         if (!isDirectory) {
-            try (inputStream = File(fileToAdd.path, OpenOption.Open(true, false))){
+            try (inputStream = File(fileToAdd.path, OpenMode.Read)){
                 var readLen = inputStream.read(readBuff)
                 while (readLen > 0) {
                     zipOutputStream.write(readBuff[0..readLen])

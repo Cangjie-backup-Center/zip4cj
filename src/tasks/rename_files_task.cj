@@ -3,6 +3,8 @@
  */
 package zip4cj.tasks
 
+import std.fs.*
+
 public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters> {
     private let zipModel: ZipModel
     private let headerWriter: HeaderWriter
@@ -28,7 +30,7 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
 
         let temporaryFile = getTemporaryFile(zipModel.getZipFile().toString())
         var successFlag = false
-        let inputStream = RandomAccessFile(zipModel.getZipFile(), OpenOption.Open(true, true))
+        let inputStream = RandomAccessFile(zipModel.getZipFile(), OpenMode.ReadWrite)
         let outputStream = SplitOutputStream(temporaryFile)
         try {
             var currentFileCopyPointer = 0

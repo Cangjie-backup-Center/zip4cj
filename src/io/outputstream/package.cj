@@ -10,7 +10,6 @@ internal import std.io.ByteBuffer
 internal import std.fs.Path
 internal import std.fs.FileInfo
 internal import std.fs.exists
-internal import std.fs.OpenOption
 internal import std.fs.canonicalize
 internal import std.fs.rename
 internal import std.time.DateTime

@@ -3,6 +3,8 @@
  */
 package zip4cj.tasks
 
+import std.fs.*
+
 public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
     private let zipModel: ZipModel
     private let unzipParameters: UnzipParameters
@@ -67,7 +69,10 @@ public abstract class AbstractExtractFileTask<T> <: AsyncZipTask<T> {
         if (!exists(outputFile.parent)) {
             Directory.create(outputFile.parent, recursive: true)
         }
-        try (file = File(outputFile, OpenOption.CreateOrTruncate(true))) {
+        if ((exists(outputFile))) {
+            remove(outputFile, recursive: true)
+        }
+        try (file = File(outputFile, OpenMode.ReadWrite)) {
             let outputStream = BufferedOutputStream<File>(file, 8192 * 2)
             var readLength = inputStream.read(buff)
             while (readLength > 0) {

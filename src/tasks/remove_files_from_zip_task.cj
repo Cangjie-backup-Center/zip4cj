@@ -3,6 +3,8 @@
  */
 package zip4cj.tasks
 
+import std.fs.*
+
 public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZipTaskParameters> {
     private let zipModel: ZipModel
     private let headerWriter: HeaderWriter
@@ -32,7 +34,7 @@ public class RemoveFilesFromZipTask <: AbstractModifyFileTask<RemoveFilesFromZip
         var successFlag: Bool = false
 
         let outputStream: SplitOutputStream = SplitOutputStream(temporaryZipFile)
-        let inputStream: RandomAccessFile = RandomAccessFile(zipModel.getZipFile().toString(), OpenOption.Open(true, false))
+        let inputStream: RandomAccessFile = RandomAccessFile(zipModel.getZipFile().toString(), OpenMode.Read)
         try {
             var currentFileCopyPointer: Int64 = 0
             var sortedFileHeaders: Array<FileHeader> = cloneAndSortFileHeadersByOffset(
