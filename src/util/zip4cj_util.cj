@@ -3,8 +3,6 @@
  */
 package zip4cj.util
 
-import std.unicode.*
-
 public class Zip4cjUtil {
     private init(){}
     private static let DOSTIME_BEFORE_1980: Int64 = (1 << 21) | (1 << 16)

@@ -23,7 +23,7 @@ public class AddFolderToZipTask <: AbstractAddFileToZipTask<AddFolderToZipTaskPa
         var filesToAdd = getFilesToAdd(taskParameters)
 
         if (taskParameters.zipParameters.isIncludeRootFolder()) {
-            filesToAdd.append(taskParameters.folderToAdd)
+            filesToAdd.add(taskParameters.folderToAdd)
         }
 
         return calculateWorkForFiles(
@@ -53,7 +53,7 @@ public class AddFolderToZipTask <: AbstractAddFileToZipTask<AddFolderToZipTaskPa
             taskParameters.zipParameters
         )
         if (taskParameters.zipParameters.isIncludeRootFolder()) {
-            filesToAdd.append(taskParameters.folderToAdd)
+            filesToAdd.add(taskParameters.folderToAdd)
         }
 
         return filesToAdd

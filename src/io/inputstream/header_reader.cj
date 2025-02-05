@@ -160,7 +160,7 @@ public class HeaderReader {
                     fileHeader.setEncryptionMethod(EncryptionMethod.AES)
                 }
             }
-            fileHeaders.append(fileHeader)
+            fileHeaders.add(fileHeader)
         }
 
         centralDirectory.setFileHeaders(fileHeaders)
@@ -264,7 +264,7 @@ public class HeaderReader {
                 extraDataRecord.setData(data)
             }
             counter += Int64(sizeOfRec)
-            extraDataRecords.append(extraDataRecord)
+            extraDataRecords.add(extraDataRecord)
         }
         return if (extraDataRecords.size > 0) {
             extraDataRecords

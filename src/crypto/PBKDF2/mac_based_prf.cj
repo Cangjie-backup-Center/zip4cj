@@ -70,7 +70,7 @@ public class MacBasedPRF <: PRF {
         if (this.macCache.size + u.size > InternalZipConstants.BUFF_SIZE) {
             this.doMacUpdate(0)
         }
-        this.macCache.appendAll(u)
+        this.macCache.add(all: u)
     }
 
     private func doMacUpdate(numberOfBytesToPushBack: Int64): Unit {

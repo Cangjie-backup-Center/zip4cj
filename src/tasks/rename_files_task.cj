@@ -3,8 +3,6 @@
  */
 package zip4cj.tasks
 
-import std.fs.*
-
 public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters> {
     private let zipModel: ZipModel
     private let headerWriter: HeaderWriter
@@ -176,9 +174,9 @@ public class RenameFilesTask <: AbstractModifyFileTask<RenameFilesTaskParameters
 
             if (let Some(fileHeaderToBeChanged) <- HeaderUtil.getFileHeader(zipModel, key)) {
                 if (fileHeaderToBeChanged.isDirectory() && !value.endsWith(InternalZipConstants.ZIP_FILE_SEPARATOR)) {
-                    fileNamesMapToBeChanged.put(key, "${value}${InternalZipConstants.ZIP_FILE_SEPARATOR}")
+                    fileNamesMapToBeChanged.add(key, "${value}${InternalZipConstants.ZIP_FILE_SEPARATOR}")
                 } else {
-                    fileNamesMapToBeChanged.put(key, value)
+                    fileNamesMapToBeChanged.add(key, value)
                 }
             }
         }

@@ -41,7 +41,7 @@ public func ArrayCopy<T>(src: Array<T>, srcPos: Int64, dest: Array<T>, destPos: 
 
 public func ListRmove<T>(arr: ArrayList<T>, item: T): Unit where T <: Equatable<T> {
     for (i in 0..arr.size where arr[i] == item) {
-        arr.remove(i)
+        arr.remove(at: i)
         break
     }
 }

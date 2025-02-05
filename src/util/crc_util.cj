@@ -3,8 +3,6 @@
  */
 package zip4cj.util
 
-import std.fs.*
-
 /*
  * The class is RarCRC class
  * @since 0.37.2

@@ -433,7 +433,7 @@ public class ZipFile <: Resource {
             throw ZipException("zip model is None, cannot get inputstream")
         }
         var zipInputStream = UnzipUtil.createZipInputStream(zipModel, fileHeader, password)
-        openInputStreams.append(zipInputStream)
+        openInputStreams.add(zipInputStream)
         return zipInputStream
     }
 

@@ -85,8 +85,8 @@ public class ZipOutputStream <: OutputStream & Resource {
             fileHeader.getOrThrow().setCrc(crc32.getValue())
             localFileHeader.getOrThrow().setCrc(crc32.getValue())
         }
-        zipModel.getLocalFileHeaders().append(localFileHeader.getOrThrow())
-        zipModel.getCentralDirectory().getOrThrow().getFileHeaders().append(fileHeader.getOrThrow())
+        zipModel.getLocalFileHeaders().add(localFileHeader.getOrThrow())
+        zipModel.getCentralDirectory().getOrThrow().getFileHeaders().add(fileHeader.getOrThrow())
 
         if (localFileHeader.getOrThrow().isDataDescriptorExists()) {
             headerWriter.writeExtendedLocalHeader(localFileHeader, countingOutputStream)
