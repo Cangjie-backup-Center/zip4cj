@@ -3,9 +3,9 @@
 </div>
 
 <p align="center">
-<img alt="" src="https://img.shields.io/badge/release-v1.0.2-brightgreen" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/release-v1.0.0-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/build-pass-brightgreen" style="display: inline-block;" />
-<img alt="" src="https://img.shields.io/badge/cjc-v0.58.3-brightgreen" style="display: inline-block;" />
+<img alt="" src="https://img.shields.io/badge/cjc-v0.59.6-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/cjcov-92%25-brightgreen" style="display: inline-block;" />
 <img alt="" src="https://img.shields.io/badge/project-open-brightgreen" style="display: inline-block;" />
 </p>
@@ -242,6 +242,24 @@ main() {
 }
 ```
 
+## 约束和限制
+#### 压缩方式支持（[其他压缩方式可参阅zip格式规范](https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE-6.3.10.TXT)）
+- 0 -  （支持）The file is stored (no compression)
+- 8 -  （支持）The file is Deflated
+
+#### 加密方式和版本支持（[其他不支持方式可参阅zip格式规范](https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE-6.3.10.TXT)）
+
+- 1.0 - （支持）Default value
+- 1.1 - （支持）File is a volume label
+- 2.0 - （支持）File is a folder (directory)
+- 2.0 - （支持）File is compressed using Deflate compression
+- 2.0 - （支持）File is encrypted using traditional PKWARE encryption
+- 4.5 - （支持）File uses ZIP64 format extensions
+- 5.1 - （支持）File is encrypted using AES encryption
+
+#### 流式解压和压缩方式限制
+
+- 流式解压文件, 如果流式zip中的frcompressSize为0时, 可能解压失败[链接](https://gitcode.com/Cangjie-TPC/zip4cj/issues/3) .
 
 ## 开源协议
 
