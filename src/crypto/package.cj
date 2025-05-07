@@ -12,4 +12,4 @@ protected import zip4cj.model.enums.*
 protected import zip4cj.util.*
 protected import zip4cj.util.internals.*
 protected import zip4cj.exception.ZipException
-protected import crypto.crypto.SecureRandom
+protected import stdx.crypto.crypto.SecureRandom

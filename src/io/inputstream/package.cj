@@ -9,7 +9,7 @@ internal import std.fs.exists
 internal import std.io.InputStream
 internal import std.io.OutputStream
 internal import std.io.IOException
-internal import compress.zlib.DecompressInputStream
+internal import stdx.compress.zlib.DecompressInputStream
 
 internal import zip4cj.headers.*
 internal import zip4cj.progress.*
