@@ -25,5 +25,5 @@ internal import zip4cj.exception.*
 internal import zip4cj.model.*
 internal import zip4cj.model.enums.*
 internal import zip4cj.util.internals.*
-internal import crypto.digest.HashType
+internal import stdx.crypto.digest.HashType
 internal import std.unicode.* 
