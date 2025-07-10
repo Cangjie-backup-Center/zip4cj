@@ -19,7 +19,7 @@
 [dependencies]
 
 [package]
-  cjc-version = "0.60.5"
+  cjc-version = "1.0.0"
   compile-option = "-O2 -Woff all"
   description = "nothing here"
   link-option = ""
@@ -27,7 +27,7 @@
   output-type = "dynamic"
   src-dir = "src"
   target-dir = ""
-  version = "1.0.2"
+  version = "1.0.5"
   package-configuration = {}
   scripts = {}
 
