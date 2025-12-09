@@ -1,71 +1,54 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2025. All rights reserved.
  */
 package zip4cj.tasks
 import std.sync.AtomicBool
 
-public open class ExecutorService {
-    let map = ConcurrentHashMap<Int64, Future<Unit>>()
-    let TASK = BlockingQueue<() -> Unit>()
-    let shutdownTASK = BlockingQueue<Int64>()
-    let mon = Monitor()
-    let threadId = BlockingQueue<Int64>()
-    public init() {}
+public class ExecutorService {
+    var thread = Option<Future<Unit>>.None
+    let isShutdown = AtomicBool(false)
+    let TASK = BlockingQueue<Option<() -> Unit>>()
 
+    public init() {}
     public static func new(): ExecutorService {
         let service = ExecutorService()
         service.reset()
-        spawn {
+        return service
+    }
+
+    func reset() {
+        thread = spawn {
             while (true) {
-                let shutdownId = service.shutdownTASK.dequeue()
-                if (let Some(v) <- service.map.get(shutdownId)) {
-                    v.cancel()
-                    service.map.remove(shutdownId)
-                    service.reset()
+                if (let Some(fn) <- this.TASK.dequeue()) {
+                    fn()
                 } else {
                     break
                 }
             }
         }
-        return service
-    }
-
-    private func reset() {
-        let thread: Future<Unit> = spawn {
-            threadId.enqueue(Thread.currentThread.id)
-            while (true) {
-                let fn = this.TASK.dequeue()
-                fn()
-                mon.lock()
-                mon.notifyAll()
-                mon.unlock()
-            }
-        }
-        this.map.put(threadId.dequeue(), thread)
     }
 
     public func execute(fn: () -> Unit): Unit {
         this.TASK.enqueue(fn)
     }
 
-    public func shutdown() {
-        for ((id, _) in this.map) {
-            shutdownTASK.enqueue(id)
+    public func shutdown(self!: Bool = false) {
+        isShutdown.store(true)
+        this.TASK.enqueue(None)
+        if (self) {
+            return
+        }
+        if (let Some(v) <- this.thread) {
+            v.cancel()
+            v.get() // Wait for the thread to finish
         }
     }
 
-    public func close (isBusy:Bool, fn: () -> Unit) {
-        spawn {
-            if (isBusy) {
-                mon.lock()
-                mon.wait()
-                mon.unlock()
-            }
-            fn()
-            for ((id, _) in this.map) {
-                shutdownTASK.enqueue(id)
-            }
+    public func close () {
+        if (isShutdown.load()) {
+            return
         }
+        this.shutdown()
     }
 }
 
@@ -109,7 +92,7 @@ public abstract class AsyncZipTask<T> {
                     } catch (e: ZipException) {
                         throw e
                     } finally {
-                        v.shutdown()
+                        v.shutdown(self: true)
                     }
                 })
             } else {

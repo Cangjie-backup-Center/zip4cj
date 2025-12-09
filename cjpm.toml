@@ -19,7 +19,7 @@
 [dependencies]
 
 [package]
-  cjc-version = "1.0.0"
+  cjc-version = "1.0.4"
   compile-option = "-O2 -Woff all"
   description = "nothing here"
   link-option = ""
