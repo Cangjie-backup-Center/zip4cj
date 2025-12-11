@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2022-2024. All rights reserved.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2022-2025. All rights reserved.
  */
 package zip4cj
 
@@ -77,6 +77,16 @@ public class ZipFile <: Resource {
         this.password = password
         this.runInThread = false
         this.progressMonitor = ProgressMonitor()
+    }
+
+    ~init() {
+        for (i in 0..openInputStreams.size) {
+            openInputStreams[i].close()
+        }
+        this.openInputStreams.clear()
+        if (let Some(v) <- this.executorService) {
+            v.close()
+        } 
     }
 
     public func createSplitZipFile(
@@ -457,17 +467,16 @@ public class ZipFile <: Resource {
     }
 
     public func close(): Unit {
-        func tmp(): Unit {
-            for (i in 0..openInputStreams.size) {
-                openInputStreams[i].close()
-            }
-            this.openInputStreams.clear()
+        if (isClose) {
+            return
         }
+        for (i in 0..openInputStreams.size) {
+            openInputStreams[i].close()
+        }
+        this.openInputStreams.clear()
         if (let Some(v) <- this.executorService) {
-            v.close(this.progressMonitor.getState() == ProgressMonitorState.BUSY, tmp)
-        } else {
-            tmp()
-        }
+            v.close()
+        } 
         this.isClose = true
     }
 
