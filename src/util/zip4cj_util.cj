@@ -101,10 +101,21 @@ public class Zip4cjUtil {
         if (length == 0) {
             return 0
         }
-        if (Int64(offset + length) > b.size) {
+        if (offset + length > b.size) {
             throw IllegalArgumentException("Length greater than buffer size")
         }
-        return inputStream.read(b[offset..offset + length])
+        var numberOfBytesRead = 0
+        while (numberOfBytesRead != length) {
+            let currentReadLength = inputStream.read(b[offset + numberOfBytesRead..offset + length])
+            if (currentReadLength <= 0) {
+                if (numberOfBytesRead <= 0) {
+                    return -1
+                }
+                return numberOfBytesRead
+            }
+            numberOfBytesRead += currentReadLength
+        }
+        return numberOfBytesRead
     }
 
     private static func readUntilBufferIsFull(inputStream: InputStream, bufferToReadInto: Array<Byte>, readLength: Int64): Int64 {

@@ -13,8 +13,7 @@ internal import std.fs.exists
 internal import std.fs.canonicalize
 internal import std.fs.rename
 internal import std.time.DateTime
-internal import stdx.compress.zlib.CompressOutputStream
-internal import stdx.compress.zlib.CompressLevel 
+internal import zlib4cj.DeflaterOutputStream as Zlib4cjDeflaterOutputStream
 internal import zip4cj.util.*
 internal import zip4cj.model.*
 internal import zip4cj.crypto.*
