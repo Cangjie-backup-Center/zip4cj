@@ -101,7 +101,7 @@ public class ZipInputStream <: InputStream & Resource {
     private func endOfCompressedDataReached () {
         var numberOfBytesPushedBack = decompressedInputStream.getOrThrow().pushBackInputStreamIfNecessary(inputStream)
         //First signal the end of data for this entry so that ciphers can read any header data if applicable
-        decompressedInputStream.getOrThrow().endOfEntryReached(inputStream, numberOfBytesPushedBack)
+        decompressedInputStream?.endOfEntryReached(inputStream, numberOfBytesPushedBack)
         readExtendedLocalFileHeaderIfPresent()
         verifyCrc()
         resetFields()
@@ -116,9 +116,7 @@ public class ZipInputStream <: InputStream & Resource {
         if (streamClosed) {
             return
         }
-        if (let Some(v) <- decompressedInputStream) {
-            v.close()
-        }
+        decompressedInputStream?.close()
         this.streamClosed = true
     }
 
