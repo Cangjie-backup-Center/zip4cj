@@ -18,6 +18,9 @@
   [target.x86_64-w64-mingw32]
     [target.x86_64-w64-mingw32.bin-dependencies]
       path-option = [ "${CANGJIE_STDX_PATH}/windows_x86_64_llvm/dynamic/stdx" ]
+  [target.arch64-apple-darwin]
+    [target.aarch64-apple-darwin.bin-dependencies]
+      path-option = [ "${CANGJIE_STDX_PATH}/darwin_aarch64_cjnative/dynamic/stdx" ]
 [dependencies]
   [dependencies.zlib4cj]
     git = "https://gitcode.com/Cangjie-TPC/zlib4cj.git"
